@@ -1,0 +1,15 @@
+node_modules
+
+/build
+/public/build
+.env
+
+/app/styles/tailwind.css
+
+*.json
+*.config.js
+*.setup.js
+.next
+.eslintrc
+.prettierrc
+*.md
