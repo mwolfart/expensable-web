@@ -19,13 +19,6 @@ module.exports = {
     },
   },
   rules: {
-    "@typescript-eslint/explicit-function-return-type": [
-      "error",
-      {
-        allowExpressions: true,
-        allowTypedFunctionExpressions: true
-      }
-    ],
     "@typescript-eslint/no-explicit-any": ["error"],
     curly: ["error"],
     "no-else-return": ["error", {
