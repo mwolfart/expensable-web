@@ -10,6 +10,7 @@ generator client {
 model User {
   id            String @id @default(cuid()) @map("_id") @db.ObjectId
   email         String @unique
+  fullName      String
 
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
@@ -26,4 +27,45 @@ model RefreshToken {
   revoked     Boolean  @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+model Category {
+  id        String @id @default(cuid()) @map("_id") @db.ObjectId
+  title     String
+  expenses  CategoriesOnExpense[]
+}
+
+model Expense {
+  id            String @id @default(cuid()) @map("_id") @db.ObjectId
+  title         String
+  amount        Float
+  unit          Float
+  datetime      DateTime
+  categories    CategoriesOnExpense[]
+  transactions  ExpensesInTransaction[]
+}
+
+model Transaction {
+  id            String @id @default(cuid()) @map("_id") @db.ObjectId
+  datetime      DateTime
+  location      String
+  expenses      ExpensesInTransaction[]
+}
+
+model CategoriesOnExpense {
+  id            String @id @default(cuid()) @map("_id") @db.ObjectId
+  expense       Expense @relation(fields: [expenseId], references: [id])
+  expenseId     String @db.ObjectId
+  category      Category @relation(fields: [categoryId], references: [id])
+  categoryId    String @db.ObjectId
+  @@unique([expenseId, categoryId])
+}
+
+model ExpensesInTransaction {
+  id               String @id @default(cuid()) @map("_id") @db.ObjectId
+  expense          Expense @relation(fields: [expenseId], references: [id])
+  expenseId        String @db.ObjectId
+  transaction      Transaction @relation(fields: [transactionId], references: [id])
+  transactionId    String @db.ObjectId
+  @@unique([expenseId, transactionId])
 }
