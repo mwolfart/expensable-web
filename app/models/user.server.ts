@@ -9,8 +9,16 @@ export const getUserByEmail = (email: string) =>
     },
   })
 
-export const createUserByEmailAndPassword = (user: User) => {
-  user.password = bcrypt.hashSync(user.password, 12)
+export const createUser = (
+  email: string,
+  password: string,
+  fullName: string,
+) => {
+  const user: User = {
+    email,
+    fullName,
+    password: bcrypt.hashSync(password, 12),
+  }
   return prisma.user.create({
     data: user,
   })

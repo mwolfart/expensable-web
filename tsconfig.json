@@ -19,6 +19,7 @@
       "~/*": ["app/*"],
       "@utils/*": ["app/utils/*"],
       "@models/*": ["app/models/*"],
+      "@hooks/*": ["app/hooks/*"],
     },
     "skipLibCheck": true,
     "incremental": true,

@@ -5,8 +5,8 @@ import * as React from 'react'
 
 import { getUserId, createUserSession } from '~/session.server'
 
-import { createUser, getUserByEmail } from '~/models/user.server'
-import { safeRedirect, validateEmail } from '~/utils'
+import { createUser, getUserByEmail } from '@models/user.server'
+import { safeRedirect, validateEmail } from '@utils/auth'
 
 export async function loader({ request }: LoaderArgs) {
   const userId = await getUserId(request)
@@ -54,7 +54,7 @@ export async function action({ request }: ActionArgs) {
     )
   }
 
-  const user = await createUser(email, password)
+  const user = await createUser(email, password, '')
 
   return createUserSession({
     request,
