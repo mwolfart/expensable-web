@@ -15,7 +15,7 @@ model User {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
-  passwordHash  String
+  password      String
   refreshTokens RefreshToken[]
 }
 
