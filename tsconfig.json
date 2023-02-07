@@ -16,8 +16,9 @@
     "forceConsistentCasingInFileNames": true,
     "baseUrl": ".",
     "paths": {
+      "~/*": ["app/*"],
       "@utils/*": ["app/utils/*"],
-      "@services/*": ["app/services/*"],
+      "@models/*": ["app/models/*"],
     },
     "skipLibCheck": true,
     "incremental": true,
