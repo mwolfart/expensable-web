@@ -14,7 +14,7 @@ export const createUser = (
   password: string,
   fullName: string,
 ) => {
-  const user: User = {
+  const user = {
     email,
     fullName,
     password: bcrypt.hashSync(password, 12),
