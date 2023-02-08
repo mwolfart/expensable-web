@@ -35,7 +35,7 @@ export default function App() {
         <Meta />
         <Links />
       </head>
-      <body className="h-full">
+      <body className="h-full bg-gradient-to-tr from-green-200 via-orange-200 to-red-200">
         <Outlet />
         <ScrollRestoration />
         <Scripts />
