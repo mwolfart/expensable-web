@@ -7,7 +7,7 @@ import { verifyLogin } from '@models/auth.server'
 import { SignInForm } from '@components/sign-in-form'
 import { useState } from 'react'
 import cx from 'classnames'
-import { timeout } from '@utils/sleep'
+import { timeout } from '~/utils/timeout'
 
 export async function loader({ request }: LoaderArgs) {
   const userId = await getUserId(request)
