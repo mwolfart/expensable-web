@@ -2,6 +2,7 @@
 
 const colors = {
   primary: "#ef4444",
+  'primary-focus': '#c22015',
   black: '#475569',
   foreground: "#fff7ed",
   white: "#ffffff",
