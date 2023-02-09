@@ -1,7 +1,7 @@
 import type { User } from '@prisma/client'
 import { useMatches } from '@remix-run/react'
 import { useMemo } from 'react'
-import { useMatchesData } from '@hooks/use-matches-data'
+import { useMatchesData } from '@hooks'
 
 const DEFAULT_REDIRECT = '/'
 

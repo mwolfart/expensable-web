@@ -1,0 +1,8 @@
+{
+    "common": {
+        "email": "E-mail"
+    },
+    "login": {
+        "welcome": "Welcome to Expensable"
+    }
+}

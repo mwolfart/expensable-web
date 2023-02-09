@@ -8,14 +8,19 @@ import {
   Scripts,
   ScrollRestoration,
 } from '@remix-run/react'
+import { i18n } from '@constants'
 
-import tailwindStylesheetUrl from './styles/tailwind.css'
 import { getUser } from './session.server'
+import { IntlProvider } from 'use-intl'
+import tailwindStylesheetUrl from './styles/tailwind.css'
+import globalStyles from './styles/globals.css'
 
 export const links: LinksFunction = () => {
-  return [{ rel: 'stylesheet', href: tailwindStylesheetUrl }]
+  return [
+    { rel: 'stylesheet', href: tailwindStylesheetUrl },
+    { rel: 'stylesheet', href: globalStyles },
+  ]
 }
-
 export const meta: MetaFunction = () => ({
   charset: 'utf-8',
   title: 'Remix Notes',
@@ -36,7 +41,9 @@ export default function App() {
         <Links />
       </head>
       <body className="h-full bg-gradient-to-tr from-green-200 via-orange-200 to-red-200">
-        <Outlet />
+        <IntlProvider messages={i18n.en} locale="en">
+          <Outlet />
+        </IntlProvider>
         <ScrollRestoration />
         <Scripts />
         <LiveReload />
