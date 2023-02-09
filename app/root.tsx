@@ -13,13 +13,9 @@ import { i18n } from '@constants'
 import { getUser } from './session.server'
 import { IntlProvider } from 'use-intl'
 import tailwindStylesheetUrl from './styles/tailwind.css'
-import globalStyles from './styles/globals.css'
 
 export const links: LinksFunction = () => {
-  return [
-    { rel: 'stylesheet', href: tailwindStylesheetUrl },
-    { rel: 'stylesheet', href: globalStyles },
-  ]
+  return [{ rel: 'stylesheet', href: tailwindStylesheetUrl }]
 }
 export const meta: MetaFunction = () => ({
   charset: 'utf-8',

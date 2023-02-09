@@ -1,8 +1,11 @@
 {
     "common": {
-        "email": "E-mail"
+        "email": "E-mail",
+        "password": "Password"
     },
     "login": {
-        "welcome": "Welcome to Expensable"
+        "welcome": "Welcome to",
+        "expensable": "Expensable",
+        "login": "Log in"
     }
 }
