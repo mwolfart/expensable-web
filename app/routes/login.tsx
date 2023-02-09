@@ -5,6 +5,9 @@ import { createUserSession, getUserId } from '~/session.server'
 import { safeRedirect, validateEmail } from '@utils/auth'
 import { verifyLogin } from '@models/auth.server'
 import { SignInForm } from '@components/sign-in-form'
+import { useState } from 'react'
+import cx from 'classnames'
+import { timeout } from '@utils/sleep'
 
 export async function loader({ request }: LoaderArgs) {
   const userId = await getUserId(request)
@@ -63,11 +66,59 @@ export const meta: MetaFunction = () => {
   }
 }
 
+type FormTypes = 'login' | 'create-account' | 'forgot-password'
+
 export default function LoginPage() {
+  const [isTransitioning, setTransitioning] = useState(false)
+  const [currentForm, setCurrentForm] = useState<FormTypes>('login')
+
+  const transition = async () => {
+    setTransitioning(true)
+    await timeout(300)
+    setTransitioning(false)
+  }
+
+  const onLogin = (email: string, password: string) => {}
+
+  const onGoToCreateAccount = async () => {
+    await transition()
+    setCurrentForm('create-account')
+  }
+
+  const onGoToForgotPassword = async () => {
+    await transition()
+    setCurrentForm('forgot-password')
+  }
+
+  const panelClasses = cx(
+    'w-full rounded-xl bg-foreground p-8 md:w-1/2 xl:w-1/3 transition duration-300',
+    isTransitioning && 'translate-x-[-600px]',
+  )
+
   return (
     <div className="flex h-full items-center p-8 sm:p-16">
-      <div className="w-full rounded-xl bg-foreground p-8 md:w-1/2 xl:w-1/3">
-        <SignInForm onSubmit={() => {}} />
+      <div className={panelClasses}>
+        {currentForm === 'login' && (
+          <SignInForm
+            onSubmit={onLogin}
+            onGoToCreateAccount={onGoToCreateAccount}
+            onGoToForgotPassword={onGoToForgotPassword}
+          />
+        )}
+        {currentForm === 'create-account' && (
+          <SignInForm
+            onSubmit={onLogin}
+            onGoToCreateAccount={onGoToCreateAccount}
+            onGoToForgotPassword={onGoToForgotPassword}
+          />
+        )}
+        {currentForm === 'forgot-password' && (
+          <SignInForm
+            onSubmit={onLogin}
+            onGoToCreateAccount={onGoToCreateAccount}
+            onGoToForgotPassword={onGoToForgotPassword}
+          />
+        )}
       </div>
     </div>
   )
