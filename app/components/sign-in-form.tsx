@@ -11,7 +11,7 @@ export const SignInForm: FC<Props> = ({ onSubmit }) => {
     <div className="flex flex-col gap-8">
       <div className="flex flex-col">
         <span className="pl-6">{t('login.welcome')}</span>
-        <h2 className="font-bold text-slate-600">{t('login.expensable')}</h2>
+        <h2 className="font-bold">{t('login.expensable')}</h2>
       </div>
       <input
         type="email"
@@ -23,7 +23,13 @@ export const SignInForm: FC<Props> = ({ onSubmit }) => {
         placeholder={t('common.password')}
         className="input w-full bg-white"
       />
-      <button className="btn-primary">{t('login.login')}</button>
+      <div className="flex flex-col gap-4">
+        <button className="btn-primary btn">{t('login.login')}</button>
+        <button className="btn-outline btn-primary btn">
+          {t('login.create-account')}
+        </button>
+      </div>
+      <button className="btn-link btn">{t('login.forgot-password')}</button>
     </div>
   )
 }

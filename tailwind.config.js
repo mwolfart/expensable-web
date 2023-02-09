@@ -1,4 +1,12 @@
 /** @type {import('tailwindcss').Config} */
+
+const colors = {
+  primary: "#ef4444",
+  black: '#475569',
+  foreground: "#fff7ed",
+  white: "#ffffff",
+}
+
 module.exports = {
   content: ["./app/**/*.{ts,tsx,jsx,js}"],
   theme: {
@@ -23,7 +31,34 @@ module.exports = {
       sm: ['17px', '23px'],
     },
     extend: {
+      colors
     },
+  },
+  daisyui: {
+    themes: [
+      {
+        expensable: {
+          ...colors,
+          '.btn': {
+            transition: '0.5s',
+          },
+          '.btn-primary': {
+            color: '#ffffff'
+          },
+          '.btn-outline.btn-primary:hover': {
+            color: '#ffffff'
+          },
+          '.btn-link': {
+            'text-transform': 'none',
+            'height': 'auto',
+            'min-height': 'auto',
+          },
+          '.btn-link:hover': {
+            'text-decoration-color': 'transparent',
+          }
+        }
+      }
+    ]
   },
   plugins: [require('daisyui')],
 };

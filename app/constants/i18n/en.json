@@ -6,6 +6,8 @@
     "login": {
         "welcome": "Welcome to",
         "expensable": "Expensable",
-        "login": "Log in"
+        "forgot-password": "I forgot my password",
+        "login": "Log in",
+        "create-account": "Create an account"
     }
 }

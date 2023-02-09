@@ -10,7 +10,7 @@
   }
 
   body {
-    @apply font-opensans text-sm text-slate-600;
+    @apply font-opensans text-sm text-black;
   }
 
   p {
