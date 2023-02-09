@@ -65,8 +65,8 @@ export const meta: MetaFunction = () => {
 
 export default function LoginPage() {
   return (
-    <div className="flex h-full items-center p-16">
-      <div className="w-1/3 rounded-xl bg-foreground p-8">
+    <div className="flex h-full items-center p-8 sm:p-16">
+      <div className="w-full rounded-xl bg-foreground p-8 md:w-1/2 xl:w-1/3">
         <SignInForm onSubmit={() => {}} />
       </div>
     </div>
