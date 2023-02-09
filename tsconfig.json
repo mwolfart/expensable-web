@@ -19,6 +19,7 @@
       "~/*": ["app/*"],
       "@utils/*": ["app/utils/*"],
       "@models/*": ["app/models/*"],
+      "@components/*": ["app/components/*"],
       "@hooks": ["app/hooks/index.ts"],
       "@constants": ["app/constants/index.ts"],
     },
@@ -27,6 +28,8 @@
     "noImplicitAny": true,
     "noFallthroughCasesInSwitch": true,
     "strictNullChecks": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
     // Remix takes care of building everything in `remix build`.
     "noEmit": true
   }
