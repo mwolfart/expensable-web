@@ -70,7 +70,7 @@ export const meta: MetaFunction = () => {
 
 type FormTypes = 'login' | 'create-account' | 'forgot-password'
 
-export default function LoginPage() {
+export default function AuthPage() {
   const [isTransitioning, setTransitioning] = useState(false)
   const [currentForm, setCurrentForm] = useState<FormTypes>('login')
 
