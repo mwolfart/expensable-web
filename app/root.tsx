@@ -8,7 +8,7 @@ import {
   Scripts,
   ScrollRestoration,
 } from '@remix-run/react'
-import { i18n } from '@constants'
+import { i18n } from '~/constants'
 
 import { getUser } from './session.server'
 import { IntlProvider } from 'use-intl'

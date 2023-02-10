@@ -2,12 +2,14 @@ import type { ActionArgs, LoaderArgs, MetaFunction } from '@remix-run/node'
 import { json, redirect } from '@remix-run/node'
 
 import { createUserSession, getUserId } from '~/session.server'
-import { safeRedirect, validateEmail } from '@utils/auth'
-import { verifyLogin } from '@models/auth.server'
-import { SignInForm } from '@components/sign-in-form'
+import { safeRedirect, validateEmail } from '~/utils/auth'
+import { verifyLogin } from '~/models/auth.server'
 import { useState } from 'react'
 import cx from 'classnames'
 import { timeout } from '~/utils/timeout'
+import { SignInForm } from '~/components/sign-in-form'
+import { CreateUserForm } from '~/components/create-user-form'
+import { ForgotPasswordForm } from '~/components/forgot-password-form'
 
 export async function loader({ request }: LoaderArgs) {
   const userId = await getUserId(request)
@@ -79,6 +81,13 @@ export default function LoginPage() {
   }
 
   const onLogin = (email: string, password: string) => {}
+  const onCreateUser = (email: string, name: string, password: string) => {}
+  const onResetPassword = (email: string) => {}
+
+  const onGoToLogin = async () => {
+    await transition()
+    setCurrentForm('login')
+  }
 
   const onGoToCreateAccount = async () => {
     await transition()
@@ -106,17 +115,12 @@ export default function LoginPage() {
           />
         )}
         {currentForm === 'create-account' && (
-          <SignInForm
-            onSubmit={onLogin}
-            onGoToCreateAccount={onGoToCreateAccount}
-            onGoToForgotPassword={onGoToForgotPassword}
-          />
+          <CreateUserForm onSubmit={onCreateUser} onGoToLogin={onGoToLogin} />
         )}
         {currentForm === 'forgot-password' && (
-          <SignInForm
-            onSubmit={onLogin}
-            onGoToCreateAccount={onGoToCreateAccount}
-            onGoToForgotPassword={onGoToForgotPassword}
+          <ForgotPasswordForm
+            onSubmit={onResetPassword}
+            onGoToLogin={onGoToLogin}
           />
         )}
       </div>

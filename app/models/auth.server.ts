@@ -1,4 +1,4 @@
-import { hashToken } from '@utils/jwt'
+import { hashToken } from '~/utils/jwt'
 import { compare } from 'bcrypt'
 import { prisma } from '~/db.server'
 import { getUserByEmail } from './user.server'

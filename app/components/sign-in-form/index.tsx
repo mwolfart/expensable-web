@@ -19,8 +19,8 @@ export const SignInForm: FC<Props> = ({
   return (
     <div className="flex flex-col gap-8">
       <div className="flex flex-col">
-        <span className="pl-6">{t('login.welcome')}</span>
-        <h2 className="font-bold">{t('login.expensable')}</h2>
+        <span className="pl-6">{t('auth.welcome')}</span>
+        <h2 className="font-bold">{t('auth.expensable')}</h2>
       </div>
       <input
         type="email"
@@ -39,17 +39,17 @@ export const SignInForm: FC<Props> = ({
           className="btn-primary btn"
           onClick={() => onSubmit(email, password)}
         >
-          {t('login.login')}
+          {t('auth.login')}
         </button>
         <button
           className="btn-outline btn-primary btn"
           onClick={onGoToCreateAccount}
         >
-          {t('login.create-account')}
+          {t('auth.create-account')}
         </button>
       </div>
       <button className="btn-link btn" onClick={onGoToForgotPassword}>
-        {t('login.forgot-password')}
+        {t('auth.forgot-password')}
       </button>
     </div>
   )

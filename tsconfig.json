@@ -17,11 +17,6 @@
     "baseUrl": ".",
     "paths": {
       "~/*": ["app/*"],
-      "@utils/*": ["app/utils/*"],
-      "@models/*": ["app/models/*"],
-      "@components/*": ["app/components/*"],
-      "@hooks": ["app/hooks/index.ts"],
-      "@constants": ["app/constants/index.ts"],
     },
     "skipLibCheck": true,
     "incremental": true,
