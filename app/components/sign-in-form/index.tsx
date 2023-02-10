@@ -1,20 +1,28 @@
 import { FC, useState } from 'react'
 import { useTranslations } from 'use-intl'
+import { withFade } from '~/utils'
 
 type Props = {
   onSubmit: (email: string, password: string) => void
   onGoToCreateAccount: () => void
   onGoToForgotPassword: () => void
+  showInvalidCredentials?: boolean
 }
 
 export const SignInForm: FC<Props> = ({
   onSubmit,
   onGoToCreateAccount,
   onGoToForgotPassword,
+  showInvalidCredentials,
 }) => {
   const t = useTranslations()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+
+  const invalidCredentialClasses = withFade(
+    'font-bold text-primary transition',
+    showInvalidCredentials,
+  )
 
   return (
     <div className="flex flex-col gap-8">
@@ -34,6 +42,9 @@ export const SignInForm: FC<Props> = ({
         className="input w-full bg-white"
         onChange={(evt) => setPassword(evt.target.value)}
       />
+      <p className={invalidCredentialClasses}>
+        {t('auth.errors.invalid-credentials')}
+      </p>
       <div className="flex flex-col gap-4">
         <button
           className="btn-primary btn"

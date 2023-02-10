@@ -18,6 +18,9 @@
         "login": "Log in",
         "create-account": "Create an account",
         "enter-data": "Enter the data below to create an account.",
-        "already-have-account": "I already have an account"
+        "already-have-account": "I already have an account",
+        "errors": {
+            "invalid-credentials": "The credentials entered are invalid."
+        }
     }
 }

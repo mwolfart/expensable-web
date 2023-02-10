@@ -4,12 +4,13 @@ import { json, redirect } from '@remix-run/node'
 import { createUserSession, getUserId } from '~/session.server'
 import { safeRedirect, validateEmail, validatePassword } from '~/utils/auth'
 import { verifyLogin } from '~/models/auth.server'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import cx from 'classnames'
 import { timeout } from '~/utils/timeout'
 import { SignInForm } from '~/components/sign-in-form'
 import { CreateUserForm } from '~/components/create-user-form'
 import { ForgotPasswordForm } from '~/components/forgot-password-form'
+import { useActionData, useSubmit } from '@remix-run/react'
 
 export async function loader({ request }: LoaderArgs) {
   const userId = await getUserId(request)
@@ -66,6 +67,20 @@ type FormTypes = 'login' | 'create-account' | 'forgot-password'
 export default function AuthPage() {
   const [isTransitioning, setTransitioning] = useState(false)
   const [currentForm, setCurrentForm] = useState<FormTypes>('login')
+  const [showInvalidCredentials, setInvalidCredentials] = useState(false)
+  const actionData = useActionData<typeof action>()
+  const submit = useSubmit()
+
+  useEffect(() => {
+    const parseAction = async () => {
+      if (actionData?.errors) {
+        setInvalidCredentials(true)
+        await timeout(5000)
+        setInvalidCredentials(false)
+      }
+    }
+    parseAction()
+  }, [actionData])
 
   const transition = async () => {
     setTransitioning(true)
@@ -73,7 +88,10 @@ export default function AuthPage() {
     setTransitioning(false)
   }
 
-  const onLogin = (email: string, password: string) => {}
+  const onLogin = (email: string, password: string) => {
+    setInvalidCredentials(false)
+    submit({ email, password }, { method: 'post' })
+  }
   const onCreateUser = (email: string, name: string, password: string) => {}
   const onResetPassword = (email: string) => {}
 
@@ -105,6 +123,7 @@ export default function AuthPage() {
             onSubmit={onLogin}
             onGoToCreateAccount={onGoToCreateAccount}
             onGoToForgotPassword={onGoToForgotPassword}
+            showInvalidCredentials={showInvalidCredentials}
           />
         )}
         {currentForm === 'create-account' && (

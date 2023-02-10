@@ -1,6 +1,6 @@
-import cx from 'classnames'
 import { FC, useState } from 'react'
 import { useTranslations } from 'use-intl'
+import { withFade } from '~/utils'
 import { timeout } from '~/utils/timeout'
 
 type Props = {
@@ -20,10 +20,9 @@ export const ForgotPasswordForm: FC<Props> = ({ onSubmit, onGoToLogin }) => {
     setConfirmation(false)
   }
 
-  const confirmationClasses = cx(
+  const confirmationClasses = withFade(
     'font-bold text-primary transition',
-    !displayConfirmation && 'pointer-events-none opacity-0',
-    displayConfirmation && 'opacity-100',
+    displayConfirmation,
   )
 
   return (
