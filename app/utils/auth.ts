@@ -1,6 +1,4 @@
 import type { User } from '@prisma/client'
-import { useMatches } from '@remix-run/react'
-import { useMemo } from 'react'
 import { useMatchesData } from '~/hooks'
 
 const DEFAULT_REDIRECT = '/'
@@ -12,10 +10,10 @@ const DEFAULT_REDIRECT = '/'
  * @param {string} to The redirect destination
  * @param {string} defaultRedirect The redirect to use if the to is unsafe.
  */
-export function safeRedirect(
+export const safeRedirect = (
   to: FormDataEntryValue | string | null | undefined,
   defaultRedirect: string = DEFAULT_REDIRECT,
-) {
+) => {
   if (!to || typeof to !== 'string') {
     return defaultRedirect
   }
@@ -27,11 +25,11 @@ export function safeRedirect(
   return to
 }
 
-function isUser(user: any): user is User {
+const isUser = (user: any): user is User => {
   return user && typeof user === 'object' && typeof user.email === 'string'
 }
 
-export function useOptionalUser(): User | undefined {
+export const useOptionalUser = (): User | undefined => {
   const data = useMatchesData('root')
   if (!data || !isUser(data.user)) {
     return undefined
@@ -39,7 +37,7 @@ export function useOptionalUser(): User | undefined {
   return data.user
 }
 
-export function useUser(): User {
+export const useUser = (): User => {
   const maybeUser = useOptionalUser()
   if (!maybeUser) {
     throw new Error(
@@ -49,6 +47,14 @@ export function useUser(): User {
   return maybeUser
 }
 
-export function validateEmail(email: unknown): email is string {
+export const validateEmail = (email: unknown): email is string => {
   return typeof email === 'string' && email.length > 3 && email.includes('@')
 }
+
+export const validatePassword = (password: unknown): password is string =>
+  typeof password === 'string' &&
+  Boolean(
+    password.match(
+      /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/,
+    ),
+  )

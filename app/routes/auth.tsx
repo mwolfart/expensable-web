@@ -2,7 +2,7 @@ import type { ActionArgs, LoaderArgs, MetaFunction } from '@remix-run/node'
 import { json, redirect } from '@remix-run/node'
 
 import { createUserSession, getUserId } from '~/session.server'
-import { safeRedirect, validateEmail } from '~/utils/auth'
+import { safeRedirect, validateEmail, validatePassword } from '~/utils/auth'
 import { verifyLogin } from '~/models/auth.server'
 import { useState } from 'react'
 import cx from 'classnames'
@@ -17,54 +17,47 @@ export async function loader({ request }: LoaderArgs) {
   return json({})
 }
 
-// export async function action({ request }: ActionArgs) {
-//   const formData = await request.formData()
-//   const email = formData.get('email')
-//   const password = formData.get('password')
-//   const redirectTo = safeRedirect(formData.get('redirectTo'), '/')
-//   const remember = formData.get('remember')
+export async function action({ request }: ActionArgs) {
+  const formData = await request.formData()
+  const email = formData.get('email')
+  const password = formData.get('password')
+  const redirectTo = safeRedirect('/')
+  // const remember = formData.get('remember')
 
-//   if (!validateEmail(email)) {
-//     return json(
-//       { errors: { email: 'Email is invalid', password: null } },
-//       { status: 400 },
-//     )
-//   }
+  if (!validateEmail(email)) {
+    return json(
+      { errors: { email: 'Email is invalid', password: null } },
+      { status: 400 },
+    )
+  }
 
-//   if (typeof password !== 'string' || password.length === 0) {
-//     return json(
-//       { errors: { email: null, password: 'Password is required' } },
-//       { status: 400 },
-//     )
-//   }
+  if (!validatePassword(password)) {
+    return json(
+      { errors: { email: null, password: 'Password is invalid' } },
+      { status: 400 },
+    )
+  }
 
-//   if (password.length < 8) {
-//     return json(
-//       { errors: { email: null, password: 'Password is too short' } },
-//       { status: 400 },
-//     )
-//   }
+  const user = await verifyLogin(email, password)
 
-//   const user = await verifyLogin(email, password)
+  if (!user) {
+    return json(
+      { errors: { email: 'Invalid email or password', password: null } },
+      { status: 400 },
+    )
+  }
 
-//   if (!user) {
-//     return json(
-//       { errors: { email: 'Invalid email or password', password: null } },
-//       { status: 400 },
-//     )
-//   }
-
-//   return createUserSession({
-//     request,
-//     userId: user.id,
-//     remember: remember === 'on' ? true : false,
-//     redirectTo,
-//   })
-// }
+  return createUserSession({
+    request,
+    userId: user.id,
+    remember: false,
+    redirectTo,
+  })
+}
 
 export const meta: MetaFunction = () => {
   return {
-    title: 'Login',
+    title: 'Authentication',
   }
 }
 
