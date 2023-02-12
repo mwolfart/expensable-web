@@ -8,7 +8,9 @@
         "back": "Back",
         "errors": {
             "invalid-field": "{field} is invalid.",
-            "password-rules": "Password must have at least 8 characters and at least each of the following: one uppercase letter, one lowercase letter, one number and one symbol"
+            "required-field": "{field} is required",
+            "password-short": "Password must have at least 8 characters long",
+            "password-rules": "Password must have at least each of the following: one uppercase letter, one lowercase letter, one number and one symbol"
         }
     },
     "auth": {

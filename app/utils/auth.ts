@@ -46,15 +46,3 @@ export const useUser = (): User => {
   }
   return maybeUser
 }
-
-export const validateEmail = (email: unknown): email is string => {
-  return typeof email === 'string' && email.length > 3 && email.includes('@')
-}
-
-export const validatePassword = (password: unknown): password is string =>
-  typeof password === 'string' &&
-  Boolean(
-    password.match(
-      /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/,
-    ),
-  )

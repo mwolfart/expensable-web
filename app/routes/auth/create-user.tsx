@@ -2,7 +2,7 @@ import type { ActionArgs, MetaFunction } from '@remix-run/node'
 import { json } from '@remix-run/node'
 import { createUserSession } from '~/session.server'
 import { createUser, getUserByEmail } from '~/models/user.server'
-import { safeRedirect, validateEmail, validatePassword } from '~/utils/auth'
+import { safeRedirect } from '~/utils/auth'
 import { useTranslations } from 'use-intl'
 import {
   Form,
@@ -14,6 +14,7 @@ import { useEffect, useReducer } from 'react'
 import { AuthContext } from '../auth'
 import { cxFormInput } from '~/utils'
 import { ErrorCodes, useErrorMessages } from '~/hooks'
+import { userSchema } from '~/utils/schemas'
 
 type FormErrors = {
   email?: string
@@ -28,30 +29,16 @@ const errorsReducer = (state: FormErrors, action: FormErrors) => ({
 
 export async function action({ request }: ActionArgs) {
   const formData = await request.formData()
-  const email = formData.get('email')
-  const password = formData.get('password')
-  const fullName = formData.get('name')
+  const email = formData.get('email') as string
+  const password = formData.get('password') as string
+  const name = formData.get('name') as string
   const redirectTo = safeRedirect(formData.get('redirectTo'), '/')
 
-  if (!validateEmail(email)) {
-    return json(
-      { errors: { email: ErrorCodes.INVALID_EMAIL } as FormErrors },
-      { status: 400 },
-    )
-  }
-
-  if (typeof fullName !== 'string' || fullName === '') {
-    return json(
-      { errors: { name: ErrorCodes.INVALID_NAME } as FormErrors },
-      { status: 400 },
-    )
-  }
-
-  if (!validatePassword(password)) {
-    return json(
-      { errors: { password: ErrorCodes.INVALID_PASSWORD } as FormErrors },
-      { status: 400 },
-    )
+  try {
+    await userSchema.validate({ email, password, name })
+  } catch (e: any) {
+    const errors = { [e.path]: e.errors[0] } as FormErrors
+    return json({ errors }, { status: 400 })
   }
 
   const existingUser = await getUserByEmail(email)
@@ -62,7 +49,7 @@ export async function action({ request }: ActionArgs) {
     )
   }
 
-  const user = await createUser(email, password, fullName as string)
+  const user = await createUser(email, password, name)
 
   return createUserSession({
     request,

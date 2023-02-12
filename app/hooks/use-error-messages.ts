@@ -1,27 +1,30 @@
 import { useTranslations } from 'use-intl'
-
-export enum ErrorCodes {
-  INVALID_EMAIL = 'invalid_email',
-  INVALID_LOGIN = 'invalid_login',
-  INVALID_PASSWORD = 'invalid_password',
-  INVALID_NAME = 'invalid_name',
-  DUPLICATE_USER = 'duplicate_user',
-}
+import { ErrorCodes } from '~/utils/schemas'
 
 export const useErrorMessages = () => {
   const t = useTranslations()
 
   const errorToString = (code?: string) => {
     switch (code) {
-      case ErrorCodes.INVALID_EMAIL:
+      case ErrorCodes.EMAIL_REQUIRED:
+        return t('common.errors.required-field', {
+          field: t('common.email'),
+        })
+      case ErrorCodes.EMAIL_INVALID:
         return t('common.errors.invalid-field', {
           field: t('common.email'),
         })
-      case ErrorCodes.INVALID_NAME:
-        return t('common.errors.invalid-field', {
+      case ErrorCodes.NAME_REQUIRED:
+        return t('common.errors.required-field', {
           field: t('common.name'),
         })
-      case ErrorCodes.INVALID_PASSWORD:
+      case ErrorCodes.PASSWORD_REQUIRED:
+        return t('common.errors.required-field', {
+          field: t('common.password'),
+        })
+      case ErrorCodes.PASSWORD_SHORT:
+        return t('common.errors.password-short')
+      case ErrorCodes.PASSWORD_INVALID:
         return t('common.errors.password-rules')
       case ErrorCodes.DUPLICATE_USER:
         return t('auth.errors.account-exists')

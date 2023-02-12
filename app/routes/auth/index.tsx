@@ -1,7 +1,7 @@
 import type { ActionArgs, MetaFunction } from '@remix-run/node'
 import { json } from '@remix-run/node'
 import { createUserSession } from '~/session.server'
-import { safeRedirect, validateEmail } from '~/utils/auth'
+import { safeRedirect } from '~/utils/auth'
 import { verifyLogin } from '~/models/auth.server'
 import { useEffect, useState } from 'react'
 import { timeout } from '~/utils/timeout'
@@ -15,19 +15,25 @@ import { useTranslations } from 'use-intl'
 import { cxWithFade } from '~/utils'
 import { AuthContext } from '../auth'
 import { ErrorCodes } from '~/hooks'
+import { loginSchema } from '~/utils/schemas'
+
+type FormErrors = { email?: string; password?: string }
 
 export async function action({ request }: ActionArgs) {
   const formData = await request.formData()
-  const email = formData.get('email')
-  const password = formData.get('password')
+  const email = formData.get('email') as string
+  const password = formData.get('password') as string
   const redirectTo = safeRedirect('/')
   // const remember = formData.get('remember')
 
-  if (!validateEmail(email)) {
-    return json({ errors: ErrorCodes.INVALID_EMAIL }, { status: 400 })
+  try {
+    await loginSchema.validate({ email, password })
+  } catch (e: any) {
+    const errors = { [e.path]: e.errors[0] } as FormErrors
+    return json({ errors }, { status: 400 })
   }
 
-  const user = await verifyLogin(email, password as string)
+  const user = await verifyLogin(email, password)
 
   if (!user) {
     return json({ errors: ErrorCodes.INVALID_LOGIN }, { status: 400 })
