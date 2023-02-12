@@ -6,6 +6,7 @@ const colors = {
   black: '#475569',
   foreground: "#fff7ed",
   white: "#ffffff",
+  error: '#ff0000',
 }
 
 module.exports = {

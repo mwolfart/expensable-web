@@ -1,23 +1,20 @@
-import type { ActionArgs, LoaderArgs, MetaFunction } from '@remix-run/node'
-import { json, redirect } from '@remix-run/node'
-
-import { createUserSession, getUserId } from '~/session.server'
-import { safeRedirect, validateEmail, validatePassword } from '~/utils/auth'
+import type { ActionArgs, MetaFunction } from '@remix-run/node'
+import { json } from '@remix-run/node'
+import { createUserSession } from '~/session.server'
+import { safeRedirect, validateEmail } from '~/utils/auth'
 import { verifyLogin } from '~/models/auth.server'
 import { useEffect, useState } from 'react'
-import cx from 'classnames'
 import { timeout } from '~/utils/timeout'
-import { SignInForm } from '~/components/sign-in-form'
-import { CreateUserForm } from '~/components/create-user-form'
-import { ForgotPasswordForm } from '~/components/forgot-password-form'
-import { useActionData, useSubmit } from '@remix-run/react'
+import {
+  Form,
+  useActionData,
+  useOutletContext,
+  useNavigate,
+} from '@remix-run/react'
 import { useTranslations } from 'use-intl'
-
-export async function loader({ request }: LoaderArgs) {
-  const userId = await getUserId(request)
-  if (userId) return redirect('/')
-  return json({})
-}
+import { cxWithFade } from '~/utils'
+import { AuthContext } from '../auth'
+import { ErrorCodes } from '~/hooks'
 
 export async function action({ request }: ActionArgs) {
   const formData = await request.formData()
@@ -27,17 +24,13 @@ export async function action({ request }: ActionArgs) {
   // const remember = formData.get('remember')
 
   if (!validateEmail(email)) {
-    return json({ errors: { email: true, password: null } }, { status: 400 })
+    return json({ errors: ErrorCodes.INVALID_EMAIL }, { status: 400 })
   }
 
-  if (!validatePassword(password)) {
-    return json({ errors: { email: null, password: true } }, { status: 400 })
-  }
-
-  const user = await verifyLogin(email, password)
+  const user = await verifyLogin(email, password as string)
 
   if (!user) {
-    return json({ errors: { email: true, password: null } }, { status: 400 })
+    return json({ errors: ErrorCodes.INVALID_LOGIN }, { status: 400 })
   }
 
   return createUserSession({
@@ -50,18 +43,17 @@ export async function action({ request }: ActionArgs) {
 
 export const meta: MetaFunction = () => {
   return {
-    title: 'Authentication',
+    title: 'Login',
   }
 }
 
-type FormTypes = 'login' | 'create-account' | 'forgot-password'
-
-export default function AuthPage() {
-  const [isTransitioning, setTransitioning] = useState(false)
-  const [currentForm, setCurrentForm] = useState<FormTypes>('login')
+export default function Login() {
+  const t = useTranslations()
+  const navigate = useNavigate()
+  const [transition] = useOutletContext<AuthContext>()
   const [showInvalidCredentials, setInvalidCredentials] = useState(false)
+
   const actionData = useActionData<typeof action>()
-  const submit = useSubmit()
 
   useEffect(() => {
     const parseAction = async () => {
@@ -74,62 +66,65 @@ export default function AuthPage() {
     parseAction()
   }, [actionData])
 
-  const transition = async () => {
-    setTransitioning(true)
-    await timeout(300)
-    setTransitioning(false)
-  }
-
-  const onLogin = (email: string, password: string) => {
-    setInvalidCredentials(false)
-    submit({ email, password }, { method: 'post' })
-  }
-  const onCreateUser = (email: string, name: string, password: string) => {
-    submit({ email, name, password }, { action: '/auth/join', method: 'post' })
-  }
-  const onResetPassword = (email: string) => {}
-
-  const onGoToLogin = async () => {
-    await transition()
-    setCurrentForm('login')
-  }
-
   const onGoToCreateAccount = async () => {
     await transition()
-    setCurrentForm('create-account')
+    navigate('/auth/create-user')
   }
 
   const onGoToForgotPassword = async () => {
     await transition()
-    setCurrentForm('forgot-password')
+    navigate('/auth/forgot-password')
   }
 
-  const panelClasses = cx(
-    'w-full rounded-xl bg-foreground p-8 md:w-1/2 xl:w-1/3 transition duration-300',
-    isTransitioning && 'translate-x-[-600px]',
+  const invalidCredentialClasses = cxWithFade(
+    'font-bold text-primary transition',
+    showInvalidCredentials,
   )
 
   return (
-    <div className="flex h-full items-center p-8 sm:p-16">
-      <div className={panelClasses}>
-        {currentForm === 'login' && (
-          <SignInForm
-            onSubmit={onLogin}
-            onGoToCreateAccount={onGoToCreateAccount}
-            onGoToForgotPassword={onGoToForgotPassword}
-            showInvalidCredentials={showInvalidCredentials}
-          />
-        )}
-        {currentForm === 'create-account' && (
-          <CreateUserForm onSubmit={onCreateUser} onGoToLogin={onGoToLogin} />
-        )}
-        {currentForm === 'forgot-password' && (
-          <ForgotPasswordForm
-            onSubmit={onResetPassword}
-            onGoToLogin={onGoToLogin}
-          />
-        )}
+    <Form method="post" className="flex flex-col gap-8">
+      <div className="flex flex-col">
+        <span className="pl-6">{t('auth.welcome')}</span>
+        <h2 className="font-bold">{t('auth.expensable')}</h2>
       </div>
-    </div>
+      <input
+        type="email"
+        name="email"
+        placeholder={t('common.email')}
+        className="input w-full bg-white"
+      />
+      <input
+        type="password"
+        name="password"
+        placeholder={t('common.password')}
+        className="input w-full bg-white"
+      />
+      <p className={invalidCredentialClasses}>
+        {t('auth.errors.invalid-credentials')}
+      </p>
+      <div className="flex flex-col gap-4">
+        <button
+          className="btn-primary btn"
+          type="submit"
+          onClick={() => setInvalidCredentials(false)}
+        >
+          {t('auth.login')}
+        </button>
+        <button
+          className="btn-outline btn-primary btn"
+          onClick={onGoToCreateAccount}
+          type="button"
+        >
+          {t('auth.create-account')}
+        </button>
+      </div>
+      <button
+        className="btn-link btn"
+        type="button"
+        onClick={onGoToForgotPassword}
+      >
+        {t('auth.forgot-password')}
+      </button>
+    </Form>
   )
 }
