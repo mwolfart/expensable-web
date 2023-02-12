@@ -5,7 +5,11 @@
         "password": "Password",
         "password-check": "Confirm password",
         "submit": "Submit",
-        "back": "Back"
+        "back": "Back",
+        "errors": {
+            "invalid-field": "{field} is invalid.",
+            "password-rules": "Password must have at least 8 characters and at least each of the following: one uppercase letter, one lowercase letter, one number and one symbol"
+        }
     },
     "auth": {
         "welcome": "Welcome to",
@@ -20,7 +24,8 @@
         "enter-data": "Enter the data below to create an account.",
         "already-have-account": "I already have an account",
         "errors": {
-            "invalid-credentials": "The credentials entered are invalid."
+            "invalid-credentials": "The credentials entered are invalid.",
+            "account-exists": "This e-mail is already associated with another account. Try choosing a different e-mail."
         }
     }
 }

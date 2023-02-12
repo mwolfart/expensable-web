@@ -11,6 +11,7 @@ import { SignInForm } from '~/components/sign-in-form'
 import { CreateUserForm } from '~/components/create-user-form'
 import { ForgotPasswordForm } from '~/components/forgot-password-form'
 import { useActionData, useSubmit } from '@remix-run/react'
+import { useTranslations } from 'use-intl'
 
 export async function loader({ request }: LoaderArgs) {
   const userId = await getUserId(request)
@@ -26,26 +27,17 @@ export async function action({ request }: ActionArgs) {
   // const remember = formData.get('remember')
 
   if (!validateEmail(email)) {
-    return json(
-      { errors: { email: 'Email is invalid', password: null } },
-      { status: 400 },
-    )
+    return json({ errors: { email: true, password: null } }, { status: 400 })
   }
 
   if (!validatePassword(password)) {
-    return json(
-      { errors: { email: null, password: 'Password is invalid' } },
-      { status: 400 },
-    )
+    return json({ errors: { email: null, password: true } }, { status: 400 })
   }
 
   const user = await verifyLogin(email, password)
 
   if (!user) {
-    return json(
-      { errors: { email: 'Invalid email or password', password: null } },
-      { status: 400 },
-    )
+    return json({ errors: { email: true, password: null } }, { status: 400 })
   }
 
   return createUserSession({
@@ -92,7 +84,9 @@ export default function AuthPage() {
     setInvalidCredentials(false)
     submit({ email, password }, { method: 'post' })
   }
-  const onCreateUser = (email: string, name: string, password: string) => {}
+  const onCreateUser = (email: string, name: string, password: string) => {
+    submit({ email, name, password }, { action: '/auth/join', method: 'post' })
+  }
   const onResetPassword = (email: string) => {}
 
   const onGoToLogin = async () => {
