@@ -13,9 +13,9 @@ import {
 } from '@remix-run/react'
 import { useTranslations } from 'use-intl'
 import { cxFormInput, cxWithFade, getYupErrors } from '~/utils'
-import { AuthContext } from '../auth'
 import { useErrorMessages } from '~/hooks'
 import { ErrorCodes, loginSchema } from '~/utils/schemas'
+import { AuthContext } from '../__auth'
 
 type FormErrors = { email?: string; password?: string }
 
@@ -94,12 +94,12 @@ export default function Login() {
 
   const onGoToCreateAccount = async () => {
     await transition()
-    navigate('/auth/create-user')
+    navigate('/create-user')
   }
 
   const onGoToForgotPassword = async () => {
     await transition()
-    navigate('/auth/forgot-password')
+    navigate('/forgot-password')
   }
 
   const invalidCredentialClasses = cxWithFade(

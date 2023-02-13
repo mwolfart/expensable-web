@@ -1,11 +1,12 @@
 import { json, LoaderArgs, redirect } from '@remix-run/node'
-import { useLoaderData, useNavigate, useSubmit } from '@remix-run/react'
+import { useLoaderData, useSubmit } from '@remix-run/react'
 import { useTranslations } from 'use-intl'
+import { Tab, TabGroup } from '~/components/tab'
 import { getUser, getUserId } from '~/session.server'
 
 export async function loader({ request }: LoaderArgs) {
   const userId = await getUserId(request)
-  if (!userId) return redirect('/auth')
+  if (!userId) return redirect('/login')
   const user = await getUser(request)
   return json(user)
 }
@@ -16,8 +17,8 @@ export default function Index() {
   const submit = useSubmit()
 
   return (
-    <main className="relative flex h-full flex-col p-8 sm:p-16 sm:pt-4">
-      <div className="hidden flex-row justify-end gap-8 p-8 sm:flex">
+    <main className="relative flex h-full flex-col p-8 sm:p-16 sm:pt-0">
+      <div className="hidden flex-row justify-end gap-8 p-4 sm:flex">
         <p className="flex items-center text-sm text-primary">
           {t('home.logged-in-as', { user: user?.fullName })}
         </p>
@@ -31,7 +32,16 @@ export default function Index() {
           {t('common.logout')}
         </button>
       </div>
-      <div className="flex-grow rounded-2xl bg-foreground"></div>
+      <div className="flex-grow rounded-2xl bg-foreground">
+        <TabGroup>
+          <Tab id="expenses" title={t('home.expenses')}>
+            Expenses
+          </Tab>
+          <Tab id="categories" title={t('home.categories')}>
+            Categories
+          </Tab>
+        </TabGroup>
+      </div>
     </main>
   )
 }

@@ -1,8 +1,6 @@
 import type { ActionArgs, MetaFunction, TypedResponse } from '@remix-run/node'
 import { json } from '@remix-run/node'
-import { createUserSession } from '~/session.server'
 import { createUser, getUserByEmail } from '~/models/user.server'
-import { safeRedirect } from '~/utils/auth'
 import { useTranslations } from 'use-intl'
 import {
   Form,
@@ -11,7 +9,7 @@ import {
   useOutletContext,
 } from '@remix-run/react'
 import { useEffect, useReducer, useState } from 'react'
-import { AuthContext } from '../auth'
+import { AuthContext } from '../__auth'
 import { cxFormInput, cxWithGrowMd, getYupErrors } from '~/utils'
 import { useErrorMessages } from '~/hooks'
 import { ErrorCodes, userSchema } from '~/utils/schemas'
@@ -123,7 +121,7 @@ export default function CreateUser() {
 
   const onGoToLogin = async () => {
     await transition()
-    navigate('/auth')
+    navigate('/login')
   }
 
   return (

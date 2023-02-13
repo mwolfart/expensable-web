@@ -1,15 +1,10 @@
 import type { ActionArgs, MetaFunction } from '@remix-run/node'
 import { useTranslations } from 'use-intl'
-import {
-  Form,
-  useActionData,
-  useNavigate,
-  useOutletContext,
-} from '@remix-run/react'
+import { Form, useNavigate, useOutletContext } from '@remix-run/react'
 import { useState } from 'react'
 import { cxWithFade } from '~/utils'
 import { timeout } from '~/utils/timeout'
-import { AuthContext } from '../auth'
+import { AuthContext } from '../__auth'
 
 export async function action({ request }: ActionArgs) {}
 
@@ -35,7 +30,7 @@ export default function CreateUser() {
 
   const onGoToLogin = async () => {
     await transition()
-    navigate('/auth')
+    navigate('/login')
   }
 
   const confirmationClasses = cxWithFade(
