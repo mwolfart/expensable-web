@@ -6,6 +6,7 @@
         "password-check": "Confirm password",
         "submit": "Submit",
         "back": "Back",
+        "logout": "Log out",
         "errors": {
             "invalid-field": "{field} is invalid.",
             "required-field": "{field} is required",
@@ -31,5 +32,8 @@
             "invalid-credentials": "The credentials entered are invalid.",
             "account-exists": "This e-mail is already associated with another account. Try choosing a different e-mail."
         }
+    },
+    "home": {
+        "logged-in-as": "Logged in as {user}"
     }
 }
