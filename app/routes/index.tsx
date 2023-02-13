@@ -16,8 +16,8 @@ export default function Index() {
   const submit = useSubmit()
 
   return (
-    <main className="relative flex h-full flex-col p-16 pt-4">
-      <div className="flex flex-row justify-end gap-8 p-8">
+    <main className="relative flex h-full flex-col p-8 sm:p-16 sm:pt-4">
+      <div className="hidden flex-row justify-end gap-8 p-8 sm:flex">
         <p className="flex items-center text-sm text-primary">
           {t('home.logged-in-as', { user: user?.fullName })}
         </p>
