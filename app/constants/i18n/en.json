@@ -36,6 +36,8 @@
     "home": {
         "logged-in-as": "Logged in as {user}",
         "expenses": "Expenses",
-        "categories": "Categories"
+        "categories": "Categories",
+        "supermarket": "Supermarket",
+        "dashboard": "Dashboard"
     }
 }

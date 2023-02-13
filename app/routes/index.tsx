@@ -40,6 +40,12 @@ export default function Index() {
           <Tab id="categories" title={t('home.categories')}>
             Categories
           </Tab>
+          <Tab id="supermarket" title={t('home.supermarket')}>
+            Supermarket
+          </Tab>
+          <Tab id="dashboard" title={t('home.dashboard')}>
+            Dashboard
+          </Tab>
         </TabGroup>
       </div>
     </main>
