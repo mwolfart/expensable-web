@@ -103,7 +103,7 @@ export default function Login() {
   }
 
   const invalidCredentialClasses = cxWithFade(
-    'font-bold text-primary transition',
+    'font-bold text-primary',
     showInvalidCredentials,
   )
 

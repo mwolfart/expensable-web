@@ -33,7 +33,10 @@ module.exports = {
       sm: ['17px', '23px'],
     },
     extend: {
-      colors
+      colors,
+      transitionProperty: {
+        height: 'max-height, opacity'
+      }
     },
   },
   daisyui: {

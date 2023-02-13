@@ -22,6 +22,8 @@ export const useErrorMessages = () => {
         return t('common.errors.required-field', {
           field: t('common.password'),
         })
+      case ErrorCodes.PASSWORD_MISMATCH:
+        return t('common.errors.password-mismatch')
       case ErrorCodes.PASSWORD_SHORT:
         return t('common.errors.password-short')
       case ErrorCodes.PASSWORD_INVALID:

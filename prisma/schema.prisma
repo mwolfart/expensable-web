@@ -8,7 +8,7 @@ generator client {
 }
 
 model User {
-  id            String @id @default(cuid()) @map("_id") @db.ObjectId
+  id            String @id @default(auto()) @map("_id") @db.ObjectId
   email         String @unique
   fullName      String
 
@@ -20,7 +20,7 @@ model User {
 }
 
 model RefreshToken {
-  id          String   @id @default(uuid()) @map("_id") @db.ObjectId
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
   hashedToken String
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId      String   @db.ObjectId
@@ -30,13 +30,13 @@ model RefreshToken {
 }
 
 model Category {
-  id        String @id @default(cuid()) @map("_id") @db.ObjectId
+  id        String @id @default(auto()) @map("_id") @db.ObjectId
   title     String
   expenses  CategoriesOnExpense[]
 }
 
 model Expense {
-  id            String @id @default(cuid()) @map("_id") @db.ObjectId
+  id            String @id @default(auto()) @map("_id") @db.ObjectId
   title         String
   amount        Float
   unit          Float
@@ -46,14 +46,14 @@ model Expense {
 }
 
 model Transaction {
-  id            String @id @default(cuid()) @map("_id") @db.ObjectId
+  id            String @id @default(auto()) @map("_id") @db.ObjectId
   datetime      DateTime
   location      String
   expenses      ExpensesInTransaction[]
 }
 
 model CategoriesOnExpense {
-  id            String @id @default(cuid()) @map("_id") @db.ObjectId
+  id            String @id @default(auto()) @map("_id") @db.ObjectId
   expense       Expense @relation(fields: [expenseId], references: [id])
   expenseId     String @db.ObjectId
   category      Category @relation(fields: [categoryId], references: [id])
@@ -62,7 +62,7 @@ model CategoriesOnExpense {
 }
 
 model ExpensesInTransaction {
-  id               String @id @default(cuid()) @map("_id") @db.ObjectId
+  id               String @id @default(auto()) @map("_id") @db.ObjectId
   expense          Expense @relation(fields: [expenseId], references: [id])
   expenseId        String @db.ObjectId
   transaction      Transaction @relation(fields: [transactionId], references: [id])

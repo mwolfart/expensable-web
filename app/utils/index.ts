@@ -2,9 +2,17 @@ import cx from 'classnames'
 
 export const cxWithFade = (baseClasses: string, active?: boolean) => {
   return cx(
-    baseClasses,
+    `${baseClasses} transition`,
     !active && 'pointer-events-none opacity-0',
     active && 'opacity-100',
+  )
+}
+
+export const cxWithGrowMd = (baseClasses: string, active?: boolean) => {
+  return cx(
+    `${baseClasses} transition-height duration-300`,
+    !active && 'max-h-0 opacity-0 invisible',
+    active && 'max-h-64 opacity-1 visible',
   )
 }
 

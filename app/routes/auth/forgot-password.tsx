@@ -39,7 +39,7 @@ export default function CreateUser() {
   }
 
   const confirmationClasses = cxWithFade(
-    'font-bold text-primary transition',
+    'font-bold text-primary',
     displayConfirmation,
   )
 

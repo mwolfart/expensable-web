@@ -7,6 +7,7 @@ export enum ErrorCodes {
   PASSWORD_INVALID = 'invalid_password',
   PASSWORD_REQUIRED = 'required_password',
   PASSWORD_SHORT = 'short_password',
+  PASSWORD_MISMATCH = 'password_mismatch',
   NAME_REQUIRED = 'required_name',
   DUPLICATE_USER = 'duplicate_user',
 }
@@ -15,7 +16,7 @@ const emailSchema = yup
   .string()
   .required(ErrorCodes.EMAIL_REQUIRED)
   .matches(
-    /^[a-z0-9.]+@[a-z0-9]+\.[a-z]+\.([a-z]+)?$/,
+    /^[a-zA-Z0-9.]+@[a-zA-Z0-9]+(\.[a-zA-Z]+)+$/,
     ErrorCodes.EMAIL_INVALID,
   )
 
