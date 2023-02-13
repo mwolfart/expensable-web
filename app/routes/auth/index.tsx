@@ -3,7 +3,7 @@ import { json } from '@remix-run/node'
 import { createUserSession } from '~/session.server'
 import { safeRedirect } from '~/utils/auth'
 import { verifyLogin } from '~/models/auth.server'
-import { useEffect, useState } from 'react'
+import { useEffect, useReducer, useState } from 'react'
 import { timeout } from '~/utils/timeout'
 import {
   Form,
@@ -12,12 +12,17 @@ import {
   useNavigate,
 } from '@remix-run/react'
 import { useTranslations } from 'use-intl'
-import { cxWithFade } from '~/utils'
+import { cxFormInput, cxWithFade, getYupErrors } from '~/utils'
 import { AuthContext } from '../auth'
-import { ErrorCodes } from '~/hooks'
-import { loginSchema } from '~/utils/schemas'
+import { useErrorMessages } from '~/hooks'
+import { ErrorCodes, loginSchema } from '~/utils/schemas'
 
 type FormErrors = { email?: string; password?: string }
+
+const errorsReducer = (state: FormErrors, action: FormErrors) => ({
+  ...state,
+  ...action,
+})
 
 export async function action({ request }: ActionArgs) {
   const formData = await request.formData()
@@ -27,16 +32,19 @@ export async function action({ request }: ActionArgs) {
   // const remember = formData.get('remember')
 
   try {
-    await loginSchema.validate({ email, password })
+    await loginSchema.validate({ email, password }, { abortEarly: false })
   } catch (e: any) {
-    const errors = { [e.path]: e.errors[0] } as FormErrors
+    const errors = getYupErrors(e) as FormErrors
     return json({ errors }, { status: 400 })
   }
 
   const user = await verifyLogin(email, password)
 
   if (!user) {
-    return json({ errors: ErrorCodes.INVALID_LOGIN }, { status: 400 })
+    return json(
+      { errors: { email: ErrorCodes.LOGIN_INVALID } as FormErrors },
+      { status: 400 },
+    )
   }
 
   return createUserSession({
@@ -56,17 +64,29 @@ export const meta: MetaFunction = () => {
 export default function Login() {
   const t = useTranslations()
   const navigate = useNavigate()
-  const [transition] = useOutletContext<AuthContext>()
-  const [showInvalidCredentials, setInvalidCredentials] = useState(false)
-
   const actionData = useActionData<typeof action>()
+  const [transition] = useOutletContext<AuthContext>()
+  const { errorToString } = useErrorMessages()
+  const [showInvalidCredentials, setInvalidCredentials] = useState(false)
+  const [loginErrors, updateLoginErrors] = useReducer(errorsReducer, {
+    email: '',
+    password: '',
+  })
 
   useEffect(() => {
     const parseAction = async () => {
-      if (actionData?.errors) {
+      if (
+        actionData?.errors &&
+        actionData.errors.email === ErrorCodes.LOGIN_INVALID
+      ) {
         setInvalidCredentials(true)
         await timeout(5000)
         setInvalidCredentials(false)
+      } else if (actionData?.errors) {
+        updateLoginErrors({
+          email: errorToString(actionData.errors.email),
+          password: errorToString(actionData.errors.password),
+        })
       }
     }
     parseAction()
@@ -96,14 +116,16 @@ export default function Login() {
       <input
         type="email"
         name="email"
-        placeholder={t('common.email')}
-        className="input w-full bg-white"
+        placeholder={loginErrors.email || t('common.email')}
+        className={cxFormInput({ hasError: Boolean(loginErrors.email) })}
+        onChange={() => updateLoginErrors({ email: '' })}
       />
       <input
         type="password"
         name="password"
-        placeholder={t('common.password')}
-        className="input w-full bg-white"
+        placeholder={loginErrors.password || t('common.password')}
+        className={cxFormInput({ hasError: Boolean(loginErrors.password) })}
+        onChange={() => updateLoginErrors({ password: '' })}
       />
       <p className={invalidCredentialClasses}>
         {t('auth.errors.invalid-credentials')}

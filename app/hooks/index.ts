@@ -1,2 +1,2 @@
 export { useMatchesData } from './use-matches-data'
-export { useErrorMessages, ErrorCodes } from './use-error-messages'
+export { useErrorMessages } from './use-error-messages'

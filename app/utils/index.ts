@@ -21,3 +21,16 @@ export const cxFormInput = ({
     extraClasses,
   )
 }
+
+export const getYupErrors = (yupError: any) => {
+  const errorArray = yupError.inner.map(
+    ({ path, errors: [code] }: any): { path: string; code: string } => ({
+      path,
+      code,
+    }),
+  ) as Array<{ path: string; code: string }>
+  const errors = errorArray
+    .reverse()
+    .reduce((acc, { path, code }) => ({ ...acc, [path]: code }), {})
+  return errors
+}

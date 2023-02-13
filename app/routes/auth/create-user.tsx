@@ -12,9 +12,9 @@ import {
 } from '@remix-run/react'
 import { useEffect, useReducer } from 'react'
 import { AuthContext } from '../auth'
-import { cxFormInput } from '~/utils'
-import { ErrorCodes, useErrorMessages } from '~/hooks'
-import { userSchema } from '~/utils/schemas'
+import { cxFormInput, getYupErrors } from '~/utils'
+import { useErrorMessages } from '~/hooks'
+import { ErrorCodes, userSchema } from '~/utils/schemas'
 
 type FormErrors = {
   email?: string
@@ -35,9 +35,9 @@ export async function action({ request }: ActionArgs) {
   const redirectTo = safeRedirect(formData.get('redirectTo'), '/')
 
   try {
-    await userSchema.validate({ email, password, name })
+    await userSchema.validate({ email, password, name }, { abortEarly: false })
   } catch (e: any) {
-    const errors = { [e.path]: e.errors[0] } as FormErrors
+    const errors = getYupErrors(e) as FormErrors
     return json({ errors }, { status: 400 })
   }
 
@@ -87,9 +87,9 @@ export default function CreateUser() {
   useEffect(() => {
     if (actionData?.errors) {
       updateUserErrors({
-        email: errorToString(actionData?.errors.email),
-        name: errorToString(actionData?.errors.name),
-        password: errorToString(actionData?.errors.password),
+        email: errorToString(actionData.errors.email),
+        name: errorToString(actionData.errors.name),
+        password: errorToString(actionData.errors.password),
       })
     }
   }, [actionData])
@@ -110,26 +110,26 @@ export default function CreateUser() {
         name="email"
         placeholder={userErrors.email || t('common.email')}
         className={cxFormInput({ hasError: Boolean(userErrors.email) })}
-        onChange={() => updateUserErrors({ email: undefined })}
+        onChange={() => updateUserErrors({ email: '' })}
       />
       <input
         name="name"
         placeholder={userErrors.name || t('common.name')}
         className={cxFormInput({ hasError: Boolean(userErrors.name) })}
-        onChange={() => updateUserErrors({ name: undefined })}
+        onChange={() => updateUserErrors({ name: '' })}
       />
       <input
         type="password"
         name="password"
         placeholder={userErrors.password || t('common.password')}
         className={cxFormInput({ hasError: Boolean(userErrors.password) })}
-        onChange={() => updateUserErrors({ password: undefined })}
+        onChange={() => updateUserErrors({ password: '' })}
       />
       <input
         type="password"
         placeholder={userErrors.password || t('common.password-check')}
         className={cxFormInput({ hasError: Boolean(userErrors.password) })}
-        onChange={() => updateUserErrors({ password: undefined })}
+        onChange={() => updateUserErrors({ password: '' })}
       />
       <div className="flex flex-col gap-4">
         <button className="btn-primary btn" type="submit">
