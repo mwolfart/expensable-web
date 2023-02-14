@@ -1,7 +1,6 @@
 import { json, LoaderArgs, redirect } from '@remix-run/node'
-import { useLoaderData, useSubmit } from '@remix-run/react'
+import { Outlet, useLoaderData, useLocation, useSubmit } from '@remix-run/react'
 import { useTranslations } from 'use-intl'
-import { Tab, TabGroup } from '~/components/tab'
 import { getUser, getUserId } from '~/session.server'
 
 export async function loader({ request }: LoaderArgs) {
@@ -15,6 +14,14 @@ export default function Index() {
   const t = useTranslations()
   const user = useLoaderData<typeof loader>()
   const submit = useSubmit()
+  const { pathname } = useLocation()
+
+  const getTabClass = (path: string) =>
+    `btn normal-case ${
+      path === pathname
+        ? 'btn-primary'
+        : 'btn-ghost text-primary hover:bg-primary hover:text-white'
+    }`
 
   return (
     <main className="relative flex h-full flex-col p-8 sm:p-16 sm:pt-0">
@@ -33,20 +40,21 @@ export default function Index() {
         </button>
       </div>
       <div className="flex-grow rounded-2xl bg-foreground">
-        <TabGroup>
-          <Tab id="expenses" title={t('home.expenses')}>
-            Expenses
-          </Tab>
-          <Tab id="categories" title={t('home.categories')}>
-            Categories
-          </Tab>
-          <Tab id="supermarket" title={t('home.supermarket')}>
-            Supermarket
-          </Tab>
-          <Tab id="dashboard" title={t('home.dashboard')}>
-            Dashboard
-          </Tab>
-        </TabGroup>
+        <div className="tabs gap-4 p-4">
+          <a className={getTabClass('/')} href="/">
+            {t('home.dashboard')}
+          </a>
+          <a className={getTabClass('/expenses')} href="/expenses">
+            {t('home.expenses')}
+          </a>
+          <a className={getTabClass('/categories')} href="/categories">
+            {t('home.categories')}
+          </a>
+          <a className={getTabClass('/supermarket')} href="/supermarket">
+            {t('home.supermarket')}
+          </a>
+        </div>
+        <Outlet />
       </div>
     </main>
   )

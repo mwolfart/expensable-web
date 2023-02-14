@@ -29,3 +29,13 @@ export const getUserById = (id: string) =>
       id,
     },
   })
+
+export const getUserCategories = (id: string) =>
+  prisma.user.findUnique({
+    select: {
+      categories: true,
+    },
+    where: {
+      id,
+    },
+  })

@@ -7,6 +7,7 @@
         "submit": "Submit",
         "back": "Back",
         "logout": "Log out",
+        "search": "Search",
         "errors": {
             "invalid-field": "{field} is invalid.",
             "required-field": "{field} is required",
@@ -39,5 +40,9 @@
         "categories": "Categories",
         "supermarket": "Supermarket",
         "dashboard": "Dashboard"
+    },
+    "category": {
+        "search": "Search categories...",
+        "add": "New category"
     }
 }
