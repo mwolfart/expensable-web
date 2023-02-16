@@ -3,6 +3,7 @@
 const colors = {
   primary: "#ef4444",
   'primary-focus': '#c22015',
+  secondary: '#faa460',
   black: '#475569',
   foreground: "#fff7ed",
   white: "#ffffff",
@@ -35,7 +36,11 @@ module.exports = {
     extend: {
       colors,
       transitionProperty: {
-        height: 'max-height, opacity'
+        height: 'max-height',
+        'height-fade': 'max-height, opacity'
+      },
+      gridTemplateColumns: {
+        '2-grow-left': 'minmax(0, 1fr) min-content',
       }
     },
   },

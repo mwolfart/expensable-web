@@ -10,7 +10,7 @@ import {
 } from '@remix-run/react'
 import { useEffect, useReducer, useState } from 'react'
 import { AuthContext } from '../__auth'
-import { cxFormInput, cxWithGrowMd, getYupErrors } from '~/utils'
+import { cxFormInput, cxWithGrowFadeMd, getYupErrors } from '~/utils'
 import { useErrorMessages } from '~/hooks'
 import { ErrorCodes, userSchema } from '~/utils/schemas'
 import { timeout } from '~/utils/timeout'
@@ -157,7 +157,7 @@ export default function CreateUser() {
         className={cxFormInput({ hasError: Boolean(userErrors.password) })}
         onChange={() => updateUserErrors({ password: '' })}
       />
-      <p className={cxWithGrowMd('', showConfirmation)}>
+      <p className={cxWithGrowFadeMd('', showConfirmation)}>
         {t('auth.account-created')}
       </p>
       <div className="flex flex-col gap-4">

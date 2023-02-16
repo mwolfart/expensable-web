@@ -8,6 +8,8 @@
         "back": "Back",
         "logout": "Log out",
         "search": "Search",
+        "cancel": "Cancel",
+        "ok": "OK",
         "nothing-to-see": "There is nothing to see here",
         "errors": {
             "invalid-field": "{field} is invalid.",
@@ -45,6 +47,7 @@
     "category": {
         "search": "Search categories...",
         "add": "New category",
-        "try-adding": "Try adding a category first"
+        "try-adding": "Try adding a category first",
+        "category-name": "Category name"
     }
 }

@@ -8,11 +8,27 @@ export const cxWithFade = (baseClasses: string, active?: boolean) => {
   )
 }
 
-export const cxWithGrowMd = (baseClasses: string, active?: boolean) => {
+export const cxWithGrowFadeMd = (baseClasses: string, active?: boolean) => {
   return cx(
-    `${baseClasses} transition-height duration-300`,
+    `${baseClasses} transition-height-fade duration-300`,
     !active && 'max-h-0 opacity-0 invisible',
     active && 'max-h-64 opacity-1 visible',
+  )
+}
+
+export const cxWithGrowMd = (baseClasses: string, active?: boolean) => {
+  return cx(
+    `${baseClasses} transition-height duration-700`,
+    !active && 'max-h-0 delay-200',
+    active && 'max-h-64 delay-0',
+  )
+}
+
+export const cxWithDelayedFade = (baseClasses: string, active?: boolean) => {
+  return cx(
+    `${baseClasses} transition duration-500`,
+    !active && 'pointer-events-none opacity-0 delay-0',
+    active && 'opacity-100 delay-200',
   )
 }
 
