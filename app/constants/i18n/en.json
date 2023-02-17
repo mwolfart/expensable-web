@@ -10,6 +10,7 @@
         "search": "Search",
         "cancel": "Cancel",
         "ok": "OK",
+        "delete": "Delete",
         "nothing-to-see": "There is nothing to see here",
         "errors": {
             "invalid-field": "{field} is invalid.",
@@ -50,6 +51,7 @@
         "try-adding": "Try adding a category first",
         "category-name": "Category name",
         "category-added": "Category added succesfully!",
+        "category-deleted": "Category deleted succesfully!",
         "errors": {
             "duplicate": "Category exists",
             "empty": "Enter a name"

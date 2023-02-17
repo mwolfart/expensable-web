@@ -7,6 +7,7 @@ const colors = {
   black: '#475569',
   foreground: "#fff7ed",
   white: "#ffffff",
+  grey: '#aaaaaa',
   error: '#ff0000',
 }
 

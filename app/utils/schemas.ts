@@ -12,6 +12,7 @@ export enum ErrorCodes {
   DUPLICATE_USER = 'duplicate_user',
   CATEGORY_DUPLICATE = 'duplicate_category',
   CATEGORY_EMPTY = 'empty_category',
+  INVALID_ID = 'invalid_id',
 }
 
 const emailSchema = yup

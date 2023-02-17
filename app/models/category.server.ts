@@ -16,3 +16,6 @@ export const createCategory = (userId: string, title: string) => {
     data: category,
   })
 }
+
+export const deleteCategory = (id: string) =>
+  prisma.category.delete({ where: { id } })
