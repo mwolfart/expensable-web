@@ -48,6 +48,11 @@
         "search": "Search categories...",
         "add": "New category",
         "try-adding": "Try adding a category first",
-        "category-name": "Category name"
+        "category-name": "Category name",
+        "category-added": "Category added succesfully!",
+        "errors": {
+            "duplicate": "Category exists",
+            "empty": "Enter a name"
+        }
     }
 }

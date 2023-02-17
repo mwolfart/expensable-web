@@ -42,7 +42,6 @@ export async function action({
     await userSchema.validate({ email, password, name }, { abortEarly: false })
   } catch (e: any) {
     const errors = getYupErrors(e)
-    console.log(errors)
     return json({ errors }, { status: 400 })
   }
 
@@ -66,7 +65,7 @@ export async function action({
   } catch (_) {
     return json({ success: false }, { status: 500 })
   }
-  return json({ success: true }, { status: 400 })
+  return json({ success: true }, { status: 200 })
 
   // return createUserSession({
   //   request,

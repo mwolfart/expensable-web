@@ -10,6 +10,8 @@ export enum ErrorCodes {
   PASSWORD_MISMATCH = 'password_mismatch',
   NAME_REQUIRED = 'required_name',
   DUPLICATE_USER = 'duplicate_user',
+  CATEGORY_DUPLICATE = 'duplicate_category',
+  CATEGORY_EMPTY = 'empty_category',
 }
 
 const emailSchema = yup

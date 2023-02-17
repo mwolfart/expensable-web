@@ -30,6 +30,10 @@ export const useErrorMessages = () => {
         return t('common.errors.password-rules')
       case ErrorCodes.DUPLICATE_USER:
         return t('auth.errors.account-exists')
+      case ErrorCodes.CATEGORY_DUPLICATE:
+        return t('category.errors.duplicate')
+      case ErrorCodes.CATEGORY_EMPTY:
+        return t('category.errors.empty')
       default:
         return code
     }

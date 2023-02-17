@@ -3,6 +3,9 @@ import { Outlet, useLoaderData, useLocation, useSubmit } from '@remix-run/react'
 import { useTranslations } from 'use-intl'
 import { DialogProvider } from '~/providers/dialog'
 import { getUser, getUserId } from '~/session.server'
+import { MdOutlineCategory } from 'react-icons/md'
+import { GoGraph, GoCreditCard } from 'react-icons/go'
+import { AiOutlineShoppingCart } from 'react-icons/ai'
 
 export async function loader({ request }: LoaderArgs) {
   const userId = await getUserId(request)
@@ -18,7 +21,7 @@ export default function Index() {
   const { pathname } = useLocation()
 
   const getTabClass = (path: string) =>
-    `btn normal-case ${
+    `btn normal-case px-2 xs:px-3 sm:px-4 ${
       path === pathname
         ? 'btn-primary'
         : 'btn-ghost text-primary hover:bg-primary hover:text-white'
@@ -44,16 +47,20 @@ export default function Index() {
         <div className="flex flex-grow flex-col rounded-2xl bg-foreground">
           <div className="tabs gap-4 p-4">
             <a className={getTabClass('/')} href="/">
-              {t('home.dashboard')}
+              <div className="hidden md:block">{t('home.dashboard')}</div>
+              <GoGraph className="block md:hidden" size={24} />
             </a>
             <a className={getTabClass('/expenses')} href="/expenses">
-              {t('home.expenses')}
+              <div className="hidden md:block">{t('home.expenses')}</div>
+              <GoCreditCard className="block md:hidden" size={24} />
             </a>
             <a className={getTabClass('/categories')} href="/categories">
-              {t('home.categories')}
+              <div className="hidden md:block">{t('home.categories')}</div>
+              <MdOutlineCategory className="block md:hidden" size={24} />
             </a>
             <a className={getTabClass('/supermarket')} href="/supermarket">
-              {t('home.supermarket')}
+              <div className="hidden md:block">{t('home.supermarket')}</div>
+              <AiOutlineShoppingCart className="block md:hidden" size={24} />
             </a>
           </div>
           <Outlet />
