@@ -132,7 +132,7 @@ export default function Categories() {
   return (
     <div className="m-8 mt-0 flex flex-grow flex-col gap-2 md:mt-4 md:gap-4">
       {showDeleteToast && DeleteToast}
-      <div className="relative flex gap-4">
+      <div className="relative flex flex-col gap-4 sm:flex-row">
         <input
           className="input flex-grow"
           placeholder={t('category.search')}
@@ -142,8 +142,11 @@ export default function Categories() {
           className="btn-primary btn md:btn-outline"
           onClick={() => setAddCategory(true)}
         >
-          <div className="hidden sm:block">{t('category.add')}</div>
-          <AiOutlinePlus className="block text-white sm:hidden" size={28} />
+          <div className="block sm:hidden md:block">{t('category.add')}</div>
+          <AiOutlinePlus
+            className="hidden text-white sm:block md:hidden"
+            size={24}
+          />
         </button>
         <AddCategoryPopup isOpen={showAddCategory} setOpen={setAddCategory} />
       </div>
