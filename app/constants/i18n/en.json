@@ -10,6 +10,8 @@
         "search": "Search",
         "cancel": "Cancel",
         "ok": "OK",
+        "edit": "Edit",
+        "rename": "Rename",
         "delete": "Delete",
         "nothing-to-see": "There is nothing to see here",
         "errors": {

@@ -1,4 +1,5 @@
 import cx from 'classnames'
+import { KeyboardEvent } from 'react'
 
 export const cxWithFade = (baseClasses: string, active?: boolean) => {
   return cx(
@@ -57,4 +58,13 @@ export const getYupErrors = (yupError: any) => {
     .reverse()
     .reduce((acc, { path, code }) => ({ ...acc, [path]: code }), {})
   return errors
+}
+
+export const onEnter = (
+  evt: KeyboardEvent<HTMLInputElement>,
+  callback: () => unknown,
+) => {
+  if (evt.key === 'Enter') {
+    callback()
+  }
 }

@@ -1,4 +1,4 @@
-import { Form, useActionData, useLoaderData, useSubmit } from '@remix-run/react'
+import { useActionData, useLoaderData } from '@remix-run/react'
 import {
   ActionArgs,
   json,
@@ -12,15 +12,15 @@ import {
   getCategoryByTitle,
   createCategory,
   deleteCategory,
+  updateCategory,
 } from '~/models/category.server'
 import { NoData } from '~/components/no-data'
-import { ChangeEvent, useEffect, useState } from 'react'
-import { cxFormInput, cxWithDelayedFade, cxWithGrowMd } from '~/utils'
+import { useEffect, useState } from 'react'
 import { AiOutlinePlus } from 'react-icons/ai'
-import { BsTrash } from 'react-icons/bs'
 import { ErrorCodes } from '~/utils/schemas'
+import { CategoryList } from '~/components/category-list'
+import { AddCategoryPopup } from '~/components/category-add-popup'
 import { timeout } from '~/utils/timeout'
-import { useErrorMessages } from '~/hooks'
 
 export async function loader({ request }: LoaderArgs) {
   const userId = await getUserId(request)
@@ -80,81 +80,57 @@ export async function action({
     } catch (_) {
       return json({ success: false, ...res }, { status: 500 })
     }
-  } else return json({ success: false, ...res }, { status: 405 })
+  } else if (method === 'PATCH') {
+    const formData = await request.formData()
+    const id = formData.get('id')
+    const title = formData.get('title')
+
+    if (typeof id !== 'string' || id === '') {
+      return json({ error: ErrorCodes.INVALID_ID, ...res }, { status: 400 })
+    }
+
+    if (typeof title !== 'string' || title === '') {
+      return json({ error: ErrorCodes.CATEGORY_EMPTY, ...res }, { status: 400 })
+    }
+
+    const existingCategory = await getCategoryByTitle(title)
+    if (existingCategory) {
+      return json(
+        { error: ErrorCodes.CATEGORY_DUPLICATE, ...res },
+        { status: 400 },
+      )
+    }
+
+    try {
+      await updateCategory(id, title)
+    } catch (_) {
+      return json({ success: false, ...res }, { status: 500 })
+    }
+    return json({ success: true, ...res }, { status: 200 })
+  }
+  return json({ success: false, ...res }, { status: 405 })
 }
 
 export default function Categories() {
   const { categories } = useLoaderData<typeof loader>()
-  const actionData = useActionData<typeof action>()
   const t = useTranslations()
-  const onSubmit = useSubmit()
-  const { errorToString } = useErrorMessages()
   const [showAddCategory, setAddCategory] = useState(false)
-  const [newCategory, setNewCategory] = useState('')
-  const [addError, setAddError] = useState<string>()
-  const [showAddToast, setShowAddToast] = useState(false)
   const [showDeleteToast, setShowDeleteToast] = useState(false)
 
-  useEffect(() => {
-    const foo = async () => {
-      if (actionData?.method === 'POST') {
-        if (actionData?.error) {
-          setAddError(errorToString(actionData.error))
-          setNewCategory('')
-        } else if (actionData?.success) {
-          setAddCategory(false)
-          setShowAddToast(true)
-          setNewCategory('')
-          await timeout(3000)
-          setShowAddToast(false)
-        }
-      } else if (actionData?.method === 'DELETE') {
-        setShowDeleteToast(true)
-        await timeout(3000)
-        setShowDeleteToast(false)
-      }
-    }
-    foo()
-  }, [actionData])
-
-  const onCancelAdd = () => {
-    setNewCategory('')
-    setAddCategory(false)
+  const renderDeleteToast = async () => {
+    setShowDeleteToast(true)
+    await timeout(3000)
+    setShowDeleteToast(false)
   }
 
-  const onChangeNewCategory = (evt: ChangeEvent<HTMLInputElement>) => {
-    setNewCategory(evt.target.value)
-    setAddError(undefined)
-  }
-
-  const onDelete = (id: string) => {
-    onSubmit({ id }, { method: 'delete' })
-  }
-
-  const AddToast = (
-    <div className="toast">
-      <div className="alert alert-success">{t('category.category-added')}</div>
-    </div>
-  )
   const DeleteToast = (
     <div className="toast">
-      <div className="alert alert-success">
-        {t('category.category-deleted')}
-      </div>
+      <div className="alert alert-info">{t('category.category-deleted')}</div>
     </div>
-  )
-  const addCategoryOuter = cxWithGrowMd(
-    'absolute right-0 left-0 sm:left-auto top-full my-4 sm:w-80 rounded-xl bg-primary',
-    showAddCategory,
-  )
-  const addCategoryInner = cxWithDelayedFade(
-    'grid grid-cols-2-grow-left grid-rows-2 gap-4 p-4',
-    showAddCategory,
   )
 
   return (
-    <div className="m-8 mt-0 flex flex-grow flex-col gap-4 md:mt-4 md:gap-8">
-      {showAddToast && AddToast}
+    <div className="m-8 mt-0 flex flex-grow flex-col gap-2 md:mt-4 md:gap-4">
       {showDeleteToast && DeleteToast}
       <div className="relative flex gap-4">
         <input
@@ -169,50 +145,17 @@ export default function Categories() {
           <div className="hidden sm:block">{t('category.add')}</div>
           <AiOutlinePlus className="block text-white sm:hidden" size={28} />
         </button>
-        <div className={addCategoryOuter}>
-          <Form method="post" className={addCategoryInner}>
-            <input
-              name="category"
-              className={cxFormInput({ hasError: Boolean(addError) })}
-              placeholder={addError || t('category.category-name')}
-              value={newCategory}
-              onChange={onChangeNewCategory}
-            ></input>
-            <button className="btn-secondary btn p-4 text-white" type="submit">
-              {t('common.ok')}
-            </button>
-            <button
-              type="button"
-              className="btn col-span-2 text-white hover:border-transparent hover:bg-white hover:text-primary"
-              onClick={onCancelAdd}
-            >
-              {t('common.cancel')}
-            </button>
-          </Form>
-        </div>
+        <AddCategoryPopup isOpen={showAddCategory} setOpen={setAddCategory} />
       </div>
       {!categories.length && (
         <NoData>
           <p>{t('category.try-adding')}</p>
         </NoData>
       )}
-      <div className="flex flex-col gap-[1px] bg-gradient-to-r from-grey to-primary">
-        {categories.map((category) => (
-          <div
-            className="flex items-center bg-foreground py-2"
-            key={category.id}
-          >
-            <p className="flex-grow">{category.title}</p>
-            <button
-              className="btn-ghost btn p-2 text-primary"
-              aria-label={t('common.delete')}
-              onClick={() => onDelete(category.id)}
-            >
-              <BsTrash size={20} />
-            </button>
-          </div>
-        ))}
-      </div>
+      <CategoryList
+        categories={categories}
+        renderDeleteToast={renderDeleteToast}
+      />
     </div>
   )
 }
