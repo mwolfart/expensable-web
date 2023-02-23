@@ -15,7 +15,7 @@ import {
   updateCategory,
 } from '~/models/category.server'
 import { NoData } from '~/components/no-data'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { AiOutlinePlus } from 'react-icons/ai'
 import { ErrorCodes } from '~/utils/schemas'
 import { CategoryList } from '~/components/category-list'
