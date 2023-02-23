@@ -1,4 +1,4 @@
-import { useActionData, useLoaderData } from '@remix-run/react'
+import { useLoaderData } from '@remix-run/react'
 import {
   ActionArgs,
   json,
@@ -6,13 +6,13 @@ import {
   TypedResponse,
 } from '@remix-run/server-runtime'
 import { useTranslations } from 'use-intl'
-import { getUserCategories } from '~/models/user.server'
 import { getUserId } from '~/session.server'
 import {
   getCategoryByTitle,
   createCategory,
   deleteCategory,
   updateCategory,
+  getUserCategories,
 } from '~/models/category.server'
 import { NoData } from '~/components/no-data'
 import { useState } from 'react'
@@ -114,6 +114,7 @@ export async function action({
 export default function Categories() {
   const { categories } = useLoaderData<typeof loader>()
   const t = useTranslations()
+  const [query, setQuery] = useState('')
   const [showAddCategory, setAddCategory] = useState(false)
   const [showDeleteToast, setShowDeleteToast] = useState(false)
 
@@ -137,7 +138,9 @@ export default function Categories() {
           className="input flex-grow"
           placeholder={t('category.search')}
           aria-label={t('category.search')}
-        ></input>
+          value={query}
+          onChange={(evt) => setQuery(evt.target.value)}
+        />
         <button
           className="btn-primary btn md:btn-outline"
           onClick={() => setAddCategory(true)}
@@ -157,6 +160,7 @@ export default function Categories() {
       )}
       <CategoryList
         categories={categories}
+        query={query}
         renderDeleteToast={renderDeleteToast}
       />
     </div>

@@ -1,5 +1,23 @@
 import { prisma } from '~/db.server'
 
+export const getUserCategories = (id: string) =>
+  prisma.user.findUnique({
+    select: {
+      categories: true,
+    },
+    where: {
+      id,
+    },
+  })
+
+export const getUserCategoriesByQuery = (id: string, text: string) =>
+  prisma.category.findMany({
+    where: {
+      id,
+      title: text,
+    },
+  })
+
 export const getCategoryByTitle = (title: string) =>
   prisma.category.findUnique({
     where: {
