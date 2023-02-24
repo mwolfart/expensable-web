@@ -13,12 +13,11 @@ export function CategoryList({ query, categories, renderDeleteToast }: Props) {
       {categories.map((category) => {
         if (category.title.toLowerCase().includes(query.toLowerCase())) {
           return (
-            <div key={category.id}>
-              <CategoryItem
-                category={category}
-                renderDeleteToast={renderDeleteToast}
-              />
-            </div>
+            <CategoryItem
+              key={category.id}
+              category={category}
+              renderDeleteToast={renderDeleteToast}
+            />
           )
         }
       })}

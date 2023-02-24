@@ -13,7 +13,13 @@
         "edit": "Edit",
         "rename": "Rename",
         "delete": "Delete",
+        "filters": "Manage filters",
         "nothing-to-see": "There is nothing to see here",
+        "title": "Title",
+        "amount": "Cost amount",
+        "unit": "Unit amount",
+        "categories": "Categories",
+        "optional-field": "{field} (optional)",
         "errors": {
             "invalid-field": "{field} is invalid.",
             "required-field": "{field} is required",
@@ -58,5 +64,9 @@
             "duplicate": "Category exists",
             "empty": "Enter a name"
         }
+    },
+    "expenses": {
+        "try-adding": "Try adding an expense first",
+        "add": "New expense"
     }
 }

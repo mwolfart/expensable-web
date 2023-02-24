@@ -47,6 +47,10 @@
     @apply text-sm md:text-md;
   }
 
+  label {
+    @apply flex flex-col gap-2;
+  }
+
   @media (prefers-color-scheme: dark) {
   }
 }

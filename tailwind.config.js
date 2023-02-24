@@ -8,6 +8,7 @@ const colors = {
   foreground: "#fff7ed",
   white: "#ffffff",
   grey: '#aaaaaa',
+  'light-grey': '#cccccc',
   error: '#ff0000',
 }
 

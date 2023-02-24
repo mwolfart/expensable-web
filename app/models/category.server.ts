@@ -13,7 +13,7 @@ export const getUserCategories = (id: string) =>
 export const getUserCategoriesByQuery = (id: string, text: string) =>
   prisma.category.findMany({
     where: {
-      id,
+      userId: id,
       title: text,
     },
   })
