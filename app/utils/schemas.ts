@@ -9,10 +9,14 @@ export enum ErrorCodes {
   PASSWORD_SHORT = 'short_password',
   PASSWORD_MISMATCH = 'password_mismatch',
   NAME_REQUIRED = 'required_name',
+  AMOUNT_REQUIRED = 'amount_required',
   DUPLICATE_USER = 'duplicate_user',
   CATEGORY_DUPLICATE = 'duplicate_category',
   CATEGORY_EMPTY = 'empty_category',
   INVALID_ID = 'invalid_id',
+  BAD_CATEGORY_DATA = 'bad_category_data',
+  BAD_DATE_FORMAT = 'bad_date_format',
+  BAD_FORMAT = 'bad_format',
 }
 
 const emailSchema = yup

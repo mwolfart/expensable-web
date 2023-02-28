@@ -67,7 +67,7 @@ export function AddCategoryPopup({ isOpen, setOpen }: Props) {
       {showAddToast && AddToast}
       <div className={addCategoryInner}>
         <input
-          className={cxFormInput({ hasError: Boolean(addError) })}
+          className={cxFormInput({ hasError: addError })}
           placeholder={addError || t('category.category-name')}
           value={title}
           onChange={onChangeNewCategory}

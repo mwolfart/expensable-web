@@ -19,7 +19,9 @@
         "amount": "Cost amount",
         "unit": "Unit amount",
         "categories": "Categories",
+        "date": "Date",
         "optional-field": "{field} (optional)",
+        "each": "{value}/ea",
         "errors": {
             "invalid-field": "{field} is invalid.",
             "required-field": "{field} is required",
@@ -67,6 +69,9 @@
     },
     "expenses": {
         "try-adding": "Try adding an expense first",
-        "add": "New expense"
+        "add": "New expense",
+        "created": "Expense created successfully!",
+        "deleted": "Expense deleted successfully!",
+        "saved": "Expense saved successfully!",
     }
 }

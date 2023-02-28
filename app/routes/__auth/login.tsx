@@ -117,14 +117,14 @@ export default function Login() {
         type="email"
         name="email"
         placeholder={loginErrors.email || t('common.email')}
-        className={cxFormInput({ hasError: Boolean(loginErrors.email) })}
+        className={cxFormInput({ hasError: loginErrors.email })}
         onChange={() => updateLoginErrors({ email: '' })}
       />
       <input
         type="password"
         name="password"
         placeholder={loginErrors.password || t('common.password')}
-        className={cxFormInput({ hasError: Boolean(loginErrors.password) })}
+        className={cxFormInput({ hasError: loginErrors.password })}
         onChange={() => updateLoginErrors({ password: '' })}
       />
       <p className={invalidCredentialClasses}>

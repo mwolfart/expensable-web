@@ -1,5 +1,6 @@
 import { Expense } from '@prisma/client'
 import { prisma } from '~/db.server'
+import { CategoryInputArray, ExpenseWithCategory } from '~/utils/types'
 
 export const getUserExpenses = (id: string) =>
   prisma.user.findUnique({
@@ -80,10 +81,26 @@ export const getUserExpensesByYear = (userId: string, year: number) => {
   return getUserExpensesByFilter(userId, { startDate, endDate })
 }
 
-export const createExpense = (expense: Expense) => {
-  return prisma.expense.create({
+export const upsertExpense = async (
+  expense: Pick<Expense, 'title' | 'amount' | 'unit' | 'userId' | 'datetime'>,
+  categories?: CategoryInputArray,
+) => {
+  // TODO support upsert
+  const expenseRes = await prisma.expense.create({
     data: expense,
   })
+  const categoriesRes = categories?.map(({ id }) =>
+    prisma.categoriesOnExpense.create({
+      data: {
+        expenseId: expenseRes.id,
+        categoryId: id,
+      },
+    }),
+  )
+  if (categoriesRes) {
+    await Promise.all(categoriesRes)
+  }
+  return expenseRes
 }
 
 export const updateExpense = (id: string, expense: Expense) => {

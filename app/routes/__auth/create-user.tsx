@@ -133,27 +133,27 @@ export default function CreateUser() {
         type="email"
         name="email"
         placeholder={userErrors.email || t('common.email')}
-        className={cxFormInput({ hasError: Boolean(userErrors.email) })}
+        className={cxFormInput({ hasError: userErrors.email })}
         onChange={() => updateUserErrors({ email: '' })}
       />
       <input
         name="name"
         placeholder={userErrors.name || t('common.name')}
-        className={cxFormInput({ hasError: Boolean(userErrors.name) })}
+        className={cxFormInput({ hasError: userErrors.name })}
         onChange={() => updateUserErrors({ name: '' })}
       />
       <input
         type="password"
         name="password"
         placeholder={userErrors.password || t('common.password')}
-        className={cxFormInput({ hasError: Boolean(userErrors.password) })}
+        className={cxFormInput({ hasError: userErrors.password })}
         onChange={() => updateUserErrors({ password: '' })}
       />
       <input
         type="password"
         name="passwordConfirmation"
         placeholder={userErrors.password || t('common.password-check')}
-        className={cxFormInput({ hasError: Boolean(userErrors.password) })}
+        className={cxFormInput({ hasError: userErrors.password })}
         onChange={() => updateUserErrors({ password: '' })}
       />
       <p className={cxWithGrowFadeMd('', showConfirmation)}>

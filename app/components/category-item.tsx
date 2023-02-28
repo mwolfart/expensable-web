@@ -59,7 +59,7 @@ export function CategoryItem({ category, renderDeleteToast }: Props) {
     <div className="flex items-center gap-2 bg-foreground py-2">
       {isEditing ? (
         <input
-          className={cxFormInput({ hasError: Boolean(hasUpdateError) })}
+          className={cxFormInput({ hasError: hasUpdateError })}
           value={value}
           onKeyDown={onKeyDown}
           onChange={(e) => setValue(e.target.value)}

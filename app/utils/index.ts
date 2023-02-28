@@ -1,5 +1,6 @@
 import cx from 'classnames'
 import { KeyboardEvent } from 'react'
+import { CategoryInputArray } from './types'
 
 export const cxWithFade = (baseClasses: string, active?: boolean) => {
   return cx(
@@ -37,12 +38,12 @@ export const cxFormInput = ({
   hasError,
   extraClasses,
 }: {
-  hasError?: boolean
+  hasError?: unknown
   extraClasses?: string
 }) => {
   return cx(
     'input w-full bg-white',
-    hasError && 'border-error placeholder-error',
+    Boolean(hasError) && 'border-error placeholder-error',
     extraClasses,
   )
 }
@@ -67,4 +68,24 @@ export const onEnter = (
   if (evt.key === 'Enter') {
     callback()
   }
+}
+
+export const parseCategoryInput = (
+  categoryInput: string,
+): CategoryInputArray => {
+  const categories = JSON.parse(categoryInput)
+  if (!Array.isArray(categories)) {
+    throw new Error('invalid category array')
+  }
+  categories.forEach(({ id, text }) => {
+    if (typeof id !== 'string' && typeof text !== 'string') {
+      throw new Error('invalid category array')
+    }
+  })
+  return categories
+}
+
+export const formatCurrency = (amount: number) => {
+  const currency = 'R$'
+  return `${currency} ${(amount / 100).toFixed(2)}`
 }
