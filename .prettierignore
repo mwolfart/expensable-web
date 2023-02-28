@@ -3,13 +3,17 @@ node_modules
 /build
 /public/build
 .env
+/test
 
 /app/styles/tailwind.css
 
 *.json
 *.config.js
+*.config.ts
 *.setup.js
+*.setup.ts
 .next
 .eslintrc
+.eslintrc.js
 .prettierrc
 *.md
