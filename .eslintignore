@@ -1,1 +1,4 @@
 *.config.js
+public/build
+mocks
+cypress

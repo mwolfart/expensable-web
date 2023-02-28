@@ -12,14 +12,16 @@ import { WithContext as ReactTags, Tag } from 'react-tag-input'
 import { Form, useFetcher } from '@remix-run/react'
 import { Category } from '@prisma/client'
 import { DialogContext } from '~/providers/dialog'
-import { AddExpenseFormErrors } from '~/utils/types'
+import { AddExpenseFormErrors, ExpenseWithCategory } from '~/utils/types'
 import { cxFormInput } from '~/utils'
 
 const MAX_CATEGORIES = 3
 
 type Props = {
   categories: Category[]
+  categoryMap: Map<string, string>
   onUpserted: () => unknown
+  initialData?: ExpenseWithCategory
 }
 
 const errorsReducer = (
@@ -30,7 +32,12 @@ const errorsReducer = (
   ...action,
 })
 
-export function UpsertExpenseDialog({ onUpserted, categories }: Props) {
+export function UpsertExpenseDialog({
+  onUpserted,
+  categories,
+  categoryMap,
+  initialData,
+}: Props) {
   const t = useTranslations()
   const fetcher = useFetcher()
   const { closeDialog } = useContext(DialogContext)
@@ -58,6 +65,23 @@ export function UpsertExpenseDialog({ onUpserted, categories }: Props) {
       closeDialog()
     }
   }, [fetcher.data])
+
+  useEffect(() => {
+    if (initialData?.categories) {
+      const initialTags = initialData.categories
+        .map(({ categoryId }) => {
+          const title = categoryMap.get(categoryId)
+          if (title) {
+            return {
+              id: categoryId,
+              text: categoryMap.get(categoryId) || '',
+            }
+          }
+        })
+        .filter((item) => item !== undefined)
+      setTags(initialTags as Tag[])
+    }
+  }, [])
 
   const onSubmit: FormEventHandler<HTMLFormElement> = (evt) => {
     evt.preventDefault()
@@ -92,6 +116,7 @@ export function UpsertExpenseDialog({ onUpserted, categories }: Props) {
           required
           className={cxFormInput({ hasError: formErrors.name })}
           name="name"
+          value={initialData?.title}
         />
       </label>
       <label>
@@ -100,6 +125,7 @@ export function UpsertExpenseDialog({ onUpserted, categories }: Props) {
           required
           name="amount"
           className={cxFormInput({ hasError: formErrors.amount })}
+          value={initialData?.amount.toString()}
         />
       </label>
       <label>
@@ -107,6 +133,7 @@ export function UpsertExpenseDialog({ onUpserted, categories }: Props) {
         <CurrencyInput
           className={cxFormInput({ hasError: formErrors.unit })}
           name="unit"
+          value={initialData?.unit.toString()}
         />
       </label>
       <label className="col-span-2">
@@ -115,6 +142,7 @@ export function UpsertExpenseDialog({ onUpserted, categories }: Props) {
           type="date"
           className={cxFormInput({ hasError: formErrors.date })}
           name="date"
+          value={initialData?.datetime.toString()}
         />
       </label>
       <label className="col-span-2">

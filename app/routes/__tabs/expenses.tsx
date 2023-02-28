@@ -7,20 +7,25 @@ import {
 import { useTranslations } from 'use-intl'
 import { AiOutlinePlus } from 'react-icons/ai'
 import { BiFilterAlt } from 'react-icons/bi'
-import { upsertExpense, getUserExpenses } from '~/models/expenses.server'
+import {
+  createExpense,
+  deleteExpense,
+  getUserExpenses,
+  updateExpense,
+} from '~/models/expenses.server'
 import { getUserId } from '~/session.server'
 import { NoData } from '~/components/no-data'
 import { ExpenseList } from '~/components/expense-list'
 import { typedjson } from 'remix-typedjson'
 import { useTypedLoaderData } from 'remix-typedjson/dist/remix'
-import { useContext, useEffect, useState } from 'react'
+import { useContext, useEffect, useMemo, useState } from 'react'
 import { DialogContext } from '~/providers/dialog'
 import { UpsertExpenseDialog } from '~/components/expense-add-dialog'
 import { ErrorCodes } from '~/utils/schemas'
 import { parseCategoryInput } from '~/utils'
 import { timeout } from '~/utils/timeout'
-import { AddExpenseFormErrors } from '~/utils/types'
-import { useActionData, useFetcher } from '@remix-run/react'
+import { AddExpenseFormErrors, ExpenseWithCategory } from '~/utils/types'
+import { useFetcher } from '@remix-run/react'
 import { Category } from '@prisma/client'
 
 export async function loader({ request }: LoaderArgs) {
@@ -45,6 +50,7 @@ export async function action({ request }: ActionArgs): Promise<
   const res = { method }
   if (method === 'POST') {
     const formData = await request.formData()
+    const id = formData.get('id')
     const name = formData.get('name')
     const amount = formData.get('amount')
     const unit = formData.get('unit')
@@ -103,23 +109,52 @@ export async function action({ request }: ActionArgs): Promise<
       if (!userId) {
         return json({ success: false, ...res }, { status: 403 })
       }
-      await upsertExpense(
-        {
-          title: name,
-          amount: parseFloat(amount.replace(/[^0-9]/g, '')),
-          unit: parseFloat(unit.replace(/[^0-9]/g, '')),
-          datetime: new Date(Date.parse(date)),
-          userId,
-        },
-        parsedCategories,
-      )
+
+      if (typeof id === 'string' && id !== '') {
+        await updateExpense(
+          {
+            id,
+            title: name,
+            amount: parseFloat(amount.replace(/[^0-9]/g, '')),
+            unit: parseFloat(unit.replace(/[^0-9]/g, '')),
+            datetime: new Date(Date.parse(date)),
+            userId,
+          },
+          parsedCategories,
+        )
+      } else {
+        await createExpense(
+          {
+            title: name,
+            amount: parseFloat(amount.replace(/[^0-9]/g, '')),
+            unit: parseFloat(unit.replace(/[^0-9]/g, '')),
+            datetime: new Date(Date.parse(date)),
+            userId,
+          },
+          parsedCategories,
+        )
+      }
     } catch (e) {
       return json({ success: false, ...res }, { status: 500 })
     }
 
     return json({ success: true, ...res }, { status: 200 })
   } else if (method === 'DELETE') {
-    // TODO handle delete
+    const formData = await request.formData()
+    const id = formData.get('id')
+    if (typeof id !== 'string' || id === '') {
+      return json(
+        { errors: { categories: ErrorCodes.INVALID_ID }, ...res },
+        { status: 400 },
+      )
+    }
+
+    try {
+      await deleteExpense(id)
+    } catch (e) {
+      return json({ success: false, ...res }, { status: 500 })
+    }
+    return json({ success: true, ...res }, { status: 200 })
   }
   return json({ success: false, ...res }, { status: 405 })
 }
@@ -144,6 +179,13 @@ export default function Expenses() {
     }
   }, [categoryFetcher.data])
 
+  const categoryMap = useMemo(() => new Map<string, string>(), [categories])
+  useEffect(() => {
+    categories.forEach(({ id, title }) => {
+      categoryMap.set(id, title)
+    })
+  }, [categories])
+
   const onExpenseUpserted = async (updated?: boolean) => {
     setUpsertText(updated ? t('expenses.created') : t('expenses.saved'))
     setShowUpsertToast(true)
@@ -156,6 +198,7 @@ export default function Expenses() {
       <UpsertExpenseDialog
         onUpserted={onExpenseUpserted}
         categories={categories}
+        categoryMap={categoryMap}
       />,
     )
   }
@@ -166,11 +209,13 @@ export default function Expenses() {
     setShowDeletedToast(false)
   }
 
-  const onEditExpense = () => {
+  const onEditExpense = (expense: ExpenseWithCategory) => {
     openDialog(
       <UpsertExpenseDialog
         onUpserted={() => onExpenseUpserted(true)}
         categories={categories}
+        categoryMap={categoryMap}
+        initialData={expense}
       />,
     )
   }
@@ -212,7 +257,7 @@ export default function Expenses() {
         expenses={expenses}
         renderDeleteToast={onExpenseDeleted}
         renderEditDialog={onEditExpense}
-        categories={categories}
+        categoryMap={categoryMap}
       />
     </div>
   )
