@@ -1,5 +1,6 @@
-import { Category } from '@prisma/client'
-import { createContext, PropsWithChildren } from 'react'
+import type { Category } from '@prisma/client'
+import type { PropsWithChildren } from 'react'
+import { createContext } from 'react'
 
 export const CategoryContext = createContext({
   list: [] as Category[],

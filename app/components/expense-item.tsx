@@ -1,6 +1,6 @@
 import { useTranslations } from 'use-intl'
 import { formatCurrency } from '~/utils'
-import { ExpenseWithCategory } from '~/utils/types'
+import type { ExpenseWithCategory } from '~/utils/types'
 import { BsTrash } from 'react-icons/bs'
 import { MdOutlineEdit } from 'react-icons/md'
 import { useFetcher } from '@remix-run/react'
@@ -26,7 +26,7 @@ export function ExpenseItem({
     if (fetcher.data?.method === 'delete' && fetcher.data.success) {
       renderDeleteToast()
     }
-  }, [fetcher.data])
+  }, [fetcher.data, renderDeleteToast])
 
   const onDelete = () => {
     fetcher.submit(null, { method: 'delete', action: '/expenses' })

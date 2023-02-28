@@ -4,7 +4,7 @@ import { Form, useNavigate, useOutletContext } from '@remix-run/react'
 import { useState } from 'react'
 import { cxWithFade } from '~/utils'
 import { timeout } from '~/utils/timeout'
-import { AuthContext } from '../__auth'
+import type { AuthContext } from '../__auth'
 
 export async function action({ request }: ActionArgs) {}
 

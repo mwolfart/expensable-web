@@ -1,9 +1,11 @@
-import {
+import type {
   ActionArgs,
-  json,
   LoaderArgs,
   TypedResponse,
 } from '@remix-run/server-runtime'
+import type { AddExpenseFormErrors, ExpenseWithCategory } from '~/utils/types'
+import type { Category } from '@prisma/client'
+import { json } from '@remix-run/server-runtime'
 import { useTranslations } from 'use-intl'
 import { AiOutlinePlus } from 'react-icons/ai'
 import { BiFilterAlt } from 'react-icons/bi'
@@ -24,9 +26,7 @@ import { UpsertExpenseDialog } from '~/components/expense-add-dialog'
 import { ErrorCodes } from '~/utils/schemas'
 import { parseCategoryInput } from '~/utils'
 import { timeout } from '~/utils/timeout'
-import { AddExpenseFormErrors, ExpenseWithCategory } from '~/utils/types'
 import { useFetcher } from '@remix-run/react'
-import { Category } from '@prisma/client'
 
 export async function loader({ request }: LoaderArgs) {
   const userId = await getUserId(request)
@@ -139,7 +139,8 @@ export async function action({ request }: ActionArgs): Promise<
     }
 
     return json({ success: true, ...res }, { status: 200 })
-  } else if (method === 'DELETE') {
+  }
+  if (method === 'DELETE') {
     const formData = await request.formData()
     const id = formData.get('id')
     if (typeof id !== 'string' || id === '') {
@@ -171,7 +172,7 @@ export default function Expenses() {
 
   useEffect(() => {
     categoryFetcher.load('/categories')
-  }, [])
+  }, [categoryFetcher])
 
   useEffect(() => {
     if (categoryFetcher.data?.categories) {
@@ -179,12 +180,13 @@ export default function Expenses() {
     }
   }, [categoryFetcher.data])
 
-  const categoryMap = useMemo(() => new Map<string, string>(), [categories])
+  const categoryMap = useMemo(() => new Map<string, string>(), [])
   useEffect(() => {
+    categoryMap.clear()
     categories.forEach(({ id, title }) => {
       categoryMap.set(id, title)
     })
-  }, [categories])
+  }, [categories, categoryMap])
 
   const onExpenseUpserted = async (updated?: boolean) => {
     setUpsertText(updated ? t('expenses.created') : t('expenses.saved'))

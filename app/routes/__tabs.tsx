@@ -1,4 +1,5 @@
-import { json, LoaderArgs, redirect } from '@remix-run/node'
+import type { LoaderArgs } from '@remix-run/node'
+import { json, redirect } from '@remix-run/node'
 import { Outlet, useLoaderData, useLocation, useSubmit } from '@remix-run/react'
 import { useTranslations } from 'use-intl'
 import { DialogProvider } from '~/providers/dialog'
@@ -9,7 +10,9 @@ import { AiOutlineShoppingCart } from 'react-icons/ai'
 
 export async function loader({ request }: LoaderArgs) {
   const userId = await getUserId(request)
-  if (!userId) return redirect('/login')
+  if (!userId) {
+    return redirect('/login')
+  }
   const user = await getUser(request)
   return json(user)
 }

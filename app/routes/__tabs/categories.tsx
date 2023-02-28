@@ -1,10 +1,10 @@
 import { useLoaderData } from '@remix-run/react'
-import {
+import type {
   ActionArgs,
-  json,
   LoaderArgs,
   TypedResponse,
 } from '@remix-run/server-runtime'
+import { json } from '@remix-run/server-runtime'
 import { useTranslations } from 'use-intl'
 import { getUserId } from '~/session.server'
 import {
@@ -66,7 +66,8 @@ export async function action({
       return json({ success: false, ...res }, { status: 500 })
     }
     return json({ success: true, ...res }, { status: 200 })
-  } else if (method === 'DELETE') {
+  }
+  if (method === 'DELETE') {
     const formData = await request.formData()
     const id = formData.get('id')
 
@@ -76,11 +77,12 @@ export async function action({
 
     try {
       await deleteCategory(id)
-      return json({ success: true, ...res }, { status: 200 })
     } catch (_) {
       return json({ success: false, ...res }, { status: 500 })
     }
-  } else if (method === 'PATCH') {
+    return json({ success: true, ...res }, { status: 200 })
+  }
+  if (method === 'PATCH') {
     const formData = await request.formData()
     const id = formData.get('id')
     const title = formData.get('title')

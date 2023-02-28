@@ -9,7 +9,7 @@ import {
   useOutletContext,
 } from '@remix-run/react'
 import { useEffect, useReducer, useState } from 'react'
-import { AuthContext } from '../__auth'
+import type { AuthContext } from '../__auth'
 import { cxFormInput, cxWithGrowFadeMd, getYupErrors } from '~/utils'
 import { useErrorMessages } from '~/hooks'
 import { ErrorCodes, userSchema } from '~/utils/schemas'
@@ -40,7 +40,7 @@ export async function action({
 
   try {
     await userSchema.validate({ email, password, name }, { abortEarly: false })
-  } catch (e: any) {
+  } catch (e) {
     const errors = getYupErrors(e)
     return json({ errors }, { status: 400 })
   }
@@ -116,7 +116,7 @@ export default function CreateUser() {
       }
     }
     parseAction()
-  }, [actionData])
+  }, [actionData, errorToString])
 
   const onGoToLogin = async () => {
     await transition()

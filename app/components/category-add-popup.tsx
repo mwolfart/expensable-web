@@ -1,5 +1,6 @@
 import { useFetcher } from '@remix-run/react'
-import { ChangeEvent, useEffect, useState } from 'react'
+import type { ChangeEvent } from 'react'
+import { useEffect, useState } from 'react'
 import { useTranslations } from 'use-intl'
 import { useErrorMessages } from '~/hooks'
 import { cxFormInput, cxWithDelayedFade, cxWithGrowMd, onEnter } from '~/utils'
@@ -32,7 +33,7 @@ export function AddCategoryPopup({ isOpen, setOpen }: Props) {
       }
     }
     handleAction()
-  }, [fetcher.data])
+  }, [errorToString, fetcher.data, setOpen])
 
   const onCancelAdd = () => {
     setTitle('')

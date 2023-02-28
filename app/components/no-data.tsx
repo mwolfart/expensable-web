@@ -1,4 +1,4 @@
-import { PropsWithChildren } from 'react'
+import type { PropsWithChildren } from 'react'
 import { useTranslations } from 'use-intl'
 import { FaMoneyCheck } from 'react-icons/fa'
 

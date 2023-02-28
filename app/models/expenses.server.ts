@@ -1,6 +1,6 @@
-import { Expense } from '@prisma/client'
+import type { Expense } from '@prisma/client'
 import { prisma } from '~/db.server'
-import { CategoryInputArray } from '~/utils/types'
+import type { CategoryInputArray } from '~/utils/types'
 
 export const getUserExpenses = (id: string) =>
   prisma.user.findUnique({

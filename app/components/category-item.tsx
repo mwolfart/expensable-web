@@ -1,6 +1,7 @@
-import { Category } from '@prisma/client'
+import type { Category } from '@prisma/client'
 import { useFetcher } from '@remix-run/react'
-import { KeyboardEventHandler, useEffect, useState } from 'react'
+import type { KeyboardEventHandler } from 'react'
+import { useEffect, useState } from 'react'
 import { BsTrash } from 'react-icons/bs'
 import { MdOutlineEdit } from 'react-icons/md'
 import { useTranslations } from 'use-intl'
@@ -32,7 +33,7 @@ export function CategoryItem({ category, renderDeleteToast }: Props) {
       }
     }
     handleAction()
-  }, [fetcher.data])
+  }, [fetcher.data, renderDeleteToast])
 
   const onEdit = () => {
     setEditing(true)

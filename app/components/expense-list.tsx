@@ -1,4 +1,4 @@
-import { ExpenseWithCategory } from '~/utils/types'
+import type { ExpenseWithCategory } from '~/utils/types'
 import { ExpenseItem } from './expense-item'
 
 type Props = {

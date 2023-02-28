@@ -1,4 +1,4 @@
-import { Category } from '@prisma/client'
+import type { Category } from '@prisma/client'
 import { CategoryItem } from './category-item'
 
 type Props = {
@@ -20,6 +20,7 @@ export function CategoryList({ query, categories, renderDeleteToast }: Props) {
             />
           )
         }
+        return null
       })}
     </div>
   )

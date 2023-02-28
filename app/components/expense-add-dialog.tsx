@@ -1,18 +1,13 @@
-import {
-  FormEventHandler,
-  MouseEventHandler,
-  useContext,
-  useEffect,
-  useReducer,
-  useState,
-} from 'react'
+import type { FormEventHandler, MouseEventHandler } from 'react'
+import { useContext, useEffect, useReducer, useState } from 'react'
 import { useTranslations } from 'use-intl'
 import { CurrencyInput } from './currency-input'
-import { WithContext as ReactTags, Tag } from 'react-tag-input'
+import type { Tag } from 'react-tag-input'
+import { WithContext as ReactTags } from 'react-tag-input'
 import { Form, useFetcher } from '@remix-run/react'
-import { Category } from '@prisma/client'
+import type { Category } from '@prisma/client'
 import { DialogContext } from '~/providers/dialog'
-import { AddExpenseFormErrors, ExpenseWithCategory } from '~/utils/types'
+import type { AddExpenseFormErrors, ExpenseWithCategory } from '~/utils/types'
 import { cxFormInput } from '~/utils'
 
 const MAX_CATEGORIES = 3
@@ -64,7 +59,7 @@ export function UpsertExpenseDialog({
       onUpserted()
       closeDialog()
     }
-  }, [fetcher.data])
+  }, [closeDialog, fetcher.data, onUpserted])
 
   useEffect(() => {
     if (initialData?.categories) {
@@ -77,11 +72,12 @@ export function UpsertExpenseDialog({
               text: categoryMap.get(categoryId) || '',
             }
           }
+          return null
         })
-        .filter((item) => item !== undefined)
+        .filter((item) => item !== null)
       setTags(initialTags as Tag[])
     }
-  }, [])
+  }, [categoryMap, initialData?.categories])
 
   const onSubmit: FormEventHandler<HTMLFormElement> = (evt) => {
     evt.preventDefault()

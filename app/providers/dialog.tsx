@@ -1,10 +1,5 @@
-import {
-  createContext,
-  FC,
-  PropsWithChildren,
-  ReactNode,
-  useState,
-} from 'react'
+import type { FC, PropsWithChildren, ReactNode } from 'react'
+import { createContext, useState } from 'react'
 
 export const DialogContext = createContext({
   openDialog: (_children: ReactNode) => {},

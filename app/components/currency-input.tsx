@@ -1,4 +1,5 @@
-import { ChangeEventHandler, InputHTMLAttributes, useState } from 'react'
+import type { ChangeEventHandler, InputHTMLAttributes } from 'react'
+import { useState } from 'react'
 
 type Props = {
   value?: string

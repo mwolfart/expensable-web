@@ -15,7 +15,7 @@ import { useTranslations } from 'use-intl'
 import { cxFormInput, cxWithFade, getYupErrors } from '~/utils'
 import { useErrorMessages } from '~/hooks'
 import { ErrorCodes, loginSchema } from '~/utils/schemas'
-import { AuthContext } from '../__auth'
+import type { AuthContext } from '../__auth'
 
 type FormErrors = { email?: string; password?: string }
 
@@ -33,7 +33,7 @@ export async function action({ request }: ActionArgs) {
 
   try {
     await loginSchema.validate({ email, password }, { abortEarly: false })
-  } catch (e: any) {
+  } catch (e) {
     const errors = getYupErrors(e) as FormErrors
     return json({ errors }, { status: 400 })
   }
@@ -90,7 +90,7 @@ export default function Login() {
       }
     }
     parseAction()
-  }, [actionData])
+  }, [actionData, errorToString])
 
   const onGoToCreateAccount = async () => {
     await transition()
