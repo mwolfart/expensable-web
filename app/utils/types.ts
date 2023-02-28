@@ -1,4 +1,4 @@
-import { CategoriesOnExpense, Expense } from '@prisma/client'
+import type { CategoriesOnExpense, Expense } from '@prisma/client'
 
 export type ExpenseWithCategory = Expense & {
   categories: CategoriesOnExpense[]

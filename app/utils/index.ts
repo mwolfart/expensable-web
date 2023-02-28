@@ -1,6 +1,6 @@
+import type { CategoryInputArray } from './types'
+import type { KeyboardEvent } from 'react'
 import cx from 'classnames'
-import { KeyboardEvent } from 'react'
-import { CategoryInputArray } from './types'
 
 export const cxWithFade = (baseClasses: string, active?: boolean) => {
   return cx(
@@ -48,8 +48,10 @@ export const cxFormInput = ({
   )
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const getYupErrors = (yupError: any) => {
   const errorArray = yupError.inner.map(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ({ path, errors: [code] }: any): { path: string; code: string } => ({
       path,
       code,

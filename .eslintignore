@@ -2,6 +2,7 @@
 *.config.ts
 *.setup.js
 *.setup.ts
+.eslint.js
 public/build
 mocks
 cypress

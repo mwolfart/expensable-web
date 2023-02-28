@@ -8,11 +8,11 @@ import { json } from '@remix-run/server-runtime'
 import { useTranslations } from 'use-intl'
 import { getUserId } from '~/session.server'
 import {
-  getCategoryByTitle,
   createCategory,
   deleteCategory,
-  updateCategory,
+  getCategoryByTitle,
   getUserCategories,
+  updateCategory,
 } from '~/models/category.server'
 import { NoData } from '~/components/no-data'
 import { useState } from 'react'

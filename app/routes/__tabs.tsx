@@ -5,7 +5,7 @@ import { useTranslations } from 'use-intl'
 import { DialogProvider } from '~/providers/dialog'
 import { getUser, getUserId } from '~/session.server'
 import { MdOutlineCategory } from 'react-icons/md'
-import { GoGraph, GoCreditCard } from 'react-icons/go'
+import { GoCreditCard, GoGraph } from 'react-icons/go'
 import { AiOutlineShoppingCart } from 'react-icons/ai'
 
 export async function loader({ request }: LoaderArgs) {
