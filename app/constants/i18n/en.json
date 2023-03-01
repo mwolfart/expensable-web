@@ -72,6 +72,6 @@
         "add": "New expense",
         "created": "Expense created successfully!",
         "deleted": "Expense deleted successfully!",
-        "saved": "Expense saved successfully!",
+        "saved": "Expense saved successfully!"
     }
 }

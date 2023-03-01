@@ -171,7 +171,9 @@ export default function Expenses() {
   const [upsertText, setUpsertText] = useState('')
 
   useEffect(() => {
-    categoryFetcher.load('/categories')
+    if (categoryFetcher.state === 'idle' && !categoryFetcher.data) {
+      categoryFetcher.load('/categories')
+    }
   }, [categoryFetcher])
 
   useEffect(() => {
