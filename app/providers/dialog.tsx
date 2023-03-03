@@ -1,4 +1,4 @@
-import { FC, PropsWithChildren, ReactNode, useMemo } from 'react'
+import { FC, PropsWithChildren, ReactNode, useCallback, useMemo } from 'react'
 import { createContext, useState } from 'react'
 
 export const DialogContext = createContext({
@@ -10,12 +10,12 @@ export const DialogProvider: FC<PropsWithChildren> = ({ children }) => {
   const [isOpen, setOpen] = useState(false)
   const [content, setContent] = useState<ReactNode>()
 
-  const openDialog = (dialogContent: ReactNode) => {
+  const openDialog = useCallback((dialogContent: ReactNode) => {
     setOpen(true)
     setContent(dialogContent)
-  }
+  }, [])
 
-  const closeDialog = () => setOpen(false)
+  const closeDialog = useCallback(() => setOpen(false), [])
 
   return (
     <DialogContext.Provider value={{ openDialog, closeDialog }}>

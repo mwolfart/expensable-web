@@ -25,7 +25,7 @@ import { UpsertExpenseDialog } from '~/components/expense-upsert-dialog'
 import { ErrorCodes } from '~/utils/schemas'
 import { parseCategoryInput } from '~/utils'
 import { timeout } from '~/utils/timeout'
-import { useFetcher } from '@remix-run/react'
+import { useFetcher, useRevalidator } from '@remix-run/react'
 
 export async function loader({ request }: LoaderArgs) {
   const userId = await getUserId(request)
@@ -163,6 +163,7 @@ export default function Expenses() {
   const t = useTranslations()
   const { openDialog } = useContext(DialogContext)
   const categoryFetcher = useFetcher()
+  const revalidator = useRevalidator()
   const [categories, setCategories] = useState<Category[]>([])
   const [showUpsertToast, setShowUpsertToast] = useState(false)
   const [showDeletedToast, setShowDeletedToast] = useState(false)
@@ -188,6 +189,7 @@ export default function Expenses() {
 
   const onExpenseUpserted = async (updated?: boolean) => {
     setUpsertText(updated ? t('expenses.saved') : t('expenses.created'))
+    revalidator.revalidate()
     setShowUpsertToast(true)
     await timeout(3000)
     setShowUpsertToast(false)
