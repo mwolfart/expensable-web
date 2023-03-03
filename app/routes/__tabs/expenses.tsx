@@ -5,7 +5,6 @@ import type {
 } from '@remix-run/server-runtime'
 import type { AddExpenseFormErrors, ExpenseWithCategory } from '~/utils/types'
 import type { Category } from '@prisma/client'
-import { json } from '@remix-run/server-runtime'
 import { useTranslations } from 'use-intl'
 import { AiOutlinePlus } from 'react-icons/ai'
 import { BiFilterAlt } from 'react-icons/bi'
@@ -22,7 +21,7 @@ import { typedjson } from 'remix-typedjson'
 import { useTypedLoaderData } from 'remix-typedjson/dist/remix'
 import { useContext, useEffect, useMemo, useState } from 'react'
 import { DialogContext } from '~/providers/dialog'
-import { UpsertExpenseDialog } from '~/components/expense-add-dialog'
+import { UpsertExpenseDialog } from '~/components/expense-upsert-dialog'
 import { ErrorCodes } from '~/utils/schemas'
 import { parseCategoryInput } from '~/utils'
 import { timeout } from '~/utils/timeout'
@@ -33,7 +32,7 @@ export async function loader({ request }: LoaderArgs) {
   if (userId) {
     const data = await getUserExpenses(userId)
     if (data) {
-      return typedjson({ expenses: data.expenses })
+      return typedjson({ expenses: data })
     }
   }
   return typedjson({ expenses: [] })
@@ -48,7 +47,7 @@ export async function action({ request }: ActionArgs): Promise<
 > {
   const { method } = request
   const res = { method }
-  if (method === 'POST') {
+  if (method === 'PUT') {
     const formData = await request.formData()
     const id = formData.get('id')
     const name = formData.get('name')
@@ -58,35 +57,35 @@ export async function action({ request }: ActionArgs): Promise<
     const categories = formData.get('categories')
 
     if (typeof name !== 'string' || !name.length) {
-      return json(
+      return typedjson(
         { errors: { name: ErrorCodes.NAME_REQUIRED }, ...res },
         { status: 400 },
       )
     }
 
     if (typeof amount !== 'string' || !amount.length) {
-      return json(
+      return typedjson(
         { errors: { amount: ErrorCodes.AMOUNT_REQUIRED }, ...res },
         { status: 400 },
       )
     }
 
     if (typeof unit !== 'string') {
-      return json(
+      return typedjson(
         { errors: { unit: ErrorCodes.BAD_FORMAT }, ...res },
         { status: 400 },
       )
     }
 
     if (typeof date !== 'string' || isNaN(Date.parse(date))) {
-      return json(
+      return typedjson(
         { errors: { date: ErrorCodes.BAD_DATE_FORMAT }, ...res },
         { status: 400 },
       )
     }
 
     if (typeof categories !== 'undefined' && typeof categories !== 'string') {
-      return json(
+      return typedjson(
         { errors: { categories: ErrorCodes.BAD_CATEGORY_DATA }, ...res },
         { status: 400 },
       )
@@ -97,7 +96,7 @@ export async function action({ request }: ActionArgs): Promise<
       try {
         parsedCategories = parseCategoryInput(categories)
       } catch (_) {
-        return json(
+        return typedjson(
           { errors: { categories: ErrorCodes.BAD_CATEGORY_DATA }, ...res },
           { status: 400 },
         )
@@ -107,7 +106,7 @@ export async function action({ request }: ActionArgs): Promise<
     try {
       const userId = await getUserId(request)
       if (!userId) {
-        return json({ success: false, ...res }, { status: 403 })
+        return typedjson({ success: false, ...res }, { status: 403 })
       }
 
       if (typeof id === 'string' && id !== '') {
@@ -135,16 +134,15 @@ export async function action({ request }: ActionArgs): Promise<
         )
       }
     } catch (e) {
-      return json({ success: false, ...res }, { status: 500 })
+      return typedjson({ success: false, ...res }, { status: 500 })
     }
-
-    return json({ success: true, ...res }, { status: 200 })
+    return typedjson({ success: true, ...res }, { status: 200 })
   }
   if (method === 'DELETE') {
     const formData = await request.formData()
     const id = formData.get('id')
     if (typeof id !== 'string' || id === '') {
-      return json(
+      return typedjson(
         { errors: { categories: ErrorCodes.INVALID_ID }, ...res },
         { status: 400 },
       )
@@ -153,11 +151,11 @@ export async function action({ request }: ActionArgs): Promise<
     try {
       await deleteExpense(id)
     } catch (e) {
-      return json({ success: false, ...res }, { status: 500 })
+      return typedjson({ success: false, ...res }, { status: 500 })
     }
-    return json({ success: true, ...res }, { status: 200 })
+    return typedjson({ success: true, ...res }, { status: 200 })
   }
-  return json({ success: false, ...res }, { status: 405 })
+  return typedjson({ success: false, ...res }, { status: 405 })
 }
 
 export default function Expenses() {
@@ -169,6 +167,7 @@ export default function Expenses() {
   const [showUpsertToast, setShowUpsertToast] = useState(false)
   const [showDeletedToast, setShowDeletedToast] = useState(false)
   const [upsertText, setUpsertText] = useState('')
+  const categoryMap = useMemo(() => new Map<string, string>(), [])
 
   useEffect(() => {
     if (categoryFetcher.state === 'idle' && !categoryFetcher.data) {
@@ -178,20 +177,17 @@ export default function Expenses() {
 
   useEffect(() => {
     if (categoryFetcher.data?.categories) {
-      setCategories(categoryFetcher.data.categories)
+      const fetchedCategories = categoryFetcher.data.categories as Category[]
+      setCategories(fetchedCategories)
+      categoryMap.clear()
+      fetchedCategories.forEach(({ id, title }) => {
+        categoryMap.set(id, title)
+      })
     }
-  }, [categoryFetcher.data])
-
-  const categoryMap = useMemo(() => new Map<string, string>(), [])
-  useEffect(() => {
-    categoryMap.clear()
-    categories.forEach(({ id, title }) => {
-      categoryMap.set(id, title)
-    })
-  }, [categories, categoryMap])
+  }, [categoryFetcher.data, categoryMap])
 
   const onExpenseUpserted = async (updated?: boolean) => {
-    setUpsertText(updated ? t('expenses.created') : t('expenses.saved'))
+    setUpsertText(updated ? t('expenses.saved') : t('expenses.created'))
     setShowUpsertToast(true)
     await timeout(3000)
     setShowUpsertToast(false)

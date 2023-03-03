@@ -29,17 +29,27 @@ export function ExpenseItem({
   }, [fetcher.data, renderDeleteToast])
 
   const onDelete = () => {
-    fetcher.submit(null, { method: 'delete', action: '/expenses' })
+    fetcher.submit(
+      { id: expense.id },
+      { method: 'delete', action: '/expenses' },
+    )
   }
 
   const onEdit = () => {
     renderEditDialog(expense)
   }
 
+  const date = expense.datetime
+    .toISOString()
+    .substring(0, 10)
+    .split('-')
+    .reverse()
+    .join('/')
+
   return (
     <div className="grid items-center gap-2 bg-foreground py-4 sm:grid-cols-2">
       <p className="text-md font-semibold">{expense.title}</p>
-      <p className="sm:text-right">{expense.datetime.toLocaleDateString()}</p>
+      <p className="sm:text-right">{date}</p>
       <div>
         <p>{formatCurrency(expense.amount)}</p>
         {expense.unit && (
@@ -49,20 +59,31 @@ export function ExpenseItem({
         )}
       </div>
       <div className="flex flex-row flex-wrap gap-2 sm:justify-end">
-        {expense.categories.map(({ categoryId }) => (
-          <span
-            key={expense.id + categoryId}
-            className="inline rounded bg-light-grey p-1 text-xs font-semibold uppercase"
-          >
-            {categoryMap.get(categoryId)}
-          </span>
-        ))}
+        {expense.categories.map(({ categoryId }) => {
+          const catLabel = categoryMap.get(categoryId)
+          return (
+            catLabel && (
+              <span
+                key={expense.id + categoryId}
+                className="inline rounded bg-light-grey p-1 text-xs font-semibold uppercase"
+              >
+                {catLabel}
+              </span>
+            )
+          )
+        })}
       </div>
       <div className="flex justify-end gap-4 sm:col-span-2">
-        <button className="btn-outline btn-primary min-h-8 btn hidden h-10 w-24 sm:block">
+        <button
+          className="btn-outline btn-primary min-h-8 btn hidden h-10 w-24 sm:block"
+          onClick={onEdit}
+        >
           {t('common.edit')}
         </button>
-        <button className="btn-outline btn-primary min-h-8 btn hidden h-10 w-24 sm:block">
+        <button
+          className="btn-outline btn-primary min-h-8 btn hidden h-10 w-24 sm:block"
+          onClick={onDelete}
+        >
           {t('common.delete')}
         </button>
         <button

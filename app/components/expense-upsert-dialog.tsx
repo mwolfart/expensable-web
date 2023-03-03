@@ -5,10 +5,10 @@ import { CurrencyInput } from './currency-input'
 import type { Tag } from 'react-tag-input'
 import { WithContext as ReactTags } from 'react-tag-input'
 import { Form, useFetcher } from '@remix-run/react'
-import type { Category } from '@prisma/client'
+import type { Category, Expense } from '@prisma/client'
 import { DialogContext } from '~/providers/dialog'
 import type { AddExpenseFormErrors, ExpenseWithCategory } from '~/utils/types'
-import { cxFormInput } from '~/utils'
+import { cxFormInput, formatCurrency } from '~/utils'
 
 const MAX_CATEGORIES = 3
 
@@ -82,8 +82,11 @@ export function UpsertExpenseDialog({
   const onSubmit: FormEventHandler<HTMLFormElement> = (evt) => {
     evt.preventDefault()
     const data = new FormData(evt.currentTarget)
+    if (initialData) {
+      data.set('id', initialData.id)
+    }
     data.set('categories', JSON.stringify(tags))
-    fetcher.submit(data, { method: 'post', action: '/expenses' })
+    fetcher.submit(data, { method: 'put', action: '/expenses' })
   }
 
   const onCategoryDelete = (id: number) => {
@@ -100,6 +103,10 @@ export function UpsertExpenseDialog({
     evt.preventDefault()
   }
 
+  const initialAmount =
+    initialData?.amount && formatCurrency(initialData?.amount)
+  const initialUnit = initialData?.unit && formatCurrency(initialData?.unit)
+
   return (
     <Form
       className="grid grid-cols-2 gap-4 p-8"
@@ -112,7 +119,7 @@ export function UpsertExpenseDialog({
           required
           className={cxFormInput({ hasError: formErrors.name })}
           name="name"
-          value={initialData?.title}
+          defaultValue={initialData?.title}
         />
       </label>
       <label>
@@ -121,7 +128,7 @@ export function UpsertExpenseDialog({
           required
           name="amount"
           className={cxFormInput({ hasError: formErrors.amount })}
-          value={initialData?.amount.toString()}
+          value={initialAmount?.toString()}
         />
       </label>
       <label>
@@ -129,7 +136,7 @@ export function UpsertExpenseDialog({
         <CurrencyInput
           className={cxFormInput({ hasError: formErrors.unit })}
           name="unit"
-          value={initialData?.unit.toString()}
+          value={initialUnit?.toString()}
         />
       </label>
       <label className="col-span-2">
@@ -138,7 +145,7 @@ export function UpsertExpenseDialog({
           type="date"
           className={cxFormInput({ hasError: formErrors.date })}
           name="date"
-          value={initialData?.datetime.toString()}
+          defaultValue={initialData?.datetime.toISOString().substring(0, 10)}
         />
       </label>
       <label className="col-span-2">

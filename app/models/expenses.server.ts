@@ -3,16 +3,12 @@ import { prisma } from '~/db.server'
 import type { CategoryInputArray } from '~/utils/types'
 
 export const getUserExpenses = (id: string) =>
-  prisma.user.findUnique({
-    select: {
-      expenses: {
-        include: {
-          categories: true,
-        },
-      },
+  prisma.expense.findMany({
+    include: {
+      categories: true,
     },
     where: {
-      id,
+      userId: id,
     },
   })
 
@@ -106,13 +102,25 @@ export const updateExpense = async (
   expense: Expense,
   categories?: CategoryInputArray,
 ) => {
+  const { id, ...payload } = expense
+  const originalCategories = await prisma.categoriesOnExpense.findMany({
+    where: {
+      expenseId: id,
+    },
+  })
+  const removedCategories = originalCategories.filter(
+    (before) => !categories?.find((after) => after.id == before.categoryId),
+  )
   const expenseRes = await prisma.expense.update({
     where: {
       id: expense.id,
     },
-    data: expense,
+    data: payload,
   })
-  const categoriesRes = categories?.map(({ id }) =>
+  const removedCatRes = removedCategories.map(({ id }) =>
+    prisma.categoriesOnExpense.delete({ where: { id } }),
+  )
+  const addedCatRes = categories?.map(({ id }) =>
     prisma.categoriesOnExpense.upsert({
       where: {
         expenseId_categoryId: {
@@ -130,8 +138,11 @@ export const updateExpense = async (
       },
     }),
   )
-  if (categoriesRes) {
-    await Promise.all(categoriesRes)
+  if (addedCatRes) {
+    await Promise.all(addedCatRes)
+  }
+  if (removedCatRes) {
+    await Promise.all(removedCatRes)
   }
   return expenseRes
 }
