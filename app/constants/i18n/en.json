@@ -10,6 +10,7 @@
         "search": "Search",
         "cancel": "Cancel",
         "ok": "OK",
+        "apply": "Apply",
         "edit": "Edit",
         "rename": "Rename",
         "delete": "Delete",
@@ -20,6 +21,8 @@
         "unit": "Unit amount",
         "categories": "Categories",
         "date": "Date",
+        "start-date": "Start date",
+        "end-date": "End date",
         "optional-field": "{field} (optional)",
         "each": "{value}/ea",
         "errors": {

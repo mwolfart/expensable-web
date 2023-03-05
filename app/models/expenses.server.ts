@@ -16,12 +16,12 @@ type Filters = {
   title?: string
   startDate?: Date
   endDate?: Date
-  categoryId?: string
+  categoriesIds?: string[]
 }
 
 export const getUserExpensesByFilter = (
   userId: string,
-  { title, startDate, endDate, categoryId }: Filters,
+  { title, startDate, endDate, categoriesIds }: Filters,
 ) => {
   const datetime = {
     ...(startDate && { lte: startDate }),
@@ -29,14 +29,14 @@ export const getUserExpensesByFilter = (
   }
   const categories = {
     some: {
-      id: categoryId,
+      OR: categoriesIds?.map((catId) => ({ categoryId: catId })),
     },
   }
   const where = {
     userId,
     ...(title && { title }),
     ...(startDate || (endDate && { datetime })),
-    ...(categoryId && { categories }),
+    ...(categoriesIds && { categories }),
   }
   return prisma.expense.findMany({
     where,
@@ -49,8 +49,10 @@ export const getUserExpensesByFilter = (
 export const getUserExpensesByQuery = (userId: string, text: string) =>
   getUserExpensesByFilter(userId, { title: text })
 
-export const getUserExpensesByCategory = (userId: string, categoryId: string) =>
-  getUserExpensesByFilter(userId, { categoryId })
+export const getUserExpensesByCategories = (
+  userId: string,
+  categoriesIds: string[],
+) => getUserExpensesByFilter(userId, { categoriesIds })
 
 export const getUserExpensesByDateInterval = (
   userId: string,

@@ -26,6 +26,14 @@ export const cxWithGrowMd = (baseClasses: string, active?: boolean) => {
   )
 }
 
+export const cxWithGrowFadeLg = (baseClasses: string, active?: boolean) => {
+  return cx(
+    `${baseClasses} transition-height-fade duration-700`,
+    !active && 'max-h-0 opacity-0 invisible',
+    active && 'max-h-96 opacity-1 visible',
+  )
+}
+
 export const cxWithDelayedFade = (baseClasses: string, active?: boolean) => {
   return cx(
     `${baseClasses} transition duration-500`,

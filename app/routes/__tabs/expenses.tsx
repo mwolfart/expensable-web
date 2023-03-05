@@ -23,9 +23,11 @@ import { useContext, useEffect, useMemo, useState } from 'react'
 import { DialogContext } from '~/providers/dialog'
 import { UpsertExpenseDialog } from '~/components/expense-upsert-dialog'
 import { ErrorCodes } from '~/utils/schemas'
-import { parseCategoryInput } from '~/utils'
+import { cxWithGrowFadeLg, parseCategoryInput } from '~/utils'
 import { timeout } from '~/utils/timeout'
 import { useFetcher, useRevalidator } from '@remix-run/react'
+import cx from 'classnames'
+import { ExpenseFilters } from '~/components/expense-filters'
 
 export async function loader({ request }: LoaderArgs) {
   const userId = await getUserId(request)
@@ -165,6 +167,7 @@ export default function Expenses() {
   const categoryFetcher = useFetcher()
   const revalidator = useRevalidator()
   const [categories, setCategories] = useState<Category[]>([])
+  const [showFilters, setShowFilters] = useState(false)
   const [showUpsertToast, setShowUpsertToast] = useState(false)
   const [showDeletedToast, setShowDeletedToast] = useState(false)
   const [upsertText, setUpsertText] = useState('')
@@ -234,14 +237,17 @@ export default function Expenses() {
     </div>
   )
 
+  const cxFilterButton = cx('btn-primary btn transition btn-outline')
+
   return (
     <div className="m-8 mt-0 flex flex-grow flex-col gap-2 md:mt-4 md:gap-4">
       {showUpsertToast && UpsertToast}
       {showDeletedToast && DeletedToast}
       <div className="flex justify-between">
         <button
-          className="btn-outline btn-primary btn"
+          className={cxFilterButton}
           aria-label={t('common.filters')}
+          onClick={() => setShowFilters(!showFilters)}
         >
           <BiFilterAlt size={24} />
         </button>
@@ -249,6 +255,9 @@ export default function Expenses() {
           <div className="hidden sm:block">{t('expenses.add')}</div>
           <AiOutlinePlus className="block text-white sm:hidden" size={24} />
         </button>
+      </div>
+      <div className={cxWithGrowFadeLg('hidden md:block', showFilters)}>
+        <ExpenseFilters onApplyFilters={() => {}} />
       </div>
       {!expenses.length && (
         <NoData>
