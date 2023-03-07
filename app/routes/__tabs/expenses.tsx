@@ -225,6 +225,19 @@ export default function Expenses() {
     )
   }
 
+  const FiltersBlock = <ExpenseFilters onApplyFilters={() => {}} />
+  const MobileFiltersDialog = (
+    <div className="fixed inset-0 flex flex-col justify-center gap-4 bg-foreground p-16 sm:px-24 md:hidden">
+      {FiltersBlock}
+      <button
+        className="btn-outline btn-primary btn"
+        onClick={() => setShowFilters(false)}
+      >
+        {t('common.cancel')}
+      </button>
+    </div>
+  )
+
   const UpsertToast = (
     <div className="toast">
       <div className="alert alert-success">{upsertText}</div>
@@ -243,6 +256,7 @@ export default function Expenses() {
     <div className="m-8 mt-0 flex flex-grow flex-col gap-2 md:mt-4 md:gap-4">
       {showUpsertToast && UpsertToast}
       {showDeletedToast && DeletedToast}
+      {showFilters && MobileFiltersDialog}
       <div className="flex justify-between">
         <button
           className={cxFilterButton}
@@ -257,7 +271,7 @@ export default function Expenses() {
         </button>
       </div>
       <div className={cxWithGrowFadeLg('hidden md:block', showFilters)}>
-        <ExpenseFilters onApplyFilters={() => {}} />
+        {FiltersBlock}
       </div>
       {!expenses.length && (
         <NoData>
