@@ -44,6 +44,7 @@
     "react-dnd-html5-backend": "^14.0.0",
     "react-dom": "^18.2.0",
     "react-icons": "^4.7.1",
+    "react-select": "^5.7.0",
     "react-tag-input": "^6.8.1",
     "remix-typedjson": "^0.1.7",
     "tiny-invariant": "^1.3.1",

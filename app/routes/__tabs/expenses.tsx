@@ -225,7 +225,9 @@ export default function Expenses() {
     )
   }
 
-  const FiltersBlock = <ExpenseFilters onApplyFilters={() => {}} />
+  const FiltersBlock = (
+    <ExpenseFilters onApplyFilters={() => {}} categories={categories} />
+  )
   const MobileFiltersDialog = (
     <div className="fixed inset-0 flex flex-col justify-center gap-4 bg-foreground p-16 sm:px-24 md:hidden">
       {FiltersBlock}
