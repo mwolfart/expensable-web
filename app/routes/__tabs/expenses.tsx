@@ -168,6 +168,7 @@ export default function Expenses() {
   const revalidator = useRevalidator()
   const [categories, setCategories] = useState<Category[]>([])
   const [showFilters, setShowFilters] = useState(false)
+  const [filterApplied, setFilterApplied] = useState(false)
   const [showUpsertToast, setShowUpsertToast] = useState(false)
   const [showDeletedToast, setShowDeletedToast] = useState(false)
   const [upsertText, setUpsertText] = useState('')
@@ -225,9 +226,19 @@ export default function Expenses() {
     )
   }
 
+  const onApplyFilters = (formData: FormData) => {
+    setFilterApplied(true)
+    const queries = [...formData.entries()]
+    const fullQuery = queries
+      .map(([field, value]) => `${field}=${value}`)
+      .join('&')
+    console.log(fullQuery)
+  }
+
   const FiltersBlock = (
-    <ExpenseFilters onApplyFilters={() => {}} categories={categories} />
+    <ExpenseFilters onApplyFilters={onApplyFilters} categories={categories} />
   )
+
   const MobileFiltersDialog = (
     <div className="fixed inset-0 flex flex-col justify-center gap-4 bg-foreground p-16 sm:px-24 md:hidden">
       {FiltersBlock}
@@ -252,7 +263,10 @@ export default function Expenses() {
     </div>
   )
 
-  const cxFilterButton = cx('btn-primary btn transition btn-outline')
+  const cxFilterButton = cx(
+    'btn-primary btn transition',
+    !filterApplied && 'btn-outline',
+  )
 
   return (
     <div className="m-8 mt-0 flex flex-grow flex-col gap-2 md:mt-4 md:gap-4">
