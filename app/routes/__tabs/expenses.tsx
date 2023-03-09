@@ -10,6 +10,8 @@ import { useTranslations } from 'use-intl'
 import { AiOutlinePlus } from 'react-icons/ai'
 import { BiFilterAlt } from 'react-icons/bi'
 import {
+  countUserExpenses,
+  countUserExpensesByFilter,
   createExpense,
   deleteExpense,
   getUserExpenses,
@@ -44,6 +46,8 @@ export async function loader({ request }: LoaderArgs) {
   const userId = await getUserId(request)
   if (userId) {
     const url = new URL(request.url)
+    const limit = parseInt(url.searchParams.get('limit') as string)
+    const offset = parseInt(url.searchParams.get('offset') as string)
     const filter = {
       title: url.searchParams.get('title'),
       startDate: url.searchParams.get('startDate'),
@@ -51,23 +55,31 @@ export async function loader({ request }: LoaderArgs) {
       categoriesIds: url.searchParams.get('categories'),
     }
     if (!areAllValuesEmpty(filter)) {
-      const data = await getUserExpensesByFilter(userId, {
+      const parsedFilter = {
         title: filter.title,
         startDate: filter.startDate ? new Date(filter.startDate) : null,
         endDate: filter.endDate ? new Date(filter.endDate) : null,
         categoriesIds: filter.categoriesIds?.split(','),
-      })
+      }
+      const count = await countUserExpensesByFilter(userId, parsedFilter)
+      const data = await getUserExpensesByFilter(
+        userId,
+        parsedFilter,
+        offset,
+        limit,
+      )
       if (data) {
-        return typedjson({ expenses: data })
+        return typedjson({ expenses: data, total: count })
       }
     } else {
-      const data = await getUserExpenses(userId)
+      const count = await countUserExpenses(userId)
+      const data = await getUserExpenses(userId, offset, limit)
       if (data) {
-        return typedjson({ expenses: data })
+        return typedjson({ expenses: data, total: count })
       }
     }
   }
-  return typedjson({ expenses: [] })
+  return typedjson({ expenses: [], total: 0 })
 }
 
 export async function action({ request }: ActionArgs): Promise<
@@ -191,11 +203,12 @@ export async function action({ request }: ActionArgs): Promise<
 }
 
 export default function Expenses() {
-  const { expenses } = useTypedLoaderData<typeof loader>()
+  const { expenses, total } = useTypedLoaderData<typeof loader>()
   const t = useTranslations()
   const categoryFetcher = useFetcher()
   const revalidator = useRevalidator()
   const navigate = useNavigate()
+
   const [params] = useSearchParams()
   const [startDate, endDate] = [params.get('startDate'), params.get('endDate')]
   const filters = {
@@ -206,6 +219,13 @@ export default function Expenses() {
   }
   const filterApplied = !areAllValuesEmpty(filters)
 
+  const offset = parseInt(params.get('offset') as string) || 0
+  const limit = parseInt(params.get('limit') as string) || 50
+  const totalPages = Math.ceil(total / limit)
+  const currentPage = Math.floor(offset / limit)
+  const hasPrev = currentPage > 0
+  const hasNext = currentPage < totalPages - 1
+
   const { openDialog } = useContext(DialogContext)
   const [categories, setCategories] = useState<Category[]>([])
   const [showFilters, setShowFilters] = useState(false)
@@ -213,14 +233,6 @@ export default function Expenses() {
   const [showDeletedToast, setShowDeletedToast] = useState(false)
   const [upsertText, setUpsertText] = useState('')
   const categoryMap = useMemo(() => new Map<string, string>(), [])
-
-  useEffect(() => {
-    if (!params.get('limit')) {
-      const newSearchParams = new URLSearchParams(params)
-      newSearchParams.append('limit', '50')
-      navigate(`/expenses?${newSearchParams}`)
-    }
-  }, [navigate, params])
 
   useEffect(() => {
     if (categoryFetcher.state === 'idle' && !categoryFetcher.data) {
@@ -275,14 +287,13 @@ export default function Expenses() {
   }
 
   const onApplyFilters = (formData: FormData) => {
-    const currentLimit = params.get('limit')
     const queries = [...formData.entries()]
     const fullQuery = queries
       .filter(([_, value]) => Boolean(value))
       .map(([field, value]) => `${field}=${value}`)
       .join('&')
     setShowFilters(false)
-    navigate(`/expenses?${fullQuery}&limit=${currentLimit}`)
+    navigate(`/expenses?${fullQuery}&limit=${limit}`)
   }
 
   const onClearFilters = () => {
@@ -297,6 +308,24 @@ export default function Expenses() {
     } else {
       newSearchParams.append('limit', evt.target.value)
     }
+    navigate(`/expenses?${newSearchParams}`)
+  }
+
+  const goToPrevPage = () => {
+    const newSearchParams = new URLSearchParams(params)
+    newSearchParams.set('offset', ((currentPage - 1) * limit).toString())
+    navigate(`/expenses?${newSearchParams}`)
+  }
+
+  const goToNextPage = () => {
+    const newSearchParams = new URLSearchParams(params)
+    newSearchParams.set('offset', ((currentPage + 1) * limit).toString())
+    navigate(`/expenses?${newSearchParams}`)
+  }
+
+  const goToPage = (pageNo: string) => {
+    const newSearchParams = new URLSearchParams(params)
+    newSearchParams.set('offset', (parseInt(pageNo) * limit).toString())
     navigate(`/expenses?${newSearchParams}`)
   }
 
@@ -379,12 +408,42 @@ export default function Expenses() {
           <p>{t('expenses.try-adding')}</p>
         </NoData>
       )}
-      <ExpenseList
-        expenses={expenses}
-        renderDeleteToast={onExpenseDeleted}
-        renderEditDialog={onEditExpense}
-        categoryMap={categoryMap}
-      />
+      {!!expenses.length && (
+        <>
+          <ExpenseList
+            expenses={expenses}
+            renderDeleteToast={onExpenseDeleted}
+            renderEditDialog={onEditExpense}
+            categoryMap={categoryMap}
+          />
+          <div className="flex justify-center gap-4">
+            <button
+              className="btn-outline btn-primary btn"
+              disabled={!hasPrev}
+              onClick={goToPrevPage}
+            >
+              {t('common.previous')}
+            </button>
+            <select
+              className="input"
+              onChange={(evt) => goToPage(evt.target.value)}
+            >
+              {Array.from({ length: totalPages }, (_, id) => (
+                <option key={id} id={id.toString()}>
+                  {t('common.page-n', { number: id + 1 })}
+                </option>
+              ))}
+            </select>
+            <button
+              className="btn-outline btn-primary btn"
+              disabled={!hasNext}
+              onClick={goToNextPage}
+            >
+              {t('common.next')}
+            </button>
+          </div>
+        </>
+      )}
     </div>
   )
 }

@@ -25,6 +25,9 @@
         "start-date": "Start date",
         "end-date": "End date",
         "entries": "Entries per page: ",
+        "previous": "Previous",
+        "next": "Next", 
+        "page-n": "Page {number}",
         "optional-field": "{field} (optional)",
         "each": "{value}/ea",
         "errors": {

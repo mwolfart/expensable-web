@@ -3,6 +3,7 @@
 const colors = {
   primary: "#ef4444",
   'primary-focus': '#c22015',
+  'primary-disabled': '#606060',
   secondary: '#faa460',
   black: '#475569',
   foreground: "#fff7ed",

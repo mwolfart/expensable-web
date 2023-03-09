@@ -2,7 +2,9 @@ import type { Expense } from '@prisma/client'
 import { prisma } from '~/db.server'
 import type { CategoryInputArray, ExpenseFilters } from '~/utils/types'
 
-export const getUserExpenses = (id: string) =>
+export const EXPENSES_DEFAULT_LIMIT = 50
+
+export const getUserExpenses = (id: string, offset?: number, limit?: number) =>
   prisma.expense.findMany({
     include: {
       categories: true,
@@ -10,9 +12,22 @@ export const getUserExpenses = (id: string) =>
     where: {
       userId: id,
     },
+    skip: offset || 0,
+    take: limit || EXPENSES_DEFAULT_LIMIT,
+    orderBy: {
+      datetime: 'asc',
+    },
   })
 
-export const getUserExpensesByFilter = (
+// TODO: Prisma does not currently support counting along with fetching. Change this in the future to use only one query
+export const countUserExpenses = (id: string) =>
+  prisma.expense.count({
+    where: {
+      userId: id,
+    },
+  })
+
+const getWhereClauseFromFilter = (
   userId: string,
   { title, startDate, endDate, categoriesIds }: ExpenseFilters,
 ) => {
@@ -25,16 +40,46 @@ export const getUserExpensesByFilter = (
       OR: categoriesIds?.map((catId) => ({ categoryId: catId })),
     },
   }
+
   const where = {
     userId,
-    ...(title && { title }),
+    ...(title && { title: { contains: title } }),
     ...((startDate || endDate) && { datetime }),
     ...(categoriesIds && { categories }),
   }
+  return where
+}
+
+export const getUserExpensesByFilter = (
+  userId: string,
+  filters: ExpenseFilters,
+  offset?: number,
+  limit?: number,
+) => {
+  const where = getWhereClauseFromFilter(userId, filters)
   return prisma.expense.findMany({
     where,
     include: {
       categories: true,
+    },
+    skip: offset || 0,
+    take: limit || EXPENSES_DEFAULT_LIMIT,
+    orderBy: {
+      datetime: 'asc',
+    },
+  })
+}
+
+// TODO: Prisma does not currently support counting along with fetching. Change this in the future to use only one query
+export const countUserExpensesByFilter = (
+  userId: string,
+  filters: ExpenseFilters,
+) => {
+  const where = getWhereClauseFromFilter(userId, filters)
+  return prisma.expense.count({
+    where,
+    orderBy: {
+      datetime: 'asc',
     },
   })
 }
