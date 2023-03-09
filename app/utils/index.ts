@@ -99,3 +99,6 @@ export const formatCurrency = (amount: number) => {
   const currency = 'R$'
   return `${currency} ${(amount / 100).toFixed(2)}`
 }
+
+export const areAllValuesEmpty = (filter: { [key: string]: unknown }) =>
+  Object.values(filter).every((v) => !v)

@@ -1,19 +1,40 @@
 import type { FormEventHandler } from 'react'
 import type { Category } from '@prisma/client'
+import type { ExpenseFilters } from '~/utils/types'
+import { useEffect } from 'react'
 import { useState } from 'react'
 import { useTranslations } from 'use-intl'
 import Select, { components } from 'react-select'
 
 type Props = {
   onApplyFilters: (formData: FormData) => void
+  onClearFilters: () => void
+  categoryMap: Map<string, string>
   categories: Category[]
+  initialFilters?: ExpenseFilters
 }
 
 type SelectOption = { value: string; label: string }
 
-export function ExpenseFilters({ onApplyFilters, categories }: Props) {
+export function ExpenseFilterComponent({
+  onApplyFilters,
+  onClearFilters,
+  categoryMap,
+  categories,
+  initialFilters,
+}: Props) {
   const t = useTranslations()
   const [selectedOptions, setSelectedOptions] = useState<SelectOption[]>([])
+
+  useEffect(() => {
+    if (initialFilters?.categoriesIds) {
+      const initialOptions = initialFilters.categoriesIds.map((catId) => ({
+        value: catId,
+        label: categoryMap.get(catId) || '',
+      }))
+      setSelectedOptions(initialOptions)
+    }
+  }, [categoryMap, initialFilters])
 
   const catOptions = categories.map((c) => ({ value: c.id, label: c.title }))
 
@@ -34,17 +55,32 @@ export function ExpenseFilters({ onApplyFilters, categories }: Props) {
     >
       <label className="md:max-3xl:col-span-2">
         {t('common.title')}
-        <input className="input" name="title" placeholder={t('common.title')} />
+        <input
+          className="input"
+          name="title"
+          placeholder={t('common.title')}
+          defaultValue={initialFilters?.title || ''}
+        />
       </label>
       <label>
         {t('common.start-date')}
-        <input className="input" name="startDate" type="date" />
+        <input
+          className="input"
+          name="startDate"
+          type="date"
+          defaultValue={initialFilters?.startDate?.toISOString().slice(0, 10)}
+        />
       </label>
       <label>
         {t('common.end-date')}
-        <input className="input" name="endDate" type="date" />
+        <input
+          className="input"
+          name="endDate"
+          type="date"
+          defaultValue={initialFilters?.endDate?.toISOString().slice(0, 10)}
+        />
       </label>
-      <label className="md:max-3xl:col-span-3 md:max-3xl:row-start-2">
+      <label className="md:max-3xl:row-start-2 md:max-lg:col-span-2 lg:max-3xl:col-span-3">
         {t('common.categories')}
         <Select
           isMulti
@@ -59,8 +95,17 @@ export function ExpenseFilters({ onApplyFilters, categories }: Props) {
           }}
         />
       </label>
-      <div className="flex flex-col justify-end">
-        <button className="btn-primary btn">{t('common.apply')}</button>
+      <div className="flex w-full flex-row items-end gap-4 md:max-lg:col-span-2">
+        <button className="btn-primary btn flex-grow">
+          {t('common.apply')}
+        </button>
+        <button
+          type="button"
+          className="btn-outline btn-primary btn flex-grow"
+          onClick={onClearFilters}
+        >
+          {t('common.clear')}
+        </button>
       </div>
     </form>
   )

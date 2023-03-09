@@ -12,6 +12,7 @@ import {
   createExpense,
   deleteExpense,
   getUserExpenses,
+  getUserExpensesByFilter,
   updateExpense,
 } from '~/models/expenses.server'
 import { getUserId } from '~/session.server'
@@ -23,18 +24,46 @@ import { useContext, useEffect, useMemo, useState } from 'react'
 import { DialogContext } from '~/providers/dialog'
 import { UpsertExpenseDialog } from '~/components/expense-upsert-dialog'
 import { ErrorCodes } from '~/utils/schemas'
-import { cxWithGrowFadeLg, parseCategoryInput } from '~/utils'
+import {
+  areAllValuesEmpty,
+  cxWithGrowFadeLg,
+  parseCategoryInput,
+} from '~/utils'
 import { timeout } from '~/utils/timeout'
-import { useFetcher, useRevalidator } from '@remix-run/react'
+import {
+  useFetcher,
+  useNavigate,
+  useRevalidator,
+  useSearchParams,
+} from '@remix-run/react'
 import cx from 'classnames'
-import { ExpenseFilters } from '~/components/expense-filters'
+import { ExpenseFilterComponent } from '~/components/expense-filters'
 
 export async function loader({ request }: LoaderArgs) {
   const userId = await getUserId(request)
   if (userId) {
-    const data = await getUserExpenses(userId)
-    if (data) {
-      return typedjson({ expenses: data })
+    const url = new URL(request.url)
+    const filter = {
+      title: url.searchParams.get('title'),
+      startDate: url.searchParams.get('startDate'),
+      endDate: url.searchParams.get('endDate'),
+      categoriesIds: url.searchParams.get('categories'),
+    }
+    if (!areAllValuesEmpty(filter)) {
+      const data = await getUserExpensesByFilter(userId, {
+        title: filter.title,
+        startDate: filter.startDate ? new Date(filter.startDate) : null,
+        endDate: filter.endDate ? new Date(filter.endDate) : null,
+        categoriesIds: filter.categoriesIds?.split(','),
+      })
+      if (data) {
+        return typedjson({ expenses: data })
+      }
+    } else {
+      const data = await getUserExpenses(userId)
+      if (data) {
+        return typedjson({ expenses: data })
+      }
     }
   }
   return typedjson({ expenses: [] })
@@ -163,12 +192,22 @@ export async function action({ request }: ActionArgs): Promise<
 export default function Expenses() {
   const { expenses } = useTypedLoaderData<typeof loader>()
   const t = useTranslations()
-  const { openDialog } = useContext(DialogContext)
   const categoryFetcher = useFetcher()
   const revalidator = useRevalidator()
+  const navigate = useNavigate()
+  const [params] = useSearchParams()
+  const [startDate, endDate] = [params.get('startDate'), params.get('endDate')]
+  const filters = {
+    title: params.get('title'),
+    startDate: startDate ? new Date(startDate) : null,
+    endDate: endDate ? new Date(endDate) : null,
+    categoriesIds: params.get('categoriesIds')?.split(','),
+  }
+  const filterApplied = !areAllValuesEmpty(filters)
+
+  const { openDialog } = useContext(DialogContext)
   const [categories, setCategories] = useState<Category[]>([])
   const [showFilters, setShowFilters] = useState(false)
-  const [filterApplied, setFilterApplied] = useState(false)
   const [showUpsertToast, setShowUpsertToast] = useState(false)
   const [showDeletedToast, setShowDeletedToast] = useState(false)
   const [upsertText, setUpsertText] = useState('')
@@ -227,28 +266,23 @@ export default function Expenses() {
   }
 
   const onApplyFilters = (formData: FormData) => {
-    setFilterApplied(true)
     const queries = [...formData.entries()]
     const fullQuery = queries
+      .filter(([_, value]) => Boolean(value))
       .map(([field, value]) => `${field}=${value}`)
       .join('&')
-    console.log(fullQuery)
+    setShowFilters(false)
+    navigate(`/expenses?${fullQuery}`)
   }
 
-  const FiltersBlock = (
-    <ExpenseFilters onApplyFilters={onApplyFilters} categories={categories} />
-  )
+  const onClearFilters = () => {
+    setShowFilters(false)
+    navigate('/expenses')
+  }
 
-  const MobileFiltersDialog = (
-    <div className="fixed inset-0 flex flex-col justify-center gap-4 bg-foreground p-16 sm:px-24 md:hidden">
-      {FiltersBlock}
-      <button
-        className="btn-outline btn-primary btn"
-        onClick={() => setShowFilters(false)}
-      >
-        {t('common.cancel')}
-      </button>
-    </div>
+  const cxFilterButton = cx(
+    'btn-primary btn transition',
+    !filterApplied && 'btn-outline',
   )
 
   const UpsertToast = (
@@ -262,10 +296,26 @@ export default function Expenses() {
       <div className="alert alert-info">{t('expenses.deleted')}</div>
     </div>
   )
+  const FiltersBlock = (
+    <ExpenseFilterComponent
+      onApplyFilters={onApplyFilters}
+      onClearFilters={onClearFilters}
+      categories={categories}
+      categoryMap={categoryMap}
+      initialFilters={filters}
+    />
+  )
 
-  const cxFilterButton = cx(
-    'btn-primary btn transition',
-    !filterApplied && 'btn-outline',
+  const MobileFiltersDialog = (
+    <div className="fixed inset-0 flex flex-col justify-center gap-4 bg-foreground p-16 sm:px-24 md:hidden">
+      {FiltersBlock}
+      <button
+        className="btn-outline btn-primary btn"
+        onClick={() => setShowFilters(false)}
+      >
+        {t('common.cancel')}
+      </button>
+    </div>
   )
 
   return (

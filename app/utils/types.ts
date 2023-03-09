@@ -13,3 +13,10 @@ export type AddExpenseFormErrors = {
   date?: string
   categories?: string
 }
+
+export type ExpenseFilters = {
+  title?: string | null
+  startDate?: Date | null
+  endDate?: Date | null
+  categoriesIds?: string[] | null
+}

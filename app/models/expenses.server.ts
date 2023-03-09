@@ -1,6 +1,6 @@
 import type { Expense } from '@prisma/client'
 import { prisma } from '~/db.server'
-import type { CategoryInputArray } from '~/utils/types'
+import type { CategoryInputArray, ExpenseFilters } from '~/utils/types'
 
 export const getUserExpenses = (id: string) =>
   prisma.expense.findMany({
@@ -12,16 +12,9 @@ export const getUserExpenses = (id: string) =>
     },
   })
 
-type Filters = {
-  title?: string
-  startDate?: Date
-  endDate?: Date
-  categoriesIds?: string[]
-}
-
 export const getUserExpensesByFilter = (
   userId: string,
-  { title, startDate, endDate, categoriesIds }: Filters,
+  { title, startDate, endDate, categoriesIds }: ExpenseFilters,
 ) => {
   const datetime = {
     ...(startDate && { lte: startDate }),
@@ -35,7 +28,7 @@ export const getUserExpensesByFilter = (
   const where = {
     userId,
     ...(title && { title }),
-    ...(startDate || (endDate && { datetime })),
+    ...((startDate || endDate) && { datetime }),
     ...(categoriesIds && { categories }),
   }
   return prisma.expense.findMany({
