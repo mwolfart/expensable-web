@@ -24,6 +24,7 @@
         "date": "Date",
         "start-date": "Start date",
         "end-date": "End date",
+        "entries": "Entries per page: ",
         "optional-field": "{field} (optional)",
         "each": "{value}/ea",
         "errors": {

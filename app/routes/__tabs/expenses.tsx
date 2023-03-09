@@ -5,6 +5,7 @@ import type {
 } from '@remix-run/server-runtime'
 import type { AddExpenseFormErrors, ExpenseWithCategory } from '~/utils/types'
 import type { Category } from '@prisma/client'
+import type { ChangeEvent } from 'react'
 import { useTranslations } from 'use-intl'
 import { AiOutlinePlus } from 'react-icons/ai'
 import { BiFilterAlt } from 'react-icons/bi'
@@ -214,6 +215,14 @@ export default function Expenses() {
   const categoryMap = useMemo(() => new Map<string, string>(), [])
 
   useEffect(() => {
+    if (!params.get('limit')) {
+      const newSearchParams = new URLSearchParams(params)
+      newSearchParams.append('limit', '50')
+      navigate(`/expenses?${newSearchParams}`)
+    }
+  }, [navigate, params])
+
+  useEffect(() => {
     if (categoryFetcher.state === 'idle' && !categoryFetcher.data) {
       categoryFetcher.load('/categories')
     }
@@ -266,18 +275,29 @@ export default function Expenses() {
   }
 
   const onApplyFilters = (formData: FormData) => {
+    const currentLimit = params.get('limit')
     const queries = [...formData.entries()]
     const fullQuery = queries
       .filter(([_, value]) => Boolean(value))
       .map(([field, value]) => `${field}=${value}`)
       .join('&')
     setShowFilters(false)
-    navigate(`/expenses?${fullQuery}`)
+    navigate(`/expenses?${fullQuery}&limit=${currentLimit}`)
   }
 
   const onClearFilters = () => {
     setShowFilters(false)
     navigate('/expenses')
+  }
+
+  const onChangeLimit = (evt: ChangeEvent<HTMLSelectElement>) => {
+    const newSearchParams = new URLSearchParams(params)
+    if (newSearchParams.get('limit')) {
+      newSearchParams.set('limit', evt.target.value)
+    } else {
+      newSearchParams.append('limit', evt.target.value)
+    }
+    navigate(`/expenses?${newSearchParams}`)
   }
 
   const cxFilterButton = cx(
@@ -323,14 +343,29 @@ export default function Expenses() {
       {showUpsertToast && UpsertToast}
       {showDeletedToast && DeletedToast}
       {showFilters && MobileFiltersDialog}
-      <div className="flex justify-between">
-        <button
-          className={cxFilterButton}
-          aria-label={t('common.filters')}
-          onClick={() => setShowFilters(!showFilters)}
-        >
-          <BiFilterAlt size={24} />
-        </button>
+      <div className="flex items-end justify-between">
+        <div className="flex items-end gap-4">
+          <button
+            className={cxFilterButton}
+            aria-label={t('common.filters')}
+            onClick={() => setShowFilters(!showFilters)}
+          >
+            <BiFilterAlt size={24} />
+          </button>
+          <label>
+            {t('common.entries')}
+            <select
+              className="input"
+              onChange={onChangeLimit}
+              defaultValue={params.get('limit') || 50}
+            >
+              <option id="10">10</option>
+              <option id="20">20</option>
+              <option id="50">50</option>
+              <option id="100">100</option>
+            </select>
+          </label>
+        </div>
         <button className="btn-primary btn" onClick={onAddExpense}>
           <div className="hidden sm:block">{t('expenses.add')}</div>
           <AiOutlinePlus className="block text-white sm:hidden" size={24} />
