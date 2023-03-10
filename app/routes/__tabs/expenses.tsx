@@ -207,7 +207,6 @@ export default function Expenses() {
   const t = useTranslations()
   const categoryFetcher = useFetcher()
   const revalidator = useRevalidator()
-  const navigate = useNavigate()
 
   const [params] = useSearchParams()
   const [startDate, endDate] = [params.get('startDate'), params.get('endDate')]
@@ -217,14 +216,6 @@ export default function Expenses() {
     endDate: endDate ? new Date(endDate) : null,
     categoriesIds: params.get('categoriesIds')?.split(','),
   }
-  const filterApplied = !areAllValuesEmpty(filters)
-
-  const offset = parseInt(params.get('offset') as string) || 0
-  const limit = parseInt(params.get('limit') as string) || 50
-  const totalPages = Math.ceil(total / limit)
-  const currentPage = Math.floor(offset / limit)
-  const hasPrev = currentPage > 0
-  const hasNext = currentPage < totalPages - 1
 
   const { openDialog } = useContext(DialogContext)
   const [categories, setCategories] = useState<Category[]>([])
@@ -286,54 +277,6 @@ export default function Expenses() {
     )
   }
 
-  const onApplyFilters = (formData: FormData) => {
-    const queries = [...formData.entries()]
-    const fullQuery = queries
-      .filter(([_, value]) => Boolean(value))
-      .map(([field, value]) => `${field}=${value}`)
-      .join('&')
-    setShowFilters(false)
-    navigate(`/expenses?${fullQuery}&limit=${limit}`)
-  }
-
-  const onClearFilters = () => {
-    setShowFilters(false)
-    navigate('/expenses')
-  }
-
-  const onChangeLimit = (evt: ChangeEvent<HTMLSelectElement>) => {
-    const newSearchParams = new URLSearchParams(params)
-    if (newSearchParams.get('limit')) {
-      newSearchParams.set('limit', evt.target.value)
-    } else {
-      newSearchParams.append('limit', evt.target.value)
-    }
-    navigate(`/expenses?${newSearchParams}`)
-  }
-
-  const goToPrevPage = () => {
-    const newSearchParams = new URLSearchParams(params)
-    newSearchParams.set('offset', ((currentPage - 1) * limit).toString())
-    navigate(`/expenses?${newSearchParams}`)
-  }
-
-  const goToNextPage = () => {
-    const newSearchParams = new URLSearchParams(params)
-    newSearchParams.set('offset', ((currentPage + 1) * limit).toString())
-    navigate(`/expenses?${newSearchParams}`)
-  }
-
-  const goToPage = (pageNo: string) => {
-    const newSearchParams = new URLSearchParams(params)
-    newSearchParams.set('offset', (parseInt(pageNo) * limit).toString())
-    navigate(`/expenses?${newSearchParams}`)
-  }
-
-  const cxFilterButton = cx(
-    'btn-primary btn transition',
-    !filterApplied && 'btn-outline',
-  )
-
   const UpsertToast = (
     <div className="toast">
       <div className="alert alert-success">{upsertText}</div>
@@ -345,6 +288,7 @@ export default function Expenses() {
       <div className="alert alert-info">{t('expenses.deleted')}</div>
     </div>
   )
+
   const FiltersBlock = (
     <ExpenseFilterComponent
       onApplyFilters={onApplyFilters}
@@ -355,23 +299,11 @@ export default function Expenses() {
     />
   )
 
-  const MobileFiltersDialog = (
-    <div className="fixed inset-0 flex flex-col justify-center gap-4 bg-foreground p-16 sm:px-24 md:hidden">
-      {FiltersBlock}
-      <button
-        className="btn-outline btn-primary btn"
-        onClick={() => setShowFilters(false)}
-      >
-        {t('common.cancel')}
-      </button>
-    </div>
-  )
-
   return (
-    <div className="m-8 mt-0 flex flex-grow flex-col gap-2 md:mt-4 md:gap-4">
+    <div className="m-8 mt-0 md:mt-4">
       {showUpsertToast && UpsertToast}
       {showDeletedToast && DeletedToast}
-      {showFilters && MobileFiltersDialog}
+      {/* {showFilters && MobileFiltersDialog} */}
       <div className="flex items-end justify-between">
         <div className="flex items-end gap-4">
           <button
