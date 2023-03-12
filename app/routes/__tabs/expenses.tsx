@@ -5,7 +5,6 @@ import type {
 } from '@remix-run/server-runtime'
 import type { AddExpenseFormErrors, ExpenseWithCategory } from '~/utils/types'
 import type { Category } from '@prisma/client'
-import type { ChangeEvent } from 'react'
 import { useTranslations } from 'use-intl'
 import { AiOutlinePlus } from 'react-icons/ai'
 import { BiFilterAlt } from 'react-icons/bi'
@@ -33,14 +32,13 @@ import {
   parseCategoryInput,
 } from '~/utils'
 import { timeout } from '~/utils/timeout'
-import {
-  useFetcher,
-  useNavigate,
-  useRevalidator,
-  useSearchParams,
-} from '@remix-run/react'
+import { useFetcher, useRevalidator, useSearchParams } from '@remix-run/react'
 import cx from 'classnames'
 import { ExpenseFilterComponent } from '~/components/expense-filters'
+import { usePagination } from '~/hooks/use-pagination'
+import { useFilter } from '~/hooks/use-filter'
+import { PaginationButtons } from '~/components/pagination-buttons'
+import { MobileCancelDialog } from '~/components/mobile-cancel-dialog'
 
 export async function loader({ request }: LoaderArgs) {
   const userId = await getUserId(request)
@@ -207,24 +205,15 @@ export default function Expenses() {
   const t = useTranslations()
   const categoryFetcher = useFetcher()
   const revalidator = useRevalidator()
-  const navigate = useNavigate()
 
   const [params] = useSearchParams()
   const [startDate, endDate] = [params.get('startDate'), params.get('endDate')]
-  const filters = {
+  const appliedFilters = {
     title: params.get('title'),
     startDate: startDate ? new Date(startDate) : null,
     endDate: endDate ? new Date(endDate) : null,
     categoriesIds: params.get('categoriesIds')?.split(','),
   }
-  const filterApplied = !areAllValuesEmpty(filters)
-
-  const offset = parseInt(params.get('offset') as string) || 0
-  const limit = parseInt(params.get('limit') as string) || 50
-  const totalPages = Math.ceil(total / limit)
-  const currentPage = Math.floor(offset / limit)
-  const hasPrev = currentPage > 0
-  const hasNext = currentPage < totalPages - 1
 
   const { openDialog } = useContext(DialogContext)
   const [categories, setCategories] = useState<Category[]>([])
@@ -233,6 +222,9 @@ export default function Expenses() {
   const [showDeletedToast, setShowDeletedToast] = useState(false)
   const [upsertText, setUpsertText] = useState('')
   const categoryMap = useMemo(() => new Map<string, string>(), [])
+
+  const pagination = usePagination({ url: '/expenses', total })
+  const filter = useFilter({ url: '/expenses' })
 
   useEffect(() => {
     if (categoryFetcher.state === 'idle' && !categoryFetcher.data) {
@@ -286,52 +278,19 @@ export default function Expenses() {
     )
   }
 
-  const onApplyFilters = (formData: FormData) => {
-    const queries = [...formData.entries()]
-    const fullQuery = queries
-      .filter(([_, value]) => Boolean(value))
-      .map(([field, value]) => `${field}=${value}`)
-      .join('&')
-    setShowFilters(false)
-    navigate(`/expenses?${fullQuery}&limit=${limit}`)
-  }
-
-  const onClearFilters = () => {
-    setShowFilters(false)
-    navigate('/expenses')
-  }
-
-  const onChangeLimit = (evt: ChangeEvent<HTMLSelectElement>) => {
-    const newSearchParams = new URLSearchParams(params)
-    if (newSearchParams.get('limit')) {
-      newSearchParams.set('limit', evt.target.value)
-    } else {
-      newSearchParams.append('limit', evt.target.value)
-    }
-    navigate(`/expenses?${newSearchParams}`)
-  }
-
-  const goToPrevPage = () => {
-    const newSearchParams = new URLSearchParams(params)
-    newSearchParams.set('offset', ((currentPage - 1) * limit).toString())
-    navigate(`/expenses?${newSearchParams}`)
-  }
-
-  const goToNextPage = () => {
-    const newSearchParams = new URLSearchParams(params)
-    newSearchParams.set('offset', ((currentPage + 1) * limit).toString())
-    navigate(`/expenses?${newSearchParams}`)
-  }
-
-  const goToPage = (pageNo: string) => {
-    const newSearchParams = new URLSearchParams(params)
-    newSearchParams.set('offset', (parseInt(pageNo) * limit).toString())
-    navigate(`/expenses?${newSearchParams}`)
-  }
-
   const cxFilterButton = cx(
     'btn-primary btn transition',
-    !filterApplied && 'btn-outline',
+    !filter.isFilterApplied && 'btn-outline',
+  )
+
+  const FiltersBlock = (
+    <ExpenseFilterComponent
+      onApplyFilters={filter.onApplyFilters}
+      onClearFilters={filter.onClearFilters}
+      categories={categories}
+      categoryMap={categoryMap}
+      initialFilters={appliedFilters}
+    />
   )
 
   const UpsertToast = (
@@ -345,33 +304,17 @@ export default function Expenses() {
       <div className="alert alert-info">{t('expenses.deleted')}</div>
     </div>
   )
-  const FiltersBlock = (
-    <ExpenseFilterComponent
-      onApplyFilters={onApplyFilters}
-      onClearFilters={onClearFilters}
-      categories={categories}
-      categoryMap={categoryMap}
-      initialFilters={filters}
-    />
-  )
-
-  const MobileFiltersDialog = (
-    <div className="fixed inset-0 flex flex-col justify-center gap-4 bg-foreground p-16 sm:px-24 md:hidden">
-      {FiltersBlock}
-      <button
-        className="btn-outline btn-primary btn"
-        onClick={() => setShowFilters(false)}
-      >
-        {t('common.cancel')}
-      </button>
-    </div>
-  )
 
   return (
-    <div className="m-8 mt-0 flex flex-grow flex-col gap-2 md:mt-4 md:gap-4">
+    <div className="m-8 mt-0 md:mt-4">
       {showUpsertToast && UpsertToast}
       {showDeletedToast && DeletedToast}
-      {showFilters && MobileFiltersDialog}
+      {showFilters && (
+        <MobileCancelDialog
+          content={FiltersBlock}
+          onClose={() => setShowFilters(false)}
+        />
+      )}
       <div className="flex items-end justify-between">
         <div className="flex items-end gap-4">
           <button
@@ -385,7 +328,7 @@ export default function Expenses() {
             {t('common.entries')}
             <select
               className="input"
-              onChange={onChangeLimit}
+              onChange={pagination.onChangeLimit}
               defaultValue={params.get('limit') || 50}
             >
               <option id="10">10</option>
@@ -416,32 +359,7 @@ export default function Expenses() {
             renderEditDialog={onEditExpense}
             categoryMap={categoryMap}
           />
-          <div className="flex justify-center gap-4">
-            <button
-              className="btn-outline btn-primary btn"
-              disabled={!hasPrev}
-              onClick={goToPrevPage}
-            >
-              {t('common.previous')}
-            </button>
-            <select
-              className="input"
-              onChange={(evt) => goToPage(evt.target.value)}
-            >
-              {Array.from({ length: totalPages }, (_, id) => (
-                <option key={id} id={id.toString()}>
-                  {t('common.page-n', { number: id + 1 })}
-                </option>
-              ))}
-            </select>
-            <button
-              className="btn-outline btn-primary btn"
-              disabled={!hasNext}
-              onClick={goToNextPage}
-            >
-              {t('common.next')}
-            </button>
-          </div>
+          <PaginationButtons total={total} {...pagination} />
         </>
       )}
     </div>
