@@ -7,7 +7,6 @@ import type { AddExpenseFormErrors, ExpenseWithCategory } from '~/utils/types'
 import type { Category } from '@prisma/client'
 import { useTranslations } from 'use-intl'
 import { AiOutlinePlus } from 'react-icons/ai'
-import { BiFilterAlt } from 'react-icons/bi'
 import {
   countUserExpenses,
   countUserExpensesByFilter,
@@ -39,6 +38,9 @@ import { usePagination } from '~/hooks/use-pagination'
 import { useFilter } from '~/hooks/use-filter'
 import { PaginationButtons } from '~/components/pagination-buttons'
 import { MobileCancelDialog } from '~/components/mobile-cancel-dialog'
+import { Toast } from '~/components/toast'
+import { PaginationLimitSelect } from '~/components/pagination-limit-select'
+import { FilterButton } from '~/components/filter-button'
 
 export async function loader({ request }: LoaderArgs) {
   const userId = await getUserId(request)
@@ -278,11 +280,6 @@ export default function Expenses() {
     )
   }
 
-  const cxFilterButton = cx(
-    'btn-primary btn transition',
-    !filter.isFilterApplied && 'btn-outline',
-  )
-
   const FiltersBlock = (
     <ExpenseFilterComponent
       onApplyFilters={filter.onApplyFilters}
@@ -293,22 +290,14 @@ export default function Expenses() {
     />
   )
 
-  const UpsertToast = (
-    <div className="toast">
-      <div className="alert alert-success">{upsertText}</div>
-    </div>
-  )
-
-  const DeletedToast = (
-    <div className="toast">
-      <div className="alert alert-info">{t('expenses.deleted')}</div>
-    </div>
-  )
-
   return (
     <div className="m-8 mt-0 md:mt-4">
-      {showUpsertToast && UpsertToast}
-      {showDeletedToast && DeletedToast}
+      {showUpsertToast && (
+        <Toast message={upsertText} severity="alert-success" />
+      )}
+      {showDeletedToast && (
+        <Toast message={t('expenses.deleted')} severity="alert-info" />
+      )}
       {showFilters && (
         <MobileCancelDialog
           content={FiltersBlock}
@@ -317,33 +306,18 @@ export default function Expenses() {
       )}
       <div className="flex items-end justify-between">
         <div className="flex items-end gap-4">
-          <button
-            className={cxFilterButton}
-            aria-label={t('common.filters')}
+          <FilterButton
             onClick={() => setShowFilters(!showFilters)}
-          >
-            <BiFilterAlt size={24} />
-          </button>
-          <label>
-            {t('common.entries')}
-            <select
-              className="input"
-              onChange={pagination.onChangeLimit}
-              defaultValue={params.get('limit') || 50}
-            >
-              <option id="10">10</option>
-              <option id="20">20</option>
-              <option id="50">50</option>
-              <option id="100">100</option>
-            </select>
-          </label>
+            isFilterApplied={filter.isFilterApplied}
+          />
+          <PaginationLimitSelect onChangeLimit={pagination.onChangeLimit} />
         </div>
         <button className="btn-primary btn" onClick={onAddExpense}>
           <div className="hidden sm:block">{t('expenses.add')}</div>
           <AiOutlinePlus className="block text-white sm:hidden" size={24} />
         </button>
       </div>
-      <div className={cxWithGrowFadeLg('hidden md:block', showFilters)}>
+      <div className={cxWithGrowFadeLg('my-4 hidden md:block', showFilters)}>
         {FiltersBlock}
       </div>
       {!expenses.length && (
