@@ -5,7 +5,6 @@ import type {
 } from '@remix-run/server-runtime'
 import type { AddExpenseFormErrors, ExpenseWithCategory } from '~/utils/types'
 import type { Category } from '@prisma/client'
-import type { ChangeEvent } from 'react'
 import { useTranslations } from 'use-intl'
 import { AiOutlinePlus } from 'react-icons/ai'
 import { BiFilterAlt } from 'react-icons/bi'
@@ -33,14 +32,13 @@ import {
   parseCategoryInput,
 } from '~/utils'
 import { timeout } from '~/utils/timeout'
-import {
-  useFetcher,
-  useNavigate,
-  useRevalidator,
-  useSearchParams,
-} from '@remix-run/react'
+import { useFetcher, useRevalidator, useSearchParams } from '@remix-run/react'
 import cx from 'classnames'
 import { ExpenseFilterComponent } from '~/components/expense-filters'
+import { usePagination } from '~/hooks/use-pagination'
+import { useFilter } from '~/hooks/use-filter'
+import { PaginationButtons } from '~/components/pagination-buttons'
+import { MobileCancelDialog } from '~/components/mobile-cancel-dialog'
 
 export async function loader({ request }: LoaderArgs) {
   const userId = await getUserId(request)
@@ -210,7 +208,7 @@ export default function Expenses() {
 
   const [params] = useSearchParams()
   const [startDate, endDate] = [params.get('startDate'), params.get('endDate')]
-  const filters = {
+  const appliedFilters = {
     title: params.get('title'),
     startDate: startDate ? new Date(startDate) : null,
     endDate: endDate ? new Date(endDate) : null,
@@ -224,6 +222,9 @@ export default function Expenses() {
   const [showDeletedToast, setShowDeletedToast] = useState(false)
   const [upsertText, setUpsertText] = useState('')
   const categoryMap = useMemo(() => new Map<string, string>(), [])
+
+  const pagination = usePagination({ url: '/expenses', total })
+  const filter = useFilter({ url: '/expenses' })
 
   useEffect(() => {
     if (categoryFetcher.state === 'idle' && !categoryFetcher.data) {
@@ -277,6 +278,21 @@ export default function Expenses() {
     )
   }
 
+  const cxFilterButton = cx(
+    'btn-primary btn transition',
+    !filter.isFilterApplied && 'btn-outline',
+  )
+
+  const FiltersBlock = (
+    <ExpenseFilterComponent
+      onApplyFilters={filter.onApplyFilters}
+      onClearFilters={filter.onClearFilters}
+      categories={categories}
+      categoryMap={categoryMap}
+      initialFilters={appliedFilters}
+    />
+  )
+
   const UpsertToast = (
     <div className="toast">
       <div className="alert alert-success">{upsertText}</div>
@@ -289,21 +305,16 @@ export default function Expenses() {
     </div>
   )
 
-  const FiltersBlock = (
-    <ExpenseFilterComponent
-      onApplyFilters={onApplyFilters}
-      onClearFilters={onClearFilters}
-      categories={categories}
-      categoryMap={categoryMap}
-      initialFilters={filters}
-    />
-  )
-
   return (
     <div className="m-8 mt-0 md:mt-4">
       {showUpsertToast && UpsertToast}
       {showDeletedToast && DeletedToast}
-      {/* {showFilters && MobileFiltersDialog} */}
+      {showFilters && (
+        <MobileCancelDialog
+          content={FiltersBlock}
+          onClose={() => setShowFilters(false)}
+        />
+      )}
       <div className="flex items-end justify-between">
         <div className="flex items-end gap-4">
           <button
@@ -317,7 +328,7 @@ export default function Expenses() {
             {t('common.entries')}
             <select
               className="input"
-              onChange={onChangeLimit}
+              onChange={pagination.onChangeLimit}
               defaultValue={params.get('limit') || 50}
             >
               <option id="10">10</option>
@@ -348,32 +359,7 @@ export default function Expenses() {
             renderEditDialog={onEditExpense}
             categoryMap={categoryMap}
           />
-          <div className="flex justify-center gap-4">
-            <button
-              className="btn-outline btn-primary btn"
-              disabled={!hasPrev}
-              onClick={goToPrevPage}
-            >
-              {t('common.previous')}
-            </button>
-            <select
-              className="input"
-              onChange={(evt) => goToPage(evt.target.value)}
-            >
-              {Array.from({ length: totalPages }, (_, id) => (
-                <option key={id} id={id.toString()}>
-                  {t('common.page-n', { number: id + 1 })}
-                </option>
-              ))}
-            </select>
-            <button
-              className="btn-outline btn-primary btn"
-              disabled={!hasNext}
-              onClick={goToNextPage}
-            >
-              {t('common.next')}
-            </button>
-          </div>
+          <PaginationButtons total={total} {...pagination} />
         </>
       )}
     </div>
