@@ -1,13 +1,13 @@
 import type { FormEventHandler, MouseEventHandler } from 'react'
+import type { Tag } from 'react-tag-input'
+import type { Category } from '@prisma/client'
+import type { AddExpenseFormErrors, ExpenseWithCategory } from '~/utils/types'
 import { useContext, useEffect, useReducer, useState } from 'react'
 import { useTranslations } from 'use-intl'
 import { CurrencyInput } from './currency-input'
-import type { Tag } from 'react-tag-input'
 import { WithContext as ReactTags } from 'react-tag-input'
 import { Form, useFetcher } from '@remix-run/react'
-import type { Category, Expense } from '@prisma/client'
 import { DialogContext } from '~/providers/dialog'
-import type { AddExpenseFormErrors, ExpenseWithCategory } from '~/utils/types'
 import { cxFormInput, formatCurrency } from '~/utils'
 
 const MAX_CATEGORIES = 3

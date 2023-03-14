@@ -34,6 +34,7 @@ import { FilterButton } from '~/components/filter-button'
 import { MobileCancelDialog } from '~/components/mobile-cancel-dialog'
 import { TransactionFilterComponent } from '~/components/transaction-filters'
 import { ErrorCodes } from '~/utils/schemas'
+import { UpsertTransactionDialog } from '~/components/transaction-upsert-dialog'
 
 export async function loader({ request }: LoaderArgs) {
   const userId = await getUserId(request)
@@ -154,8 +155,8 @@ export default function Supermarket() {
   const [showDeletedToast, setShowDeletedToast] = useState(false)
   const [upsertText, setUpsertText] = useState('')
 
-  const pagination = usePagination({ url: '/supermarket', total })
-  const filter = useFilter({ url: '/supermarket' })
+  const pagination = usePagination({ url: '/transactions', total })
+  const filter = useFilter({ url: '/transactions' })
 
   const onTransactionUpserted = async (updated?: boolean) => {
     setUpsertText(updated ? t('transactions.saved') : t('transactions.created'))

@@ -28,6 +28,7 @@
         "previous": "Previous",
         "next": "Next", 
         "page-n": "Page {number}",
+        "expenses": "Expenses",
         "optional-field": "{field} (optional)",
         "each": "{value}/ea",
         "errors": {
