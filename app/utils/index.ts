@@ -100,5 +100,10 @@ export const formatCurrency = (amount: number) => {
   return `${currency} ${(amount / 100).toFixed(2)}`
 }
 
+export const formatDate = (date: Date) =>
+  date.toISOString().substring(0, 10).split('-').reverse().join('/')
+
 export const areAllValuesEmpty = (filter: { [key: string]: unknown }) =>
   Object.values(filter).every((v) => !v)
+
+export const DEFAULT_DATA_LIMIT = 50

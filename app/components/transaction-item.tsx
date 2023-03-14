@@ -1,23 +1,21 @@
+import type { TransactionWithExpenses } from '~/utils/types'
 import { useTranslations } from 'use-intl'
 import { formatCurrency, formatDate } from '~/utils'
-import type { ExpenseWithCategory } from '~/utils/types'
 import { BsTrash } from 'react-icons/bs'
 import { MdOutlineEdit } from 'react-icons/md'
 import { useFetcher } from '@remix-run/react'
 import { useEffect } from 'react'
 
 type Props = {
-  expense: ExpenseWithCategory
+  transaction: TransactionWithExpenses
   renderDeleteToast: () => void
-  renderEditDialog: (expense: ExpenseWithCategory) => void
-  categoryMap: Map<string, string>
+  renderEditDialog: (transaction: TransactionWithExpenses) => void
 }
 
-export function ExpenseItem({
-  expense,
+export function TransactionItem({
+  transaction,
   renderDeleteToast,
   renderEditDialog,
-  categoryMap,
 }: Props) {
   const t = useTranslations()
   const fetcher = useFetcher()
@@ -30,43 +28,26 @@ export function ExpenseItem({
 
   const onDelete = () => {
     fetcher.submit(
-      { id: expense.id },
-      { method: 'delete', action: '/expenses' },
+      { id: transaction.id },
+      { method: 'delete', action: '/transaction' },
     )
   }
 
   const onEdit = () => {
-    renderEditDialog(expense)
+    renderEditDialog(transaction)
   }
 
-  const date = formatDate(expense.datetime)
+  const date = formatDate(transaction.datetime)
 
   return (
     <div className="grid items-center gap-2 bg-foreground py-4 sm:grid-cols-2">
-      <p className="text-md font-semibold">{expense.title}</p>
+      <p className="text-md font-semibold">{transaction.location}</p>
       <p className="sm:text-right">{date}</p>
       <div>
-        <p>{formatCurrency(expense.amount)}</p>
-        {expense.unit && (
-          <small>
-            {t('common.each', { value: formatCurrency(expense.unit) })}
-          </small>
-        )}
+        <p>{formatCurrency(transaction.total)}</p>
       </div>
       <div className="flex flex-row flex-wrap gap-2 sm:justify-end">
-        {expense.categories.map(({ categoryId }) => {
-          const catLabel = categoryMap.get(categoryId)
-          return (
-            catLabel && (
-              <span
-                key={expense.id + categoryId}
-                className="inline rounded bg-light-grey p-1 text-xs font-semibold uppercase"
-              >
-                {catLabel}
-              </span>
-            )
-          )
-        })}
+        Expenses go here
       </div>
       <div className="flex justify-end gap-4 sm:col-span-2">
         <button

@@ -1,5 +1,6 @@
 import type { ChangeEvent } from 'react'
 import { useNavigate, useSearchParams } from '@remix-run/react'
+import { DEFAULT_DATA_LIMIT } from '~/utils'
 
 type Props = {
   url: string
@@ -20,7 +21,8 @@ export function usePagination({ url, total }: Props): Pagination {
   const [searchParams] = useSearchParams()
 
   const offset = parseInt(searchParams.get('offset') as string) || 0
-  const limit = parseInt(searchParams.get('limit') as string) || 50
+  const limit =
+    parseInt(searchParams.get('limit') as string) || DEFAULT_DATA_LIMIT
   const totalPages = Math.ceil(total / limit)
   const currentPage = Math.floor(offset / limit)
   const hasPrev = currentPage > 0

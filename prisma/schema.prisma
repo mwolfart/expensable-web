@@ -56,6 +56,7 @@ model Expense {
 model Transaction {
   id            String @id @default(auto()) @map("_id") @db.ObjectId
   datetime      DateTime
+  total         Float
   location      String
   expenses      ExpensesInTransaction[]
   user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)

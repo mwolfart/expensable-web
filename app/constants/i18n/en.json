@@ -81,5 +81,12 @@
         "created": "Expense created successfully!",
         "deleted": "Expense deleted successfully!",
         "saved": "Expense saved successfully!"
+    },
+    "transactions": {
+        "try-adding": "Try adding a transaction first",
+        "add": "New transaction",
+        "created": "Transaction created successfully!",
+        "deleted": "Transaction deleted successfully!",
+        "saved": "Transaction saved successfully!"
     }
 }

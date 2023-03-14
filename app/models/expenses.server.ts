@@ -1,8 +1,7 @@
 import type { Expense } from '@prisma/client'
 import { prisma } from '~/db.server'
+import { DEFAULT_DATA_LIMIT } from '~/utils'
 import type { CategoryInputArray, ExpenseFilters } from '~/utils/types'
-
-export const EXPENSES_DEFAULT_LIMIT = 50
 
 export const getUserExpenses = (id: string, offset?: number, limit?: number) =>
   prisma.expense.findMany({
@@ -13,7 +12,7 @@ export const getUserExpenses = (id: string, offset?: number, limit?: number) =>
       userId: id,
     },
     skip: offset || 0,
-    take: limit || EXPENSES_DEFAULT_LIMIT,
+    take: limit || DEFAULT_DATA_LIMIT,
     orderBy: {
       datetime: 'asc',
     },
@@ -63,7 +62,7 @@ export const getUserExpensesByFilter = (
       categories: true,
     },
     skip: offset || 0,
-    take: limit || EXPENSES_DEFAULT_LIMIT,
+    take: limit || DEFAULT_DATA_LIMIT,
     orderBy: {
       datetime: 'asc',
     },
