@@ -29,6 +29,7 @@
         "next": "Next", 
         "page-n": "Page {number}",
         "expenses": "Expenses",
+        "category": "Category",
         "optional-field": "{field} (optional)",
         "each": "{value}/ea",
         "errors": {
@@ -61,7 +62,7 @@
         "logged-in-as": "Logged in as {user}",
         "expenses": "Expenses",
         "categories": "Categories",
-        "supermarket": "Supermarket",
+        "transactions": "Transactions",
         "dashboard": "Dashboard"
     },
     "category": {

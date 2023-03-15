@@ -61,8 +61,8 @@ export default function Index() {
               <div className="hidden md:block">{t('home.categories')}</div>
               <MdOutlineCategory className="block md:hidden" size={24} />
             </a>
-            <a className={getTabClass('/supermarket')} href="/supermarket">
-              <div className="hidden md:block">{t('home.supermarket')}</div>
+            <a className={getTabClass('/transactions')} href="/transactions">
+              <div className="hidden md:block">{t('home.transactions')}</div>
               <AiOutlineShoppingCart className="block md:hidden" size={24} />
             </a>
           </div>

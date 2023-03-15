@@ -1,7 +1,7 @@
-import type { TransactionFilters } from '~/utils/types'
+import type { TransactionExpenseInput, TransactionFilters } from '~/utils/types'
+import type { Expense, Transaction } from '@prisma/client'
 import { prisma } from '~/db.server'
 import { DEFAULT_DATA_LIMIT } from '~/utils'
-import { Expense, Transaction } from '@prisma/client'
 
 export const getUserTransactions = (
   id: string,
@@ -82,13 +82,17 @@ export const countUserTransactionsByFilter = (
 
 export const createTransaction = async (
   transaction: Pick<Transaction, 'location' | 'datetime' | 'userId'>,
-  expenses: Array<Expense & { categoryId: string }>,
+  expenses: TransactionExpenseInput[],
 ) => {
   let total = 0
   const expensesPromise = expenses.map(async ({ categoryId, ...expense }) => {
     total += expense.amount
     const exp = await prisma.expense.create({
-      data: expense,
+      data: {
+        datetime: transaction.datetime,
+        userId: transaction.userId,
+        ...expense,
+      },
     })
     await prisma.categoriesOnExpense.create({
       data: {
@@ -128,7 +132,7 @@ const removeExpensesFromTransaction = async (transactionId: string) => {
 
 const createTransactionExpense = async (
   transactionId: string,
-  expense: Expense,
+  expense: Omit<Expense, 'id'>,
   categoryId: string,
 ) => {
   const { id } = await prisma.expense.create({ data: expense })
@@ -150,13 +154,21 @@ const createTransactionExpense = async (
 
 export const updateTransaction = async (
   transaction: Omit<Transaction, 'total'>,
-  expenses: Array<Expense & { categoryId: string }>,
+  expenses: TransactionExpenseInput[],
 ) => {
   // TODO if user does not change anything in expenses, don't remove/update them
   // TODO change only expenses & category that are modified (low priority)
   await removeExpensesFromTransaction(transaction.id)
   const creationPromises = expenses.map(({ categoryId, ...expense }) =>
-    createTransactionExpense(transaction.id, expense, categoryId),
+    createTransactionExpense(
+      transaction.id,
+      {
+        datetime: transaction.datetime,
+        userId: transaction.userId,
+        ...expense,
+      },
+      categoryId,
+    ),
   )
   await Promise.all(creationPromises)
   return prisma.transaction.update({

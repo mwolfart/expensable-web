@@ -15,6 +15,13 @@ export type TransactionWithExpenses = Transaction & {
 
 export type CategoryInputArray = Array<{ id: string; text: string }>
 
+export type TransactionExpenseInput = Pick<
+  Expense,
+  'title' | 'unit' | 'amount'
+> & {
+  categoryId: string
+}
+
 export type AddExpenseFormErrors = {
   name?: string
   amount?: string
@@ -31,7 +38,9 @@ export type ExpenseFilters = {
 }
 
 export type AddTransactionFormErrors = {
-  name?: string
+  title?: string
+  date?: string
+  expenses?: string
 }
 
 export type TransactionFilters = {

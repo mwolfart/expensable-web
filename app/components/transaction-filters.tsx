@@ -23,7 +23,7 @@ export function TransactionFilterComponent({
 
   return (
     <form
-      className="grid gap-4 max-md:grid-cols-1 md:max-3xl:grid-cols-4 md:max-3xl:grid-rows-2 3xl:grid-cols-5"
+      className="grid gap-4 max-md:grid-cols-1 md:grid-cols-3"
       onSubmit={submit}
     >
       <label>

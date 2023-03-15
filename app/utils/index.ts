@@ -1,4 +1,4 @@
-import type { CategoryInputArray } from './types'
+import type { CategoryInputArray, TransactionExpenseInput } from './types'
 import type { KeyboardEvent } from 'react'
 import cx from 'classnames'
 
@@ -93,6 +93,26 @@ export const parseCategoryInput = (
     }
   })
   return categories
+}
+
+export const parseExpenses = (
+  expensesJson: string,
+): TransactionExpenseInput[] | false => {
+  const parsedExpenses = JSON.parse(expensesJson)
+  if (!Array.isArray(parsedExpenses)) {
+    return false
+  }
+  parsedExpenses.forEach((expense) => {
+    if (
+      typeof expense.title !== 'string' ||
+      typeof expense.amount !== 'string' ||
+      typeof expense.categoryId !== 'string' ||
+      isNaN(parseFloat(expense.amount))
+    ) {
+      return false
+    }
+  })
+  return parsedExpenses
 }
 
 export const formatCurrency = (amount: number) => {

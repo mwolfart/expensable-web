@@ -20,13 +20,15 @@ import { usePagination } from '~/hooks/use-pagination'
 import {
   countUserTransactions,
   countUserTransactionsByFilter,
+  createTransaction,
   deleteTransaction,
   getUserTransactions,
   getUserTransactionsByFilter,
+  updateTransaction,
 } from '~/models/transaction.server'
 import { DialogContext } from '~/providers/dialog'
 import { getUserId } from '~/session.server'
-import { areAllValuesEmpty, cxWithGrowFadeLg } from '~/utils'
+import { areAllValuesEmpty, cxWithGrowFadeLg, parseExpenses } from '~/utils'
 import { timeout } from '~/utils/timeout'
 import { AiOutlinePlus } from 'react-icons/ai'
 import { PaginationLimitSelect } from '~/components/pagination-limit-select'
@@ -86,10 +88,11 @@ export async function action({ request }: ActionArgs): Promise<
     const id = formData.get('id')
     const title = formData.get('title')
     const date = formData.get('date')
+    const expensesJson = formData.get('expenses')
 
     if (typeof title !== 'string' || !title.length) {
       return typedjson(
-        { errors: { name: ErrorCodes.TITLE_REQUIRED }, ...res },
+        { errors: { title: ErrorCodes.TITLE_REQUIRED }, ...res },
         { status: 400 },
       )
     }
@@ -101,16 +104,31 @@ export async function action({ request }: ActionArgs): Promise<
       )
     }
 
+    const expenses =
+      typeof expensesJson === 'string' && parseExpenses(expensesJson)
+    if (!expenses) {
+      return typedjson(
+        { errors: { expenses: ErrorCodes.BAD_FORMAT }, ...res },
+        { status: 400 },
+      )
+    }
+
     try {
       const userId = await getUserId(request)
       if (!userId) {
         return typedjson({ success: false, ...res }, { status: 403 })
       }
 
+      const transaction = {
+        datetime: new Date(Date.parse(date)),
+        location: title,
+        userId,
+      }
+
       if (typeof id === 'string' && id !== '') {
-        // update transaction
+        await updateTransaction({ id, ...transaction }, expenses)
       } else {
-        // create transaction
+        await createTransaction(transaction, expenses)
       }
     } catch (e) {
       return typedjson({ success: false, ...res }, { status: 500 })
@@ -137,7 +155,7 @@ export async function action({ request }: ActionArgs): Promise<
   return typedjson({ success: false, ...res }, { status: 405 })
 }
 
-export default function Supermarket() {
+export default function Transactions() {
   const { transactions, total } = useTypedLoaderData<typeof loader>()
   const t = useTranslations()
   const revalidator = useRevalidator()
@@ -167,7 +185,10 @@ export default function Supermarket() {
   }
 
   const onAddTransaction = () => {
-    openDialog(<UpsertTransactionDialog onUpserted={onTransactionUpserted} />)
+    openDialog(
+      <UpsertTransactionDialog onUpserted={onTransactionUpserted} />,
+      true,
+    )
   }
 
   const onTransactionDeleted = async () => {
@@ -182,6 +203,7 @@ export default function Supermarket() {
         onUpserted={() => onTransactionUpserted(true)}
         initialData={transaction}
       />,
+      true,
     )
   }
 
@@ -220,7 +242,7 @@ export default function Supermarket() {
           <AiOutlinePlus className="block text-white sm:hidden" size={24} />
         </button>
       </div>
-      <div className={cxWithGrowFadeLg('hidden md:block', showFilters)}>
+      <div className={cxWithGrowFadeLg('my-4 hidden md:block', showFilters)}>
         {FiltersBlock}
       </div>
       {!transactions.length && (
