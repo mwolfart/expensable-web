@@ -9,7 +9,8 @@ import { Form, useFetcher } from '@remix-run/react'
 import { useTranslations } from 'use-intl'
 import { DialogContext } from '~/providers/dialog'
 import { TransactionExpenseInputGroup } from './transaction-expense-input-group'
-import { cxFormInput, cxWithGrowFadeMd } from '~/utils'
+import { cxFormInput, cxWithFade } from '~/utils'
+import { AiOutlinePlus } from 'react-icons/ai'
 
 type Props = {
   onUpserted: (updated?: boolean) => unknown
@@ -75,8 +76,14 @@ export function UpsertTransactionDialog({ onUpserted, initialData }: Props) {
     setExpenses(newExpenses)
   }
 
+  const onAddExpense = () => {
+    const newExpenses = [...expenses]
+    newExpenses.push({})
+    setExpenses(newExpenses)
+  }
+
   return (
-    <Form className="grid gap-4 p-8 lg:grid-cols-2" onSubmit={onSubmit}>
+    <Form className="grid gap-4 lg:grid-cols-2" onSubmit={onSubmit}>
       <label>
         {t('common.title')}
         <input
@@ -91,17 +98,19 @@ export function UpsertTransactionDialog({ onUpserted, initialData }: Props) {
           name="date"
         />
       </label>
-      <div>
-        <h3 className="lg:col-span-2">{t('common.expenses')}</h3>
-        <p
-          className={cxWithGrowFadeMd(
-            'text-red font-bold',
-            Boolean(formErrors.expenses),
-          )}
-        >
-          {formErrors.expenses}
-        </p>
-        <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-4 lg:col-span-2">
+        <div className="flex gap-8">
+          <h3>{t('common.expenses')}</h3>
+          <p
+            className={cxWithFade(
+              'text-red flex-grow font-bold',
+              Boolean(formErrors.expenses),
+            )}
+          >
+            {formErrors.expenses}
+          </p>
+        </div>
+        <div className="flex w-full flex-col bg-gradient-to-r from-grey to-primary max-xl:gap-[1px]">
           {expenses.map((expense, index) => (
             <TransactionExpenseInputGroup
               key={index}
@@ -113,7 +122,20 @@ export function UpsertTransactionDialog({ onUpserted, initialData }: Props) {
             />
           ))}
         </div>
+        <button
+          className="btn-primary btn flex w-fit gap-2 text-white"
+          onClick={onAddExpense}
+        >
+          <AiOutlinePlus size={24} />
+          {t('transactions.new-expense')}
+        </button>
       </div>
+      <button
+        className="btn-outline btn-primary btn w-full lg:col-span-2"
+        onClick={closeDialog}
+      >
+        {t('common.cancel')}
+      </button>
     </Form>
   )
 }

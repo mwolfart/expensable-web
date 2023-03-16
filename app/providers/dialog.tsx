@@ -25,9 +25,9 @@ export const DialogProvider: FC<PropsWithChildren> = ({ children }) => {
   const closeDialog = useCallback(() => setOpen(false), [])
 
   const cxContentWrapper = cx(
-    isLarge && 'md:min-h-2/3 md:max-h-5/6 md:w-3/4',
-    !isLarge && 'md:min-h-1/2 md:max-h-3/4 md:w-1/2',
-    `w-full bg-foreground md:m-auto md:rounded-2xl`,
+    isLarge && 'md:min-h-[50%] md:max-h-[85%] md:w-3/4',
+    !isLarge && 'md:min-h-[50%] md:max-h-[75%] md:w-1/2',
+    `w-full bg-foreground md:m-auto md:rounded-2xl flex flex-col`,
   )
 
   return (
@@ -36,7 +36,11 @@ export const DialogProvider: FC<PropsWithChildren> = ({ children }) => {
         <div className="fixed inset-0 z-10">
           <div className="absolute inset-0 bg-black opacity-20"></div>
           <div className="relative flex h-screen">
-            <div className={cxContentWrapper}>{content}</div>
+            <div className={cxContentWrapper}>
+              <div className="m-8 overflow-y-auto overflow-x-hidden">
+                {content}
+              </div>
+            </div>
           </div>
         </div>
       )}

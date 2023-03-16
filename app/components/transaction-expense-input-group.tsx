@@ -50,8 +50,8 @@ export function TransactionExpenseInputGroup({
   }
 
   return (
-    <div className="flex flex-col gap-4 lg:flex-row">
-      <label>
+    <div className="flex w-full flex-col items-end gap-4 bg-foreground py-4 lg:flex-row lg:flex-wrap xl:flex-nowrap max-lg:[&>*]:w-full">
+      <label className="flex-grow">
         {t('common.name')}
         <input
           className="input"
@@ -79,12 +79,13 @@ export function TransactionExpenseInputGroup({
           defaultValue={initialData?.amount}
         />
       </label>
-      <label>
+      <label className="lg:max-xl:flex-grow">
         {t('common.category')}
         <select
           onChange={change}
           name="categoryId"
           defaultValue={initialData?.categoryId}
+          className="input"
         >
           {categories.map(({ id, title }) => (
             <option id={id} key={id}>

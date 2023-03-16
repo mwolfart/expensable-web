@@ -89,6 +89,7 @@
         "add": "New transaction",
         "created": "Transaction created successfully!",
         "deleted": "Transaction deleted successfully!",
-        "saved": "Transaction saved successfully!"
+        "saved": "Transaction saved successfully!",
+        "new-expense": "New expense"
     }
 }
