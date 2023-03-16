@@ -229,7 +229,7 @@ export default function Transactions() {
           onClose={() => setShowFilters(false)}
         />
       )}
-      <div className="flex items-end justify-between">
+      <div className="mb-8 flex items-end justify-between">
         <div className="flex items-end gap-4">
           <FilterButton
             onClick={() => setShowFilters(!showFilters)}
@@ -242,7 +242,7 @@ export default function Transactions() {
           <AiOutlinePlus className="block text-white sm:hidden" size={24} />
         </button>
       </div>
-      <div className={cxWithGrowFadeLg('my-4 hidden md:block', showFilters)}>
+      <div className={cxWithGrowFadeLg('hidden md:block', showFilters)}>
         {FiltersBlock}
       </div>
       {!transactions.length && (

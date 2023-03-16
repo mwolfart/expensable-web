@@ -109,7 +109,7 @@ export function UpsertExpenseDialog({
 
   return (
     <Form
-      className="grid grid-cols-2 gap-4 p-8"
+      className="grid grid-cols-2 gap-4"
       onSubmit={onSubmit}
       onChange={() => updateFormErrors({})}
     >
