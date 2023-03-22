@@ -5,6 +5,7 @@ import { useFetcher } from '@remix-run/react'
 import { useEffect, useState } from 'react'
 import { BsTrash } from 'react-icons/bs'
 import { useTranslations } from 'use-intl'
+import { CurrencyInput } from './currency-input'
 
 type Props = {
   index: number
@@ -50,12 +51,12 @@ export function TransactionExpenseInputGroup({
   }
 
   return (
-    <div className="flex w-full flex-col items-end gap-4 bg-foreground py-4 lg:flex-row lg:flex-wrap xl:flex-nowrap max-lg:[&>*]:w-full">
+    <div className="flex w-full flex-col items-end gap-4 bg-foreground py-4 lg:flex-row lg:flex-wrap xl:flex-nowrap xl:py-1 max-lg:[&>*]:w-full">
       <label className="flex-grow">
         {t('common.name')}
         <input
           className="input"
-          name="name"
+          name="title"
           required
           onChange={change}
           defaultValue={initialData?.title}
@@ -63,8 +64,8 @@ export function TransactionExpenseInputGroup({
       </label>
       <label>
         {t('common.optional-field', { field: t('common.unit') })}
-        <input
-          className="input"
+        <CurrencyInput
+          className="input w-full"
           name="unit"
           onChange={change}
           defaultValue={initialData?.unit}
@@ -72,14 +73,14 @@ export function TransactionExpenseInputGroup({
       </label>
       <label>
         {t('common.amount')}
-        <input
-          className="input"
+        <CurrencyInput
+          className="input w-full"
           name="amount"
           onChange={change}
           defaultValue={initialData?.amount}
         />
       </label>
-      <label className="lg:max-xl:flex-grow">
+      <label className="lg:max-2xl:flex-grow">
         {t('common.category')}
         <select
           onChange={change}
@@ -87,8 +88,9 @@ export function TransactionExpenseInputGroup({
           defaultValue={initialData?.categoryId}
           className="input"
         >
+          <option value={undefined}>{t('common.select-option')}</option>
           {categories.map(({ id, title }) => (
-            <option id={id} key={id}>
+            <option value={id} key={id}>
               {title}
             </option>
           ))}

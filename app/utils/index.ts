@@ -95,6 +95,35 @@ export const parseCategoryInput = (
   return categories
 }
 
+const parseExpense = (expense: {
+  title?: unknown
+  unit?: unknown
+  amount?: unknown
+  categoryId?: unknown
+}) => {
+  const parsedAmount =
+    typeof expense.amount === 'string' &&
+    parseFloat(expense.amount.replace(/[^0-9.]/g, ''))
+  const parsedUnit =
+    typeof expense.unit === 'string' &&
+    parseFloat(expense.unit.replace(/[^0-9.]/g, ''))
+  if (
+    typeof expense.title !== 'string' ||
+    typeof expense.categoryId !== 'string' ||
+    !parsedAmount ||
+    isNaN(parsedAmount) ||
+    (parsedUnit && isNaN(parsedUnit))
+  ) {
+    return false
+  }
+  return {
+    title: expense.title as string,
+    amount: parsedAmount,
+    ...(parsedUnit && { unit: parsedUnit }),
+    categoryId: expense.categoryId as string,
+  }
+}
+
 export const parseExpenses = (
   expensesJson: string,
 ): TransactionExpenseInput[] | false => {
@@ -102,22 +131,25 @@ export const parseExpenses = (
   if (!Array.isArray(parsedExpenses)) {
     return false
   }
-  parsedExpenses.forEach((expense) => {
-    if (
-      typeof expense.title !== 'string' ||
-      typeof expense.amount !== 'string' ||
-      typeof expense.categoryId !== 'string' ||
-      isNaN(parseFloat(expense.amount))
-    ) {
-      return false
+  let valid = true,
+    i = 0
+  const formattedExpenses = []
+  while (i < parsedExpenses.length && valid) {
+    const parsed = parseExpense(parsedExpenses[i])
+    if (!parsed) {
+      valid = false
+    } else {
+      formattedExpenses.push(parsed)
     }
-  })
-  return parsedExpenses
+    i++
+  }
+  // TODO prisma does not detect `unit` field is optional
+  return !valid ? false : (formattedExpenses as TransactionExpenseInput[])
 }
 
 export const formatCurrency = (amount: number) => {
   const currency = 'R$'
-  return `${currency} ${(amount / 100).toFixed(2)}`
+  return `${currency} ${amount.toFixed(2)}`
 }
 
 export const formatDate = (date: Date) =>

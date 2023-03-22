@@ -10,10 +10,12 @@ import { AiOutlinePlus } from 'react-icons/ai'
 import {
   countUserExpenses,
   countUserExpensesByFilter,
+  countUserExpensesByIds,
   createExpense,
   deleteExpense,
   getUserExpenses,
   getUserExpensesByFilter,
+  getUserExpensesByIds,
   updateExpense,
 } from '~/models/expenses.server'
 import { getUserId } from '~/session.server'
@@ -47,12 +49,21 @@ export async function loader({ request }: LoaderArgs) {
     const url = new URL(request.url)
     const limit = parseInt(url.searchParams.get('limit') as string)
     const offset = parseInt(url.searchParams.get('offset') as string)
+    const ids = url.searchParams.get('ids')?.split(',')
+
+    if (ids) {
+      const count = await countUserExpensesByIds(userId, ids)
+      const data = await getUserExpensesByIds(userId, ids, 0, limit)
+      return typedjson({ expenses: data, total: count })
+    }
+
     const filter = {
       title: url.searchParams.get('title'),
       startDate: url.searchParams.get('startDate'),
       endDate: url.searchParams.get('endDate'),
       categoriesIds: url.searchParams.get('categories'),
     }
+
     if (!areAllValuesEmpty(filter)) {
       const parsedFilter = {
         title: filter.title,
@@ -157,8 +168,8 @@ export async function action({ request }: ActionArgs): Promise<
           {
             id,
             title: name,
-            amount: parseFloat(amount.replace(/[^0-9]/g, '')),
-            unit: parseFloat(unit.replace(/[^0-9]/g, '')),
+            amount: parseFloat(amount.replace(/[^0-9.]/g, '')),
+            unit: parseFloat(unit.replace(/[^0-9.]/g, '')),
             datetime: new Date(Date.parse(date)),
             userId,
           },
@@ -168,8 +179,8 @@ export async function action({ request }: ActionArgs): Promise<
         await createExpense(
           {
             title: name,
-            amount: parseFloat(amount.replace(/[^0-9]/g, '')),
-            unit: parseFloat(unit.replace(/[^0-9]/g, '')),
+            amount: parseFloat(amount.replace(/[^0-9.]/g, '')),
+            unit: parseFloat(unit.replace(/[^0-9.]/g, '')),
             datetime: new Date(Date.parse(date)),
             userId,
           },

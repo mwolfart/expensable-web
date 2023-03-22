@@ -1,10 +1,14 @@
-import type { TransactionWithExpenses } from '~/utils/types'
+import type {
+  ExpenseWithCategory,
+  TransactionWithExpenses,
+} from '~/utils/types'
 import { useTranslations } from 'use-intl'
 import { formatCurrency, formatDate } from '~/utils'
 import { BsTrash } from 'react-icons/bs'
 import { MdOutlineEdit } from 'react-icons/md'
 import { useFetcher } from '@remix-run/react'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
+import { BeatLoader } from 'react-spinners'
 
 type Props = {
   transaction: TransactionWithExpenses
@@ -19,12 +23,30 @@ export function TransactionItem({
 }: Props) {
   const t = useTranslations()
   const fetcher = useFetcher()
+  const expensesFetcher = useFetcher()
+  const [expenses, setExpenses] = useState<ExpenseWithCategory[]>()
+  const [expenseTotal, setExpenseTotal] = useState(0)
 
   useEffect(() => {
     if (fetcher.data?.method === 'delete' && fetcher.data.success) {
       renderDeleteToast()
     }
   }, [fetcher.data, renderDeleteToast])
+
+  useEffect(() => {
+    if (expensesFetcher.data) {
+      setExpenses(expensesFetcher.data.expenses)
+      setExpenseTotal(expensesFetcher.data.total)
+    }
+  }, [expensesFetcher.data])
+
+  useEffect(() => {
+    const expensesToFetch = transaction.expenses
+      .map(({ expenseId }) => expenseId)
+      .join(',')
+    expensesFetcher.load(`/expenses?ids=${expensesToFetch}&limit=5`)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [transaction.expenses])
 
   const onDelete = () => {
     fetcher.submit(
@@ -46,8 +68,28 @@ export function TransactionItem({
       <div>
         <p>{formatCurrency(transaction.total)}</p>
       </div>
-      <div className="flex flex-row flex-wrap gap-2 sm:justify-end">
-        Expenses go here
+      <div className="my-2 flex flex-row flex-nowrap gap-2 sm:justify-end">
+        {!expenses ? (
+          <BeatLoader color="grey" size={10} />
+        ) : (
+          <>
+            {expenses.map(({ id, title, amount }) => (
+              <div
+                key={id}
+                className="flex flex-col gap-1 rounded-xl border border-black p-2"
+              >
+                <p>{title}</p>
+                <span className="font-semibold text-grey">{amount}</span>
+              </div>
+            ))}
+            {expenseTotal > 5 && (
+              <div className="flex flex-col gap-1">
+                <span>+</span>
+                <p>{t('common.n-more', { value: expenseTotal - 5 })}</p>
+              </div>
+            )}
+          </>
+        )}
       </div>
       <div className="flex justify-end gap-4 sm:col-span-2">
         <button

@@ -18,11 +18,40 @@ export const getUserExpenses = (id: string, offset?: number, limit?: number) =>
     },
   })
 
+export const getUserExpensesByIds = (
+  userId: string,
+  expenseIds: string[],
+  offset?: number,
+  limit?: number,
+) =>
+  prisma.expense.findMany({
+    include: {
+      categories: true,
+    },
+    where: {
+      userId: userId,
+      id: { in: expenseIds },
+    },
+    skip: offset || 0,
+    take: limit || DEFAULT_DATA_LIMIT,
+    orderBy: {
+      datetime: 'asc',
+    },
+  })
+
 // TODO: Prisma does not currently support counting along with fetching. Change this in the future to use only one query
 export const countUserExpenses = (id: string) =>
   prisma.expense.count({
     where: {
       userId: id,
+    },
+  })
+
+export const countUserExpensesByIds = (userId: string, expenseIds: string[]) =>
+  prisma.expense.count({
+    where: {
+      userId: userId,
+      id: { in: expenseIds },
     },
   })
 

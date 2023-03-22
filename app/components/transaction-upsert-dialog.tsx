@@ -58,6 +58,7 @@ export function UpsertTransactionDialog({ onUpserted, initialData }: Props) {
     if (initialData) {
       data.set('id', initialData.id)
     }
+    data.set('expenses', JSON.stringify(expenses))
     fetcher.submit(data, { method: 'put', action: '/transactions' })
   }
 
@@ -83,7 +84,7 @@ export function UpsertTransactionDialog({ onUpserted, initialData }: Props) {
   }
 
   return (
-    <Form className="grid gap-4 lg:grid-cols-2" onSubmit={onSubmit}>
+    <Form className="grid gap-8 lg:grid-cols-2" onSubmit={onSubmit}>
       <label>
         {t('common.title')}
         <input
@@ -96,14 +97,15 @@ export function UpsertTransactionDialog({ onUpserted, initialData }: Props) {
         <input
           className={cxFormInput({ hasError: formErrors.date })}
           name="date"
+          type="date"
         />
       </label>
-      <div className="flex flex-col gap-4 lg:col-span-2">
-        <div className="flex gap-8">
+      <div className="flex flex-col gap-4 pb-8 lg:col-span-2">
+        <div className="flex items-center gap-4">
           <h3>{t('common.expenses')}</h3>
           <p
             className={cxWithFade(
-              'text-red flex-grow font-bold',
+              'flex-grow font-bold text-error',
               Boolean(formErrors.expenses),
             )}
           >
@@ -123,6 +125,7 @@ export function UpsertTransactionDialog({ onUpserted, initialData }: Props) {
           ))}
         </div>
         <button
+          type="button"
           className="btn-primary btn flex w-fit gap-2 text-white"
           onClick={onAddExpense}
         >
@@ -130,12 +133,16 @@ export function UpsertTransactionDialog({ onUpserted, initialData }: Props) {
           {t('transactions.new-expense')}
         </button>
       </div>
-      <button
-        className="btn-outline btn-primary btn w-full lg:col-span-2"
-        onClick={closeDialog}
-      >
-        {t('common.cancel')}
-      </button>
+      <div className="flex w-full flex-col gap-4 lg:col-span-2">
+        <button className="btn-primary btn w-full">{t('common.submit')}</button>
+        <button
+          type="button"
+          className="btn-outline btn-primary btn w-full"
+          onClick={closeDialog}
+        >
+          {t('common.cancel')}
+        </button>
+      </div>
     </Form>
   )
 }

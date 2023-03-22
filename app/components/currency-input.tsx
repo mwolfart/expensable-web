@@ -13,14 +13,9 @@ export function CurrencyInput({ value, onChange, ...props }: Props) {
     const multiplied = numeric ? parseFloat(numeric) / 100 : 0
     const formatted = `$${multiplied.toFixed(2)}`
     setInnerValue(formatted)
+    evt.target.value = formatted
     if (onChange) {
-      const newEvent = Object.assign({}, evt, {
-        target: {
-          ...evt.target,
-          value: formatted,
-        },
-      })
-      onChange(newEvent)
+      onChange(evt)
     }
   }
 
