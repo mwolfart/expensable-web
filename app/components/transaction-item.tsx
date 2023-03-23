@@ -9,6 +9,7 @@ import { MdOutlineEdit } from 'react-icons/md'
 import { useFetcher } from '@remix-run/react'
 import { useEffect, useState } from 'react'
 import { BeatLoader } from 'react-spinners'
+import { TransactionItemExpense } from './transaction-item-expense'
 
 type Props = {
   transaction: TransactionWithExpenses
@@ -24,7 +25,7 @@ export function TransactionItem({
   const t = useTranslations()
   const fetcher = useFetcher()
   const expensesFetcher = useFetcher()
-  const [expenses, setExpenses] = useState<ExpenseWithCategory[]>()
+  const [expenses, setExpenses] = useState<ExpenseWithCategory[]>([])
   const [expenseTotal, setExpenseTotal] = useState(0)
 
   useEffect(() => {
@@ -69,18 +70,12 @@ export function TransactionItem({
         <p>{formatCurrency(transaction.total)}</p>
       </div>
       <div className="my-2 flex flex-row flex-nowrap gap-2 sm:justify-end">
-        {!expenses ? (
+        {expensesFetcher.state === 'loading' ? (
           <BeatLoader color="grey" size={10} />
         ) : (
           <>
             {expenses.map(({ id, title, amount }) => (
-              <div
-                key={id}
-                className="flex flex-col gap-1 rounded-xl border border-black p-2"
-              >
-                <p>{title}</p>
-                <span className="font-semibold text-grey">{amount}</span>
-              </div>
+              <TransactionItemExpense key={id} title={title} amount={amount} />
             ))}
             {expenseTotal > 5 && (
               <div className="flex flex-col gap-1">

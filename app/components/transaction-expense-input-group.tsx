@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react'
 import { BsTrash } from 'react-icons/bs'
 import { useTranslations } from 'use-intl'
 import { CurrencyInput } from './currency-input'
+import { formatCurrency } from '~/utils'
 
 type Props = {
   index: number
@@ -68,7 +69,9 @@ export function TransactionExpenseInputGroup({
           className="input w-full"
           name="unit"
           onChange={change}
-          defaultValue={initialData?.unit}
+          value={
+            initialData?.unit ? formatCurrency(initialData.unit) : undefined
+          }
         />
       </label>
       <label>
@@ -77,7 +80,9 @@ export function TransactionExpenseInputGroup({
           className="input w-full"
           name="amount"
           onChange={change}
-          defaultValue={initialData?.amount}
+          value={
+            initialData?.amount ? formatCurrency(initialData.amount) : undefined
+          }
         />
       </label>
       <label className="lg:max-2xl:flex-grow">

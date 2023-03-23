@@ -155,6 +155,9 @@ export const formatCurrency = (amount: number) => {
 export const formatDate = (date: Date) =>
   date.toISOString().substring(0, 10).split('-').reverse().join('/')
 
+export const trimStr = (longStr: string) =>
+  longStr.length > 10 ? `${longStr.substring(0, 8)}...` : longStr
+
 export const areAllValuesEmpty = (filter: { [key: string]: unknown }) =>
   Object.values(filter).every((v) => !v)
 

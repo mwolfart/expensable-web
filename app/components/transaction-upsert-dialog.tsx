@@ -28,6 +28,7 @@ const errorsReducer = (
 export function UpsertTransactionDialog({ onUpserted, initialData }: Props) {
   const t = useTranslations()
   const fetcher = useFetcher()
+  const expensesFetcher = useFetcher()
   const { closeDialog } = useContext(DialogContext)
 
   const initialErrors = {
@@ -51,6 +52,22 @@ export function UpsertTransactionDialog({ onUpserted, initialData }: Props) {
       closeDialog()
     }
   }, [closeDialog, fetcher.data, onUpserted])
+
+  useEffect(() => {
+    if (expensesFetcher.data) {
+      setExpenses(expensesFetcher.data.expenses)
+    }
+  }, [expensesFetcher.data])
+
+  useEffect(() => {
+    if (initialData?.expenses) {
+      const expensesToFetch = initialData.expenses
+        .map(({ expenseId }) => expenseId)
+        .join(',')
+      expensesFetcher.load(`/expenses?ids=${expensesToFetch}`)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialData])
 
   const onSubmit: FormEventHandler<HTMLFormElement> = (evt) => {
     evt.preventDefault()
@@ -90,6 +107,7 @@ export function UpsertTransactionDialog({ onUpserted, initialData }: Props) {
         <input
           name="title"
           className={cxFormInput({ hasError: formErrors.title })}
+          defaultValue={initialData?.location}
         />
       </label>
       <label>
@@ -98,6 +116,7 @@ export function UpsertTransactionDialog({ onUpserted, initialData }: Props) {
           className={cxFormInput({ hasError: formErrors.date })}
           name="date"
           type="date"
+          defaultValue={initialData?.datetime.toISOString().substring(0, 10)}
         />
       </label>
       <div className="flex flex-col gap-4 pb-8 lg:col-span-2">
