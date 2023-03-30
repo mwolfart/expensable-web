@@ -1,12 +1,12 @@
 import type { ChangeEvent } from 'react'
-import type { Category } from '@prisma/client'
 import type { TransactionExpenseInput } from '~/utils/types'
-import { useFetcher } from '@remix-run/react'
+import { useContext } from 'react'
 import { useEffect, useState } from 'react'
 import { BsTrash } from 'react-icons/bs'
 import { useTranslations } from 'use-intl'
 import { CurrencyInput } from './currency-input'
 import { formatCurrency } from '~/utils'
+import { CategoryContext } from '~/providers/category'
 
 type Props = {
   index: number
@@ -24,22 +24,14 @@ export function TransactionExpenseInputGroup({
   initialData,
 }: Props) {
   const t = useTranslations()
-  const categoryFetcher = useFetcher()
-  const [categories, setCategories] = useState<Category[]>([])
   const [data, setData] = useState<Partial<TransactionExpenseInput>>({})
+  const { list: categories } = useContext(CategoryContext)
 
   useEffect(() => {
-    if (categoryFetcher.state === 'idle' && !categoryFetcher.data) {
-      categoryFetcher.load('/categories')
+    if (initialData) {
+      setData(initialData)
     }
-  }, [categoryFetcher])
-
-  useEffect(() => {
-    if (categoryFetcher.data?.categories) {
-      const fetchedCategories = categoryFetcher.data.categories as Category[]
-      setCategories(fetchedCategories)
-    }
-  }, [categoryFetcher.data])
+  }, [initialData])
 
   const changeText = (
     evt: ChangeEvent<HTMLInputElement | HTMLSelectElement>,
@@ -81,7 +73,7 @@ export function TransactionExpenseInputGroup({
           className="input w-full"
           name="unit"
           onChange={changeNumber}
-          defaultValue={
+          value={
             initialData?.unit ? formatCurrency(initialData.unit) : undefined
           }
         />
@@ -92,7 +84,7 @@ export function TransactionExpenseInputGroup({
           className="input w-full"
           name="amount"
           onChange={changeNumber}
-          defaultValue={
+          value={
             initialData?.amount ? formatCurrency(initialData.amount) : undefined
           }
         />
@@ -102,7 +94,7 @@ export function TransactionExpenseInputGroup({
         <select
           onChange={changeText}
           name="categoryId"
-          defaultValue={initialData?.categoryId}
+          value={initialData?.categoryId}
           className="input"
         >
           <option value={undefined}>{t('common.select-option')}</option>

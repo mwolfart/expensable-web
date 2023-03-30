@@ -124,8 +124,8 @@ const removeExpensesFromTransaction = async (transactionId: string) => {
       transactionId,
     },
   })
-  const promises = expenses.map(({ id }) =>
-    prisma.expense.delete({ where: { id } }),
+  const promises = expenses.map(({ expenseId }) =>
+    prisma.expense.delete({ where: { id: expenseId } }),
   )
   await Promise.all(promises)
 }
@@ -153,29 +153,34 @@ const createTransactionExpense = async (
 }
 
 export const updateTransaction = async (
-  transaction: Omit<Transaction, 'total'>,
+  { id: transactionId, ...transaction }: Omit<Transaction, 'total'>,
   expenses: TransactionExpenseInput[],
 ) => {
   // TODO if user does not change anything in expenses, don't remove/update them
   // TODO change only expenses & category that are modified (low priority)
-  await removeExpensesFromTransaction(transaction.id)
-  const creationPromises = expenses.map(({ categoryId, ...expense }) =>
-    createTransactionExpense(
-      transaction.id,
+  await removeExpensesFromTransaction(transactionId)
+  let total = 0
+  const creationPromises = expenses.map(({ categoryId, ...expense }) => {
+    total += expense.amount
+    return createTransactionExpense(
+      transactionId,
       {
         datetime: transaction.datetime,
         userId: transaction.userId,
         ...expense,
       },
       categoryId,
-    ),
-  )
+    )
+  })
   await Promise.all(creationPromises)
   return prisma.transaction.update({
     where: {
-      id: transaction.id,
+      id: transactionId,
     },
-    data: transaction,
+    data: {
+      ...transaction,
+      total,
+    },
   })
 }
 

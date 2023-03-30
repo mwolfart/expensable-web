@@ -28,6 +28,8 @@ export function TransactionItem({
   const [expenses, setExpenses] = useState<ExpenseWithCategory[]>([])
   const [expenseTotal, setExpenseTotal] = useState(0)
 
+  console.log('render item')
+
   useEffect(() => {
     if (fetcher.data?.method === 'delete' && fetcher.data.success) {
       renderDeleteToast()

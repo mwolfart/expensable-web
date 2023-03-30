@@ -1,26 +1,26 @@
+import type { ExpenseWithCategory } from '~/utils/types'
 import { useTranslations } from 'use-intl'
 import { formatCurrency, formatDate } from '~/utils'
-import type { ExpenseWithCategory } from '~/utils/types'
 import { BsTrash } from 'react-icons/bs'
 import { MdOutlineEdit } from 'react-icons/md'
 import { useFetcher } from '@remix-run/react'
-import { useEffect } from 'react'
+import { useContext, useEffect } from 'react'
+import { CategoryContext } from '~/providers/category'
 
 type Props = {
   expense: ExpenseWithCategory
   renderDeleteToast: () => void
   renderEditDialog: (expense: ExpenseWithCategory) => void
-  categoryMap: Map<string, string>
 }
 
 export function ExpenseItem({
   expense,
   renderDeleteToast,
   renderEditDialog,
-  categoryMap,
 }: Props) {
   const t = useTranslations()
   const fetcher = useFetcher()
+  const { map: categoryMap } = useContext(CategoryContext)
 
   useEffect(() => {
     if (fetcher.data?.method === 'delete' && fetcher.data.success) {

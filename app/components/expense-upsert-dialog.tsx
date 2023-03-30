@@ -1,6 +1,5 @@
 import type { FormEventHandler, MouseEventHandler } from 'react'
 import type { Tag } from 'react-tag-input'
-import type { Category } from '@prisma/client'
 import type { AddExpenseFormErrors, ExpenseWithCategory } from '~/utils/types'
 import { useContext, useEffect, useReducer, useState } from 'react'
 import { useTranslations } from 'use-intl'
@@ -9,12 +8,11 @@ import { WithContext as ReactTags } from 'react-tag-input'
 import { Form, useFetcher } from '@remix-run/react'
 import { DialogContext } from '~/providers/dialog'
 import { cxFormInput, formatCurrency } from '~/utils'
+import { CategoryContext } from '~/providers/category'
 
 const MAX_CATEGORIES = 3
 
 type Props = {
-  categories: Category[]
-  categoryMap: Map<string, string>
   onUpserted: () => unknown
   initialData?: ExpenseWithCategory
 }
@@ -27,14 +25,11 @@ const errorsReducer = (
   ...action,
 })
 
-export function UpsertExpenseDialog({
-  onUpserted,
-  categories,
-  categoryMap,
-  initialData,
-}: Props) {
+export function UpsertExpenseDialog({ onUpserted, initialData }: Props) {
   const t = useTranslations()
   const fetcher = useFetcher()
+  const { list: categories, map: categoryMap } = useContext(CategoryContext)
+
   const { closeDialog } = useContext(DialogContext)
   const [tags, setTags] = useState<Tag[]>([])
   const suggestions = categories.map(({ id, title }) => ({ id, text: title }))

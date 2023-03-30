@@ -23,7 +23,7 @@ import { NoData } from '~/components/no-data'
 import { ExpenseList } from '~/components/expense-list'
 import { typedjson } from 'remix-typedjson'
 import { useTypedLoaderData } from 'remix-typedjson/dist/remix'
-import { useContext, useEffect, useMemo, useState } from 'react'
+import { useContext, useState } from 'react'
 import { DialogContext } from '~/providers/dialog'
 import { UpsertExpenseDialog } from '~/components/expense-upsert-dialog'
 import { ErrorCodes } from '~/utils/schemas'
@@ -33,7 +33,7 @@ import {
   parseCategoryInput,
 } from '~/utils'
 import { timeout } from '~/utils/timeout'
-import { useFetcher, useRevalidator, useSearchParams } from '@remix-run/react'
+import { useRevalidator, useSearchParams } from '@remix-run/react'
 import { ExpenseFilterComponent } from '~/components/expense-filters'
 import { usePagination } from '~/hooks/use-pagination'
 import { useFilter } from '~/hooks/use-filter'
@@ -237,7 +237,6 @@ export async function action({ request }: ActionArgs): Promise<
 export default function Expenses() {
   const { expenses, total } = useTypedLoaderData<typeof loader>()
   const t = useTranslations()
-  const categoryFetcher = useFetcher()
   const revalidator = useRevalidator()
 
   const [params] = useSearchParams()
@@ -250,32 +249,13 @@ export default function Expenses() {
   }
 
   const { openDialog } = useContext(DialogContext)
-  const [categories, setCategories] = useState<Category[]>([])
   const [showFilters, setShowFilters] = useState(false)
   const [showUpsertToast, setShowUpsertToast] = useState(false)
   const [showDeletedToast, setShowDeletedToast] = useState(false)
   const [upsertText, setUpsertText] = useState('')
-  const categoryMap = useMemo(() => new Map<string, string>(), [])
 
   const pagination = usePagination({ url: '/expenses', total })
   const filter = useFilter({ url: '/expenses' })
-
-  useEffect(() => {
-    if (categoryFetcher.state === 'idle' && !categoryFetcher.data) {
-      categoryFetcher.load('/categories')
-    }
-  }, [categoryFetcher])
-
-  useEffect(() => {
-    if (categoryFetcher.data?.categories) {
-      const fetchedCategories = categoryFetcher.data.categories as Category[]
-      setCategories(fetchedCategories)
-      categoryMap.clear()
-      fetchedCategories.forEach(({ id, title }) => {
-        categoryMap.set(id, title)
-      })
-    }
-  }, [categoryFetcher.data, categoryMap])
 
   const onExpenseUpserted = async (updated?: boolean) => {
     setUpsertText(updated ? t('expenses.saved') : t('expenses.created'))
@@ -286,13 +266,7 @@ export default function Expenses() {
   }
 
   const onAddExpense = () => {
-    openDialog(
-      <UpsertExpenseDialog
-        onUpserted={onExpenseUpserted}
-        categories={categories}
-        categoryMap={categoryMap}
-      />,
-    )
+    openDialog(<UpsertExpenseDialog onUpserted={onExpenseUpserted} />)
   }
 
   const onExpenseDeleted = async () => {
@@ -305,8 +279,6 @@ export default function Expenses() {
     openDialog(
       <UpsertExpenseDialog
         onUpserted={() => onExpenseUpserted(true)}
-        categories={categories}
-        categoryMap={categoryMap}
         initialData={expense}
       />,
     )
@@ -316,8 +288,6 @@ export default function Expenses() {
     <ExpenseFilterComponent
       onApplyFilters={filter.onApplyFilters}
       onClearFilters={filter.onClearFilters}
-      categories={categories}
-      categoryMap={categoryMap}
       initialFilters={appliedFilters}
     />
   )
@@ -363,7 +333,6 @@ export default function Expenses() {
             expenses={expenses}
             renderDeleteToast={onExpenseDeleted}
             renderEditDialog={onEditExpense}
-            categoryMap={categoryMap}
           />
           <PaginationButtons total={total} {...pagination} />
         </>

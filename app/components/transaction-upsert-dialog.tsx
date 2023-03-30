@@ -1,6 +1,7 @@
 import type { FormEventHandler } from 'react'
 import type {
   AddTransactionFormErrors,
+  ExpenseWithCategory,
   TransactionExpenseInput,
   TransactionWithExpenses,
 } from '~/utils/types'
@@ -55,7 +56,13 @@ export function UpsertTransactionDialog({ onUpserted, initialData }: Props) {
 
   useEffect(() => {
     if (expensesFetcher.data) {
-      setExpenses(expensesFetcher.data.expenses)
+      const expenseArray = expensesFetcher.data
+        .expenses as ExpenseWithCategory[]
+      const parsedExpenses = expenseArray.map(({ categories, ...expense }) => ({
+        ...expense,
+        categoryId: categories[0].categoryId,
+      }))
+      setExpenses(parsedExpenses)
     }
   }, [expensesFetcher.data])
 

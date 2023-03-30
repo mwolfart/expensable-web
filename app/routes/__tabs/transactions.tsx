@@ -131,7 +131,10 @@ export async function action({ request }: ActionArgs): Promise<
         await createTransaction(transaction, expenses)
       }
     } catch (e) {
-      return typedjson({ success: false, ...res }, { status: 500 })
+      return typedjson(
+        { success: false, message: JSON.stringify(e), ...res },
+        { status: 500 },
+      )
     }
     return typedjson({ success: true, ...res }, { status: 200 })
   }
@@ -148,7 +151,10 @@ export async function action({ request }: ActionArgs): Promise<
     try {
       await deleteTransaction(id)
     } catch (e) {
-      return typedjson({ success: false, ...res }, { status: 500 })
+      return typedjson(
+        { success: false, message: JSON.stringify(e), ...res },
+        { status: 500 },
+      )
     }
     return typedjson({ success: true, ...res }, { status: 200 })
   }

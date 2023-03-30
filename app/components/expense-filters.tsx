@@ -1,16 +1,15 @@
 import type { FormEventHandler } from 'react'
-import type { Category } from '@prisma/client'
 import type { ExpenseFilters } from '~/utils/types'
+import { useContext } from 'react'
 import { useEffect } from 'react'
 import { useState } from 'react'
 import { useTranslations } from 'use-intl'
 import Select, { components } from 'react-select'
+import { CategoryContext } from '~/providers/category'
 
 type Props = {
   onApplyFilters: (formData: FormData) => void
   onClearFilters: () => void
-  categoryMap: Map<string, string>
-  categories: Category[]
   initialFilters?: ExpenseFilters
 }
 
@@ -19,12 +18,11 @@ type SelectOption = { value: string; label: string }
 export function ExpenseFilterComponent({
   onApplyFilters,
   onClearFilters,
-  categoryMap,
-  categories,
   initialFilters,
 }: Props) {
   const t = useTranslations()
   const [selectedOptions, setSelectedOptions] = useState<SelectOption[]>([])
+  const { list: categories, map: categoryMap } = useContext(CategoryContext)
 
   useEffect(() => {
     if (initialFilters?.categoriesIds) {

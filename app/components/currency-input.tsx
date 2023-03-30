@@ -1,4 +1,5 @@
 import type { ChangeEventHandler, InputHTMLAttributes } from 'react'
+import { useEffect } from 'react'
 import { useState } from 'react'
 
 type Props = {
@@ -6,7 +7,13 @@ type Props = {
 } & InputHTMLAttributes<HTMLInputElement>
 
 export function CurrencyInput({ value, onChange, ...props }: Props) {
-  const [innerValue, setInnerValue] = useState(value || '')
+  const [innerValue, setInnerValue] = useState('')
+
+  useEffect(() => {
+    if (value) {
+      setInnerValue(value)
+    }
+  }, [value])
 
   const innerChange: ChangeEventHandler<HTMLInputElement> = (evt) => {
     const numeric = evt.target.value.replace(/[^0-9]/g, '')

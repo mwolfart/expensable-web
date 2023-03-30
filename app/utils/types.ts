@@ -43,6 +43,7 @@ export type AddTransactionFormErrors = {
   title?: string
   date?: string
   expenses?: string
+  message?: string
 }
 
 export type TransactionFilters = {
