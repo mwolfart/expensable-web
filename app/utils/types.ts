@@ -17,7 +17,7 @@ export type CategoryInputArray = Array<{ id: string; text: string }>
 
 export type TransactionExpenseInput = Pick<
   Expense,
-  'title' | 'unit' | 'amount'
+  'title' | 'unit' | 'amount' | 'installments'
 > & {
   categoryId: string
 }
@@ -28,6 +28,7 @@ export type AddExpenseFormErrors = {
   unit?: string
   date?: string
   categories?: string
+  installments?: string
 }
 
 export type ExpenseFilters = {

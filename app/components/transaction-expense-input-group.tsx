@@ -101,6 +101,15 @@ export function TransactionExpenseInputGroup({
           ))}
         </select>
       </label>
+      <label className="flex-shrink">
+        {t('common.installments')}
+        <input
+          className="input w-full"
+          name="installments"
+          onChange={change}
+          value={initialData?.installments || 1}
+        />
+      </label>
       <button
         className="btn-outline btn-primary btn"
         onClick={() => onRemove(index)}

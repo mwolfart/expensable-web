@@ -146,7 +146,10 @@ export const getUserExpensesByYear = (userId: string, year: number) => {
 }
 
 export const createExpense = async (
-  expense: Pick<Expense, 'title' | 'amount' | 'unit' | 'userId' | 'datetime'>,
+  expense: Pick<
+    Expense,
+    'title' | 'amount' | 'unit' | 'userId' | 'datetime' | 'installments'
+  >,
   categories?: CategoryInputArray,
 ) => {
   const expenseRes = await prisma.expense.create({

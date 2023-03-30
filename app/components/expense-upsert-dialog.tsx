@@ -109,11 +109,11 @@ export function UpsertExpenseDialog({
 
   return (
     <Form
-      className="grid grid-cols-2 gap-4"
+      className="grid grid-cols-4 gap-4"
       onSubmit={onSubmit}
       onChange={() => updateFormErrors({})}
     >
-      <label className="col-span-2">
+      <label className="col-span-4">
         {t('common.name')}
         <input
           required
@@ -122,7 +122,7 @@ export function UpsertExpenseDialog({
           defaultValue={initialData?.title}
         />
       </label>
-      <label>
+      <label className="col-span-2">
         {t('common.amount')}
         <CurrencyInput
           required
@@ -131,7 +131,7 @@ export function UpsertExpenseDialog({
           value={initialAmount?.toString()}
         />
       </label>
-      <label>
+      <label className="col-span-2">
         {t('common.optional-field', { field: t('common.unit') })}
         <CurrencyInput
           className={cxFormInput({ hasError: formErrors.unit })}
@@ -139,7 +139,7 @@ export function UpsertExpenseDialog({
           value={initialUnit?.toString()}
         />
       </label>
-      <label className="col-span-2">
+      <label className="col-span-3">
         {t('common.date')}
         <input
           type="date"
@@ -148,7 +148,16 @@ export function UpsertExpenseDialog({
           defaultValue={initialData?.datetime.toISOString().substring(0, 10)}
         />
       </label>
-      <label className="col-span-2">
+      <label>
+        {t('common.installments')}
+        <input
+          type="number"
+          className={cxFormInput({ hasError: formErrors.installments })}
+          name="installments"
+          defaultValue={initialData?.installments || 1}
+        />
+      </label>
+      <label className="col-span-4">
         {t('common.optional-field', { field: t('common.categories') })}
         <div
           className={cxFormInput({

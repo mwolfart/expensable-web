@@ -43,6 +43,8 @@ import { Toast } from '~/components/toast'
 import { PaginationLimitSelect } from '~/components/pagination-limit-select'
 import { FilterButton } from '~/components/filter-button'
 
+const MAX_INSTALLMENTS = 36
+
 export async function loader({ request }: LoaderArgs) {
   const userId = await getUserId(request)
   if (userId) {
@@ -108,6 +110,7 @@ export async function action({ request }: ActionArgs): Promise<
     const amount = formData.get('amount')
     const unit = formData.get('unit')
     const date = formData.get('date')
+    const installments = formData.get('installments')
     const categories = formData.get('categories')
 
     if (typeof name !== 'string' || !name.length) {
@@ -127,6 +130,17 @@ export async function action({ request }: ActionArgs): Promise<
     if (typeof unit !== 'string') {
       return typedjson(
         { errors: { unit: ErrorCodes.BAD_FORMAT }, ...res },
+        { status: 400 },
+      )
+    }
+
+    if (
+      typeof installments !== 'string' ||
+      isNaN(parseInt(installments)) ||
+      parseInt(installments) > MAX_INSTALLMENTS
+    ) {
+      return typedjson(
+        { errors: { installments: ErrorCodes.BAD_FORMAT }, ...res },
         { status: 400 },
       )
     }
@@ -171,6 +185,7 @@ export async function action({ request }: ActionArgs): Promise<
             amount: parseFloat(amount.replace(/[^0-9.]/g, '')),
             unit: parseFloat(unit.replace(/[^0-9.]/g, '')),
             datetime: new Date(Date.parse(date)),
+            installments: parseInt(installments),
             userId,
           },
           parsedCategories,
@@ -182,6 +197,7 @@ export async function action({ request }: ActionArgs): Promise<
             amount: parseFloat(amount.replace(/[^0-9.]/g, '')),
             unit: parseFloat(unit.replace(/[^0-9.]/g, '')),
             datetime: new Date(Date.parse(date)),
+            installments: parseInt(installments),
             userId,
           },
           parsedCategories,

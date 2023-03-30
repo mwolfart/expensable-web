@@ -20,6 +20,7 @@
         "title": "Title",
         "amount": "Cost amount",
         "unit": "Unit cost",
+        "installments": "Installments",
         "categories": "Categories",
         "date": "Date",
         "start-date": "Start date",
