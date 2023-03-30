@@ -183,7 +183,7 @@ export async function action({ request }: ActionArgs): Promise<
             id,
             title: name,
             amount: parseFloat(amount.replace(/[^0-9.]/g, '')),
-            unit: parseFloat(unit.replace(/[^0-9.]/g, '')),
+            unit: unit ? parseFloat(unit.replace(/[^0-9.]/g, '')) : null,
             datetime: new Date(Date.parse(date)),
             installments: parseInt(installments),
             userId,
@@ -195,7 +195,7 @@ export async function action({ request }: ActionArgs): Promise<
           {
             title: name,
             amount: parseFloat(amount.replace(/[^0-9.]/g, '')),
-            unit: parseFloat(unit.replace(/[^0-9.]/g, '')),
+            unit: unit ? parseFloat(unit.replace(/[^0-9.]/g, '')) : null,
             datetime: new Date(Date.parse(date)),
             installments: parseInt(installments),
             userId,
@@ -204,7 +204,10 @@ export async function action({ request }: ActionArgs): Promise<
         )
       }
     } catch (e) {
-      return typedjson({ success: false, ...res }, { status: 500 })
+      return typedjson(
+        { success: false, message: JSON.stringify(e), ...res },
+        { status: 500 },
+      )
     }
     return typedjson({ success: true, ...res }, { status: 200 })
   }
@@ -221,7 +224,10 @@ export async function action({ request }: ActionArgs): Promise<
     try {
       await deleteExpense(id)
     } catch (e) {
-      return typedjson({ success: false, ...res }, { status: 500 })
+      return typedjson(
+        { success: false, message: JSON.stringify(e), ...res },
+        { status: 500 },
+      )
     }
     return typedjson({ success: true, ...res }, { status: 200 })
   }

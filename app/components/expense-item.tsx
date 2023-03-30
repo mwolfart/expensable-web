@@ -45,12 +45,15 @@ export function ExpenseItem({
     <div className="grid items-center gap-2 bg-foreground py-4 sm:grid-cols-2">
       <p className="text-md font-semibold">{expense.title}</p>
       <p className="sm:text-right">{date}</p>
-      <div>
+      <div className="flex flex-col">
         <p>{formatCurrency(expense.amount)}</p>
         {expense.unit && (
           <small>
             {t('common.each', { value: formatCurrency(expense.unit) })}
           </small>
+        )}
+        {expense.installments > 1 && (
+          <small>{`${expense.installments}x`}</small>
         )}
       </div>
       <div className="flex flex-row flex-wrap gap-2 sm:justify-end">

@@ -102,32 +102,21 @@ const parseExpense = (expense: {
   categoryId?: unknown
   installments?: unknown
 }) => {
-  const parsedAmount =
-    typeof expense.amount === 'string' &&
-    !isNaN(parseFloat(expense.amount.replace(/[^0-9.]/g, ''))) &&
-    parseFloat(expense.amount.replace(/[^0-9.]/g, ''))
-  const parsedUnit =
-    typeof expense.unit === 'string' &&
-    parseFloat(expense.unit.replace(/[^0-9.]/g, ''))
-  const parsedInstallments =
-    typeof expense.installments === 'string' &&
-    !isNaN(parseInt(expense.installments)) &&
-    parseInt(expense.installments)
   if (
     typeof expense.title !== 'string' ||
     typeof expense.categoryId !== 'string' ||
-    !parsedAmount ||
-    (parsedUnit && isNaN(parsedUnit)) ||
-    !parsedInstallments
+    typeof expense.amount !== 'number' ||
+    (expense.unit && typeof expense.unit !== 'number') ||
+    typeof expense.installments !== 'number'
   ) {
     return false
   }
   return {
     title: expense.title as string,
-    amount: parsedAmount,
-    ...(parsedUnit && { unit: parsedUnit }),
+    amount: expense.amount,
+    ...(!!expense.unit && { unit: expense.unit }),
     categoryId: expense.categoryId as string,
-    installments: parsedInstallments,
+    installments: expense.installments,
   }
 }
 

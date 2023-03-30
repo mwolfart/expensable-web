@@ -29,6 +29,7 @@ export type AddExpenseFormErrors = {
   date?: string
   categories?: string
   installments?: string
+  message?: string
 }
 
 export type ExpenseFilters = {

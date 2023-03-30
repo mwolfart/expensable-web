@@ -41,11 +41,23 @@ export function TransactionExpenseInputGroup({
     }
   }, [categoryFetcher.data])
 
-  const change = (evt: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const changeText = (
+    evt: ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+  ) => {
     const { name, value } = evt.target
     const newData = {
       ...data,
       [name]: value,
+    }
+    onChange(index, newData)
+    setData(newData)
+  }
+
+  const changeNumber = (evt: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = evt.target
+    const newData = {
+      ...data,
+      [name]: parseFloat(value.replace(/[^0-9.]/g, '')),
     }
     onChange(index, newData)
     setData(newData)
@@ -59,7 +71,7 @@ export function TransactionExpenseInputGroup({
           className="input"
           name="title"
           required
-          onChange={change}
+          onChange={changeText}
           defaultValue={initialData?.title}
         />
       </label>
@@ -68,8 +80,8 @@ export function TransactionExpenseInputGroup({
         <CurrencyInput
           className="input w-full"
           name="unit"
-          onChange={change}
-          value={
+          onChange={changeNumber}
+          defaultValue={
             initialData?.unit ? formatCurrency(initialData.unit) : undefined
           }
         />
@@ -79,8 +91,8 @@ export function TransactionExpenseInputGroup({
         <CurrencyInput
           className="input w-full"
           name="amount"
-          onChange={change}
-          value={
+          onChange={changeNumber}
+          defaultValue={
             initialData?.amount ? formatCurrency(initialData.amount) : undefined
           }
         />
@@ -88,7 +100,7 @@ export function TransactionExpenseInputGroup({
       <label className="lg:max-2xl:flex-grow">
         {t('common.category')}
         <select
-          onChange={change}
+          onChange={changeText}
           name="categoryId"
           defaultValue={initialData?.categoryId}
           className="input"
@@ -106,7 +118,7 @@ export function TransactionExpenseInputGroup({
         <input
           className="input w-full"
           name="installments"
-          onChange={change}
+          onChange={changeNumber}
           value={initialData?.installments || 1}
         />
       </label>
