@@ -7,7 +7,7 @@ import type {
   LoaderArgs,
   TypedResponse,
 } from '@remix-run/server-runtime'
-import { useRevalidator, useSearchParams } from '@remix-run/react'
+import { useNavigate, useRevalidator, useSearchParams } from '@remix-run/react'
 import { useContext, useState } from 'react'
 import { typedjson, useTypedLoaderData } from 'remix-typedjson'
 import { useTranslations } from 'use-intl'
@@ -36,7 +36,7 @@ import { FilterButton } from '~/components/filter-button'
 import { MobileCancelDialog } from '~/components/mobile-cancel-dialog'
 import { TransactionFilterComponent } from '~/components/transaction-filters'
 import { ErrorCodes } from '~/utils/schemas'
-import { UpsertTransactionDialog } from '~/components/transaction-upsert-dialog'
+import { UpsertTransactionForm } from '~/components/transaction-upsert-form'
 
 export async function loader({ request }: LoaderArgs) {
   const userId = await getUserId(request)
@@ -165,6 +165,7 @@ export default function Transactions() {
   const { transactions, total } = useTypedLoaderData<typeof loader>()
   const t = useTranslations()
   const revalidator = useRevalidator()
+  const navigate = useNavigate()
 
   const [params] = useSearchParams()
   const [startDate, endDate] = [params.get('startDate'), params.get('endDate')]
@@ -182,7 +183,7 @@ export default function Transactions() {
   const pagination = usePagination({ url: '/transactions', total })
   const filter = useFilter({ url: '/transactions' })
 
-  const onTransactionUpserted = async (updated?: boolean) => {
+  const onTransactionAdded = async (updated?: boolean) => {
     setUpsertText(updated ? t('transactions.saved') : t('transactions.created'))
     revalidator.revalidate()
     setShowUpsertToast(true)
@@ -191,10 +192,7 @@ export default function Transactions() {
   }
 
   const onAddTransaction = () => {
-    openDialog(
-      <UpsertTransactionDialog onUpserted={onTransactionUpserted} />,
-      true,
-    )
+    openDialog(<UpsertTransactionForm onUpserted={onTransactionAdded} />, true)
   }
 
   const onTransactionDeleted = async () => {
@@ -204,13 +202,7 @@ export default function Transactions() {
   }
 
   const onEditExpense = (transaction: TransactionWithExpenses) => {
-    openDialog(
-      <UpsertTransactionDialog
-        onUpserted={() => onTransactionUpserted(true)}
-        initialData={transaction}
-      />,
-      true,
-    )
+    navigate(`/transaction/${transaction.id}`)
   }
 
   const FiltersBlock = (

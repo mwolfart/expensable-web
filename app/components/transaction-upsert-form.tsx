@@ -1,7 +1,6 @@
 import type { FormEventHandler } from 'react'
 import type {
   AddTransactionFormErrors,
-  ExpenseWithCategory,
   TransactionExpenseInput,
   TransactionWithExpenses,
 } from '~/utils/types'
@@ -16,6 +15,7 @@ import { AiOutlinePlus } from 'react-icons/ai'
 type Props = {
   onUpserted: (updated?: boolean) => unknown
   initialData?: TransactionWithExpenses
+  initialExpenses?: TransactionExpenseInput[]
 }
 
 const errorsReducer = (
@@ -26,10 +26,13 @@ const errorsReducer = (
   ...action,
 })
 
-export function UpsertTransactionDialog({ onUpserted, initialData }: Props) {
+export function UpsertTransactionForm({
+  onUpserted,
+  initialData,
+  initialExpenses,
+}: Props) {
   const t = useTranslations()
   const fetcher = useFetcher()
-  const expensesFetcher = useFetcher()
   const { closeDialog } = useContext(DialogContext)
 
   const initialErrors = {
@@ -41,9 +44,9 @@ export function UpsertTransactionDialog({ onUpserted, initialData }: Props) {
     errorsReducer,
     initialErrors,
   )
-  const [expenses, setExpenses] = useState<Partial<TransactionExpenseInput>[]>([
-    {},
-  ])
+  const [expenses, setExpenses] = useState<Partial<TransactionExpenseInput>[]>(
+    initialExpenses || [{}],
+  )
 
   useEffect(() => {
     if (fetcher.data?.errors) {
@@ -53,28 +56,6 @@ export function UpsertTransactionDialog({ onUpserted, initialData }: Props) {
       closeDialog()
     }
   }, [closeDialog, fetcher.data, onUpserted])
-
-  useEffect(() => {
-    if (expensesFetcher.data) {
-      const expenseArray = expensesFetcher.data
-        .expenses as ExpenseWithCategory[]
-      const parsedExpenses = expenseArray.map(({ categories, ...expense }) => ({
-        ...expense,
-        categoryId: categories[0].categoryId,
-      }))
-      setExpenses(parsedExpenses)
-    }
-  }, [expensesFetcher.data])
-
-  useEffect(() => {
-    if (initialData?.expenses) {
-      const expensesToFetch = initialData.expenses
-        .map(({ expenseId }) => expenseId)
-        .join(',')
-      expensesFetcher.load(`/expenses?ids=${expensesToFetch}`)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [initialData])
 
   const onSubmit: FormEventHandler<HTMLFormElement> = (evt) => {
     evt.preventDefault()

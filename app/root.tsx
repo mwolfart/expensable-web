@@ -33,14 +33,14 @@ export default function App() {
   return (
     <html
       lang="en"
-      className="flex min-h-full flex-col"
+      className="flex h-full min-h-full flex-col"
       data-theme="expensable"
     >
       <head>
         <Meta />
         <Links />
       </head>
-      <body className="flex-grow bg-gradient-to-tr from-green-200 via-orange-200 to-red-200">
+      <body className="h-full flex-grow bg-gradient-to-tr from-green-200 via-orange-200 to-red-200">
         <IntlProvider messages={i18n.en} locale="en">
           <Outlet />
         </IntlProvider>
