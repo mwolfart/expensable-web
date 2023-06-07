@@ -4,18 +4,19 @@ import type {
   TransactionExpenseInput,
   TransactionWithExpenses,
 } from '~/utils/types'
-import { useState, useReducer, useContext, useEffect } from 'react'
+import { useState, useReducer, useEffect } from 'react'
 import { Form, useFetcher } from '@remix-run/react'
 import { useTranslations } from 'use-intl'
-import { DialogContext } from '~/providers/dialog'
 import { TransactionExpenseInputGroup } from './transaction-expense-input-group'
 import { cxFormInput, cxWithFade } from '~/utils'
 import { AiOutlinePlus } from 'react-icons/ai'
+import { BeatLoader } from 'react-spinners'
 
 type Props = {
-  onUpserted: (updated?: boolean) => unknown
+  onGoBack: () => unknown
   initialData?: TransactionWithExpenses
   initialExpenses?: TransactionExpenseInput[]
+  isLoadingExpenses?: boolean
 }
 
 const errorsReducer = (
@@ -27,13 +28,13 @@ const errorsReducer = (
 })
 
 export function UpsertTransactionForm({
-  onUpserted,
+  onGoBack,
   initialData,
   initialExpenses,
+  isLoadingExpenses,
 }: Props) {
   const t = useTranslations()
   const fetcher = useFetcher()
-  const { closeDialog } = useContext(DialogContext)
 
   const initialErrors = {
     title: '',
@@ -45,17 +46,22 @@ export function UpsertTransactionForm({
     initialErrors,
   )
   const [expenses, setExpenses] = useState<Partial<TransactionExpenseInput>[]>(
-    initialExpenses || [{}],
+    [],
   )
+
+  useEffect(() => {
+    if (initialExpenses) {
+      setExpenses(initialExpenses)
+    }
+  }, [initialExpenses])
 
   useEffect(() => {
     if (fetcher.data?.errors) {
       updateFormErrors(fetcher.data.errors)
     } else if (fetcher.data?.success) {
-      onUpserted()
-      closeDialog()
+      onGoBack()
     }
-  }, [closeDialog, fetcher.data, onUpserted])
+  }, [fetcher.data, onGoBack])
 
   const onSubmit: FormEventHandler<HTMLFormElement> = (evt) => {
     evt.preventDefault()
@@ -89,7 +95,10 @@ export function UpsertTransactionForm({
   }
 
   return (
-    <Form className="grid gap-8 lg:grid-cols-2" onSubmit={onSubmit}>
+    <Form
+      className="grid h-full grid-rows-[min-content] gap-8 lg:grid-cols-2"
+      onSubmit={onSubmit}
+    >
       <label>
         {t('common.title')}
         <input
@@ -107,48 +116,61 @@ export function UpsertTransactionForm({
           defaultValue={initialData?.datetime.toISOString().substring(0, 10)}
         />
       </label>
-      <div className="flex flex-col gap-4 pb-8 lg:col-span-2">
-        <div className="flex items-center gap-4">
-          <h3>{t('common.expenses')}</h3>
-          <p
-            className={cxWithFade(
-              'flex-grow font-bold text-error',
-              Boolean(formErrors.expenses),
-            )}
+      <div className="flex flex-col lg:col-span-2">
+        <div className="flex flex-grow flex-col gap-4 pb-8">
+          <div className="flex items-center gap-4">
+            <h3>{t('common.expenses')}</h3>
+            <p
+              className={cxWithFade(
+                'flex-grow font-bold text-error',
+                Boolean(formErrors.expenses),
+              )}
+            >
+              {formErrors.expenses}
+            </p>
+          </div>
+          {isLoadingExpenses ? (
+            <BeatLoader color="grey" size={10} />
+          ) : (
+            <>
+              <div className="flex w-full flex-col bg-gradient-to-r from-grey to-primary max-xl:gap-[1px]">
+                {expenses.map((expense, index) => (
+                  <TransactionExpenseInputGroup
+                    key={index}
+                    index={index}
+                    onChange={onChangeExpense}
+                    onRemove={onRemoveExpense}
+                    canRemove={index === 0 && expenses.length <= 1}
+                    initialData={expense}
+                  />
+                ))}
+              </div>
+              <button
+                type="button"
+                className="btn-primary btn flex w-fit gap-2 text-white"
+                onClick={onAddExpense}
+              >
+                <AiOutlinePlus size={24} />
+                {t('transactions.new-expense')}
+              </button>
+            </>
+          )}
+        </div>
+        <div className="flex w-full flex-col gap-4 lg:col-span-2">
+          <button
+            className="btn-primary btn w-full"
+            disabled={isLoadingExpenses}
           >
-            {formErrors.expenses}
-          </p>
+            {t('common.submit')}
+          </button>
+          <button
+            type="button"
+            className="btn-outline btn-primary btn w-full"
+            onClick={onGoBack}
+          >
+            {t('common.cancel')}
+          </button>
         </div>
-        <div className="flex w-full flex-col bg-gradient-to-r from-grey to-primary max-xl:gap-[1px]">
-          {expenses.map((expense, index) => (
-            <TransactionExpenseInputGroup
-              key={index}
-              index={index}
-              onChange={onChangeExpense}
-              onRemove={onRemoveExpense}
-              canRemove={index === 0 && expenses.length <= 1}
-              initialData={expense}
-            />
-          ))}
-        </div>
-        <button
-          type="button"
-          className="btn-primary btn flex w-fit gap-2 text-white"
-          onClick={onAddExpense}
-        >
-          <AiOutlinePlus size={24} />
-          {t('transactions.new-expense')}
-        </button>
-      </div>
-      <div className="flex w-full flex-col gap-4 lg:col-span-2">
-        <button className="btn-primary btn w-full">{t('common.submit')}</button>
-        <button
-          type="button"
-          className="btn-outline btn-primary btn w-full"
-          onClick={closeDialog}
-        >
-          {t('common.cancel')}
-        </button>
       </div>
     </Form>
   )

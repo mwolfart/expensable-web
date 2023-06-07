@@ -22,6 +22,16 @@ export const getUserTransactions = (
     },
   })
 
+export const getUserTransactionById = (transactionId: string) =>
+  prisma.transaction.findUnique({
+    include: {
+      expenses: true,
+    },
+    where: {
+      id: transactionId,
+    },
+  })
+
 // TODO: Prisma does not currently support counting along with fetching. Change this in the future to use only one query
 export const countUserTransactions = (id: string) =>
   prisma.transaction.count({

@@ -7,8 +7,8 @@ import type {
   LoaderArgs,
   TypedResponse,
 } from '@remix-run/server-runtime'
-import { useNavigate, useRevalidator, useSearchParams } from '@remix-run/react'
-import { useContext, useState } from 'react'
+import { useNavigate, useSearchParams } from '@remix-run/react'
+import { useState } from 'react'
 import { typedjson, useTypedLoaderData } from 'remix-typedjson'
 import { useTranslations } from 'use-intl'
 import { NoData } from '~/components/no-data'
@@ -26,7 +26,6 @@ import {
   getUserTransactionsByFilter,
   updateTransaction,
 } from '~/models/transaction.server'
-import { DialogContext } from '~/providers/dialog'
 import { getUserId } from '~/session.server'
 import { areAllValuesEmpty, cxWithGrowFadeLg, parseExpenses } from '~/utils'
 import { timeout } from '~/utils/timeout'
@@ -36,7 +35,6 @@ import { FilterButton } from '~/components/filter-button'
 import { MobileCancelDialog } from '~/components/mobile-cancel-dialog'
 import { TransactionFilterComponent } from '~/components/transaction-filters'
 import { ErrorCodes } from '~/utils/schemas'
-import { UpsertTransactionForm } from '~/components/transaction-upsert-form'
 
 export async function loader({ request }: LoaderArgs) {
   const userId = await getUserId(request)
@@ -164,7 +162,6 @@ export async function action({ request }: ActionArgs): Promise<
 export default function Transactions() {
   const { transactions, total } = useTypedLoaderData<typeof loader>()
   const t = useTranslations()
-  const revalidator = useRevalidator()
   const navigate = useNavigate()
 
   const [params] = useSearchParams()
@@ -174,25 +171,14 @@ export default function Transactions() {
     endDate: endDate ? new Date(endDate) : null,
   }
 
-  const { openDialog } = useContext(DialogContext)
   const [showFilters, setShowFilters] = useState(false)
-  const [showUpsertToast, setShowUpsertToast] = useState(false)
   const [showDeletedToast, setShowDeletedToast] = useState(false)
-  const [upsertText, setUpsertText] = useState('')
 
   const pagination = usePagination({ url: '/transactions', total })
   const filter = useFilter({ url: '/transactions' })
 
-  const onTransactionAdded = async (updated?: boolean) => {
-    setUpsertText(updated ? t('transactions.saved') : t('transactions.created'))
-    revalidator.revalidate()
-    setShowUpsertToast(true)
-    await timeout(3000)
-    setShowUpsertToast(false)
-  }
-
   const onAddTransaction = () => {
-    openDialog(<UpsertTransactionForm onUpserted={onTransactionAdded} />, true)
+    navigate('/transaction/new')
   }
 
   const onTransactionDeleted = async () => {
@@ -201,7 +187,7 @@ export default function Transactions() {
     setShowDeletedToast(false)
   }
 
-  const onEditExpense = (transaction: TransactionWithExpenses) => {
+  const onEditTransaction = (transaction: TransactionWithExpenses) => {
     navigate(`/transaction/${transaction.id}`)
   }
 
@@ -215,9 +201,6 @@ export default function Transactions() {
 
   return (
     <div className="m-8 mt-0 md:mt-4">
-      {showUpsertToast && (
-        <Toast message={upsertText} severity="alert-success" />
-      )}
       {showDeletedToast && (
         <Toast message={t('transactions.deleted')} severity="alert-info" />
       )}
@@ -253,7 +236,7 @@ export default function Transactions() {
           <TransactionList
             transactions={transactions}
             renderDeleteToast={onTransactionDeleted}
-            renderEditDialog={onEditExpense}
+            renderEditDialog={onEditTransaction}
           />
           <PaginationButtons total={total} {...pagination} />
         </>
