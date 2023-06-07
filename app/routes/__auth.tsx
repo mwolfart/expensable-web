@@ -34,7 +34,7 @@ export default function AuthPage() {
   )
 
   return (
-    <div className="flex h-full items-center p-8 sm:p-16">
+    <div className="flex h-full flex-grow items-center p-8 sm:p-16">
       <div className={panelClasses}>
         <Outlet context={context} />
       </div>

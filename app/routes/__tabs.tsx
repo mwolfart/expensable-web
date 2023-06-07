@@ -34,7 +34,7 @@ export default function Index() {
   return (
     <CategoryProvider>
       <DialogProvider>
-        <main className="relative flex h-full flex-col p-8 sm:p-16 sm:pt-0">
+        <main className="relative flex h-full flex-grow flex-col p-8 sm:p-16 sm:pt-0">
           <div className="hidden flex-row justify-end gap-8 p-4 sm:flex">
             <p className="flex items-center text-sm text-primary">
               {t('home.logged-in-as', { user: user?.fullName })}

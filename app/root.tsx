@@ -40,7 +40,7 @@ export default function App() {
         <Meta />
         <Links />
       </head>
-      <body className="h-full flex-grow bg-gradient-to-tr from-green-200 via-orange-200 to-red-200">
+      <body className="flex h-full flex-grow flex-col bg-gradient-to-tr from-green-200 via-orange-200 to-red-200">
         <IntlProvider messages={i18n.en} locale="en">
           <Outlet />
         </IntlProvider>
