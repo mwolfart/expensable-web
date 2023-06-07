@@ -33,7 +33,7 @@ export default function App() {
   return (
     <html
       lang="en"
-      className="flex h-full min-h-full flex-col"
+      className="flex min-h-full flex-col"
       data-theme="expensable"
     >
       <head>
