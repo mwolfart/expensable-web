@@ -39,7 +39,7 @@ export default function TransactionId() {
       const expensesToFetch = transaction.expenses
         .map(({ expenseId }) => expenseId)
         .join(',')
-      expensesFetcher.load(`/expenses?ids=${expensesToFetch}&limit=5`)
+      expensesFetcher.load(`/expenses?ids=${expensesToFetch}&limit=30`)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [transaction])

@@ -55,6 +55,8 @@ export function TransactionExpenseInputGroup({
     setData(newData)
   }
 
+  console.log(initialData?.categoryId)
+
   return (
     <div className="flex w-full flex-col items-end gap-4 bg-foreground py-4 lg:flex-row lg:flex-wrap xl:flex-nowrap xl:py-1 max-lg:[&>*]:w-full">
       <label className="flex-grow">

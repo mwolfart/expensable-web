@@ -1,14 +1,14 @@
-import type { FormEventHandler, MouseEventHandler } from 'react'
-import type { Tag } from 'react-tag-input'
+import type { FormEventHandler } from 'react'
 import type { AddExpenseFormErrors, ExpenseWithCategory } from '~/utils/types'
-import { useContext, useEffect, useReducer, useState } from 'react'
+import type { Tag } from './tag-input'
+import { useContext, useEffect, useId, useReducer, useState } from 'react'
 import { useTranslations } from 'use-intl'
 import { CurrencyInput } from './currency-input'
-import { WithContext as ReactTags } from 'react-tag-input'
 import { Form, useFetcher } from '@remix-run/react'
 import { DialogContext } from '~/providers/dialog'
 import { cxFormInput, formatCurrency } from '~/utils'
 import { CategoryContext } from '~/providers/category'
+import { TagInput } from './tag-input'
 
 const MAX_CATEGORIES = 3
 
@@ -29,6 +29,7 @@ export function UpsertExpenseDialog({ onUpserted, initialData }: Props) {
   const t = useTranslations()
   const fetcher = useFetcher()
   const { list: categories, map: categoryMap } = useContext(CategoryContext)
+  const tagInputId = useId()
 
   const { closeDialog } = useContext(DialogContext)
   const [tags, setTags] = useState<Tag[]>([])
@@ -84,18 +85,14 @@ export function UpsertExpenseDialog({ onUpserted, initialData }: Props) {
     fetcher.submit(data, { method: 'put', action: '/expenses' })
   }
 
-  const onCategoryDelete = (id: number) => {
-    setTags(tags.filter((_, index) => index !== id))
+  const onCategoryDelete = (id: number | string) => {
+    setTags(tags.filter(({ id: index }) => id !== index))
   }
 
   const onCategoryAdd = (tag: Tag) => {
     if (tags.length < MAX_CATEGORIES) {
       setTags([...tags, tag])
     }
-  }
-
-  const onTagWrapperClick: MouseEventHandler = (evt) => {
-    evt.preventDefault()
   }
 
   const initialAmount =
@@ -152,34 +149,15 @@ export function UpsertExpenseDialog({ onUpserted, initialData }: Props) {
           defaultValue={initialData?.installments || 1}
         />
       </label>
-      <label className="col-span-4">
+      <label className="col-span-4" htmlFor={tagInputId}>
         {t('common.optional-field', { field: t('common.categories') })}
-        <div
-          className={cxFormInput({
-            hasError: formErrors.categories,
-            extraClasses:
-              'h-28 cursor-text focus-within:outline focus-within:outline-[#ccc3]',
-          })}
-          onClick={onTagWrapperClick}
-        >
-          <ReactTags
-            tags={tags}
-            suggestions={suggestions}
-            handleDelete={onCategoryDelete}
-            handleAddition={onCategoryAdd}
-            classNames={{
-              tagInputField: 'outline-none w-64',
-              suggestions: 'absolute py-2',
-              tagInput: 'relative',
-              selected: 'w-full flex flex-row flex-wrap gap-2 py-2',
-              tag: 'p-1 bg-light-grey rounded-lg',
-              remove: 'px-1',
-            }}
-            autocomplete
-            allowDragDrop={false}
-            allowAdditionFromPaste={false}
-          />
-        </div>
+        <TagInput
+          tags={tags}
+          suggestions={suggestions}
+          onTagAdd={onCategoryAdd}
+          onTagDelete={onCategoryDelete}
+          inputId={tagInputId}
+        />
       </label>
       <div className="col-span-2 mt-8 flex w-full flex-row justify-between gap-4">
         <button className="btn-primary btn flex-grow">

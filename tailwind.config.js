@@ -35,7 +35,8 @@ module.exports = {
       lg: ['30px', '36px'],
       md: ['24px', '32px'],
       sm: ['17px', '23px'],
-      xs: ['14px', '18px']
+      xs: ['14px', '18px'],
+      xxs: ['11px', '13px'],
     },
     extend: {
       colors,
