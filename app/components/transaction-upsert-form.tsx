@@ -1,21 +1,22 @@
 import type { FormEventHandler } from 'react'
 import type {
   AddTransactionFormErrors,
-  TransactionExpenseInput,
+  ExpenseWithCategory,
   TransactionWithExpenses,
 } from '~/utils/types'
 import { useState, useReducer, useEffect } from 'react'
 import { Form, useFetcher } from '@remix-run/react'
 import { useTranslations } from 'use-intl'
-import { TransactionExpenseInputGroup } from './transaction-expense-input-group'
+import { TransactionExpenseRow } from './transaction-expense-row'
 import { cxFormInput, cxWithFade } from '~/utils'
 import { AiOutlinePlus } from 'react-icons/ai'
 import { BeatLoader } from 'react-spinners'
+import { TransactionNewExpenseRow } from './transaction-new-expense-row'
 
 type Props = {
   onGoBack: () => unknown
   initialData?: TransactionWithExpenses
-  initialExpenses?: TransactionExpenseInput[]
+  initialExpenses?: ExpenseWithCategory[]
   isLoadingExpenses?: boolean
 }
 
@@ -45,9 +46,8 @@ export function UpsertTransactionForm({
     errorsReducer,
     initialErrors,
   )
-  const [expenses, setExpenses] = useState<Partial<TransactionExpenseInput>[]>(
-    [],
-  )
+  const [expenses, setExpenses] = useState<ExpenseWithCategory[]>([])
+  const [isAddingExpense, setAddingExpense] = useState(true)
 
   useEffect(() => {
     if (initialExpenses) {
@@ -79,20 +79,11 @@ export function UpsertTransactionForm({
     setExpenses(newExpenses)
   }
 
-  const onChangeExpense = (
-    index: number,
-    expense: Partial<TransactionExpenseInput>,
-  ) => {
-    const newExpenses = [...expenses]
-    newExpenses[index] = expense
-    setExpenses(newExpenses)
-  }
-
-  const onAddExpense = () => {
-    const newExpenses = [...expenses]
-    newExpenses.push({})
-    setExpenses(newExpenses)
-  }
+  // const onAddExpense = () => {
+  //   const newExpenses = [...expenses]
+  //   newExpenses.push({})
+  //   setExpenses(newExpenses)
+  // }
 
   return (
     <Form
@@ -133,22 +124,42 @@ export function UpsertTransactionForm({
             <BeatLoader color="grey" size={10} />
           ) : (
             <>
-              <div className="flex w-full flex-col bg-gradient-to-r from-grey to-primary max-xl:gap-[1px]">
-                {expenses.map((expense, index) => (
-                  <TransactionExpenseInputGroup
-                    key={index}
-                    index={index}
-                    onChange={onChangeExpense}
-                    onRemove={onRemoveExpense}
-                    canRemove={index === 0 && expenses.length <= 1}
-                    initialData={expense}
-                  />
-                ))}
+              <div className="max-lg:bg-gradient-to-r from-grey to-primary flex flex-col gap-y-[1px] lg:gap-x-2 lg:grid lg:grid-cols-6">
+                <div className="hidden lg:grid lg:grid-cols-[subgrid] font-bold bg-foreground col-span-6">
+                  <span>{t('common.name')}</span>
+                  <span>
+                    {t('common.optional-field', { field: t('common.unit') })}
+                  </span>
+                  <span>{t('common.amount')}</span>
+                  <span>{t('common.category')}</span>
+                  <span>{t('common.installments')}</span>
+                  <span></span>
+                </div>
+                <div className="bg-foreground grid max-lg:grid-rows-4 max-lg:grid-flow-col max-lg:py-2 lg:items-center lg:grid-cols-[subgrid] lg:col-span-6">
+                  {expenses.map((expense, index) => (
+                    <TransactionExpenseRow
+                      key={index}
+                      index={index}
+                      onRemove={onRemoveExpense}
+                      canRemove={index === 0 && expenses.length <= 1}
+                      expense={expense}
+                    />
+                  ))}
+                </div>
+                <div className="bg-foreground grid sm:max-lg:grid-cols-2 max-lg:gap-2 max-lg:py-2 lg:grid-cols-[subgrid] lg:col-span-6">
+                  {isAddingExpense && (
+                    <TransactionNewExpenseRow
+                      onCancel={() => setAddingExpense(false)}
+                      onAdd={() => {}}
+                    />
+                  )}
+                </div>
               </div>
               <button
                 type="button"
                 className="btn-primary btn flex w-fit gap-2 text-white"
-                onClick={onAddExpense}
+                onClick={() => setAddingExpense(true)}
+                disabled={isAddingExpense}
               >
                 <AiOutlinePlus size={24} />
                 {t('transactions.new-expense')}
