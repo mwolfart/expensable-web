@@ -3,7 +3,7 @@
 const colors = {
   primary: "#ef4444",
   'primary-focus': '#c22015',
-  'primary-disabled': '#606060',
+  'primary-disabled': '#b0b0b0',
   secondary: '#faa460',
   black: '#475569',
   foreground: "#fff7ed",
@@ -46,6 +46,7 @@ module.exports = {
       },
       gridTemplateColumns: {
         '2-grow-left': 'minmax(0, 1fr) min-content',
+        '6-shrink-last': 'repeat(5, minmax(0, 1fr)) min-content',
       }
     },
   },
@@ -58,10 +59,18 @@ module.exports = {
             transition: '0.5s',
           },
           '.btn-primary': {
-            color: '#ffffff'
+            color: colors.white,
+            '&:disabled': {
+              backgroundColor: colors['primary-disabled'],
+              color: colors.white,
+            }
+          },
+          '.btn-outline.btn-primary:disabled': {
+            color: colors['primary-disabled'],
+            backgroundColor: 'inherit',
           },
           '.btn-outline.btn-primary:hover': {
-            color: '#ffffff'
+            color: colors.white
           },
           '.btn-link': {
             'text-transform': 'none',

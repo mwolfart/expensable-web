@@ -1,4 +1,4 @@
-import type { ExpenseWithCategory } from '~/utils/types'
+import type { TransactionExpenseInput } from '~/utils/types'
 import { useContext } from 'react'
 import { BsTrash } from 'react-icons/bs'
 import { formatCurrency } from '~/utils'
@@ -9,7 +9,7 @@ type Props = {
   index: number
   onRemove: (index: number) => unknown
   canRemove: boolean
-  expense: ExpenseWithCategory
+  expense: TransactionExpenseInput
 }
 
 export function TransactionExpenseRow({
@@ -29,7 +29,7 @@ export function TransactionExpenseRow({
       </div>
       <div>{formatCurrency(expense.amount)}</div>
       <div className="max-lg:col-start-2 max-lg:font-bold max-lg:text-grey">
-        {categoryMap.get(expense.categories[0].categoryId)}
+        {categoryMap.get(expense.categoryId)}
       </div>
       <div className="max-lg:col-start-2 max-lg:row-start-3">{`${expense.installments}x`}</div>
       <div className="max-lg:row-start-4 lg:flex lg:justify-end">

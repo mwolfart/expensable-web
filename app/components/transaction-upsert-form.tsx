@@ -2,6 +2,7 @@ import type { FormEventHandler } from 'react'
 import type {
   AddTransactionFormErrors,
   ExpenseWithCategory,
+  TransactionExpenseInput,
   TransactionWithExpenses,
 } from '~/utils/types'
 import { useState, useReducer, useEffect } from 'react'
@@ -46,12 +47,23 @@ export function UpsertTransactionForm({
     errorsReducer,
     initialErrors,
   )
-  const [expenses, setExpenses] = useState<ExpenseWithCategory[]>([])
-  const [isAddingExpense, setAddingExpense] = useState(true)
+  const [expenses, setExpenses] = useState<TransactionExpenseInput[]>([])
+  const [isAddingExpense, setAddingExpense] = useState(false)
 
   useEffect(() => {
     if (initialExpenses) {
-      setExpenses(initialExpenses)
+      setExpenses(
+        initialExpenses.map(
+          ({ id, title, amount, unit, categories, installments }) => ({
+            id,
+            title,
+            amount,
+            unit,
+            installments,
+            categoryId: categories[0].categoryId,
+          }),
+        ),
+      )
     }
   }, [initialExpenses])
 
@@ -79,11 +91,12 @@ export function UpsertTransactionForm({
     setExpenses(newExpenses)
   }
 
-  // const onAddExpense = () => {
-  //   const newExpenses = [...expenses]
-  //   newExpenses.push({})
-  //   setExpenses(newExpenses)
-  // }
+  const onAddExpense = (data: TransactionExpenseInput) => {
+    const newExpenses = [...expenses]
+    newExpenses.push(data)
+    setExpenses(newExpenses)
+    setAddingExpense(false)
+  }
 
   return (
     <Form
@@ -124,7 +137,7 @@ export function UpsertTransactionForm({
             <BeatLoader color="grey" size={10} />
           ) : (
             <>
-              <div className="max-lg:bg-gradient-to-r from-grey to-primary flex flex-col gap-y-[1px] lg:gap-x-2 lg:grid lg:grid-cols-6">
+              <div className="max-lg:bg-gradient-to-r from-grey to-primary flex flex-col gap-y-[1px] lg:gap-2 lg:grid lg:grid-cols-6-shrink-last">
                 <div className="hidden lg:grid lg:grid-cols-[subgrid] font-bold bg-foreground col-span-6">
                   <span>{t('common.name')}</span>
                   <span>
@@ -150,7 +163,7 @@ export function UpsertTransactionForm({
                   {isAddingExpense && (
                     <TransactionNewExpenseRow
                       onCancel={() => setAddingExpense(false)}
-                      onAdd={() => {}}
+                      onAdd={onAddExpense}
                     />
                   )}
                 </div>
@@ -170,7 +183,7 @@ export function UpsertTransactionForm({
         <div className="flex w-full flex-col gap-4 lg:col-span-2">
           <button
             className="btn-primary btn w-full"
-            disabled={isLoadingExpenses}
+            disabled={isLoadingExpenses || isAddingExpense}
           >
             {t('common.submit')}
           </button>

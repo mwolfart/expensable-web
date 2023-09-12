@@ -8,7 +8,7 @@ import { FaCheck, FaTimes } from 'react-icons/fa'
 
 type Props = {
   onCancel: () => unknown
-  onAdd: (data: Partial<TransactionExpenseInput>) => unknown
+  onAdd: (data: TransactionExpenseInput) => unknown
 }
 
 export function TransactionNewExpenseRow({ onCancel, onAdd }: Props) {
@@ -35,6 +35,9 @@ export function TransactionNewExpenseRow({ onCancel, onAdd }: Props) {
     }
     setData(newData)
   }
+
+  const isDataValid =
+    data.title && data.amount && data.categoryId && data.installments
 
   return (
     <>
@@ -96,13 +99,16 @@ export function TransactionNewExpenseRow({ onCancel, onAdd }: Props) {
           className="btn-outline btn-primary btn"
           aria-label={t('common.cancel')}
           onClick={onCancel}
+          type="button"
         >
           <FaTimes size={20} />
         </button>
         <button
           className="btn-outline btn-primary btn"
-          onClick={() => onAdd(data)}
+          onClick={() => onAdd(data as TransactionExpenseInput)}
+          disabled={!isDataValid}
           aria-label={t('common.submit')}
+          type="button"
         >
           <FaCheck size={20} />
         </button>
