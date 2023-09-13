@@ -52,7 +52,7 @@ export function TransactionItem({
   const onDelete = () => {
     fetcher.submit(
       { id: transaction.id },
-      { method: 'delete', action: '/transaction' },
+      { method: 'delete', action: '/transactions' },
     )
   }
 

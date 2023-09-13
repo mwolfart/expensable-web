@@ -73,7 +73,13 @@ export function UpsertTransactionForm({
     } else if (fetcher.data?.success) {
       onGoBack()
     }
-  }, [fetcher.data, onGoBack])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fetcher.data])
+
+  useEffect(() => {
+    updateFormErrors({ ...formErrors, expenses: '' })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAddingExpense])
 
   const onSubmit: FormEventHandler<HTMLFormElement> = (evt) => {
     evt.preventDefault()
@@ -82,6 +88,7 @@ export function UpsertTransactionForm({
       data.set('id', initialData.id)
     }
     data.set('expenses', JSON.stringify(expenses))
+    debugger
     fetcher.submit(data, { method: 'put', action: '/transactions' })
   }
 
@@ -109,6 +116,9 @@ export function UpsertTransactionForm({
           name="title"
           className={cxFormInput({ hasError: formErrors.title })}
           defaultValue={initialData?.location}
+          onChange={() =>
+            updateFormErrors({ ...formErrors, title: '', expenses: '' })
+          }
         />
       </label>
       <label>
@@ -118,6 +128,9 @@ export function UpsertTransactionForm({
           name="date"
           type="date"
           defaultValue={initialData?.datetime.toISOString().substring(0, 10)}
+          onChange={() =>
+            updateFormErrors({ ...formErrors, date: '', expenses: '' })
+          }
         />
       </label>
       <div className="flex flex-col lg:col-span-2">
@@ -138,7 +151,7 @@ export function UpsertTransactionForm({
           ) : (
             <>
               <div className="max-lg:bg-gradient-to-r from-grey to-primary flex flex-col gap-y-[1px] lg:gap-2 lg:grid lg:grid-cols-6-shrink-last">
-                <div className="hidden lg:grid lg:grid-cols-[subgrid] font-bold bg-foreground col-span-6">
+                <div className="hidden lg:grid lg:grid-cols-subgrid font-bold bg-foreground col-span-6">
                   <span>{t('common.name')}</span>
                   <span>
                     {t('common.optional-field', { field: t('common.unit') })}
@@ -148,7 +161,10 @@ export function UpsertTransactionForm({
                   <span>{t('common.installments')}</span>
                   <span></span>
                 </div>
-                <div className="bg-foreground grid max-lg:grid-rows-4 max-lg:grid-flow-col max-lg:py-2 lg:items-center lg:grid-cols-[subgrid] lg:col-span-6">
+                <div
+                  className={`bg-foreground grid max-lg:grid-rows-4 max-lg:grid-flow-col max-lg:py-2
+                    lg:items-center lg:grid-cols-subgrid lg:col-span-6`}
+                >
                   {expenses.map((expense, index) => (
                     <TransactionExpenseRow
                       key={index}
@@ -159,7 +175,7 @@ export function UpsertTransactionForm({
                     />
                   ))}
                 </div>
-                <div className="bg-foreground grid sm:max-lg:grid-cols-2 max-lg:gap-2 max-lg:py-2 lg:grid-cols-[subgrid] lg:col-span-6">
+                <div className="bg-foreground grid sm:max-lg:grid-cols-2 max-lg:gap-2 max-lg:py-2 lg:grid-cols-subgrid lg:col-span-6">
                   {isAddingExpense && (
                     <TransactionNewExpenseRow
                       onCancel={() => setAddingExpense(false)}
@@ -183,7 +199,7 @@ export function UpsertTransactionForm({
         <div className="flex w-full flex-col gap-4 lg:col-span-2">
           <button
             className="btn-primary btn w-full"
-            disabled={isLoadingExpenses || isAddingExpense}
+            disabled={isLoadingExpenses || isAddingExpense || !expenses.length}
           >
             {t('common.submit')}
           </button>

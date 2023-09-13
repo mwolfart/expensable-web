@@ -47,6 +47,10 @@ module.exports = {
       gridTemplateColumns: {
         '2-grow-left': 'minmax(0, 1fr) min-content',
         '6-shrink-last': 'repeat(5, minmax(0, 1fr)) min-content',
+        'subgrid': 'subgrid',
+      },
+      gridTemplateRows: {
+        'subgrid': 'subgrid',
       }
     },
   },
