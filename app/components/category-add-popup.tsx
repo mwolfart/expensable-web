@@ -16,11 +16,15 @@ export function AddCategoryPopup({ isOpen, setOpen }: Props) {
   const fetcher = useFetcher()
   const { errorToString } = useErrorMessages()
   const [showAddToast, setShowAddToast] = useState(false)
+  const [hasSubmitted, setSubmitted] = useState(false)
   const [title, setTitle] = useState('')
   const [addError, setAddError] = useState<string>()
 
   useEffect(() => {
     const handleAction = async () => {
+      if (!hasSubmitted) {
+        return
+      }
       if (fetcher.data?.error) {
         setAddError(errorToString(fetcher.data.error))
         setTitle('')
@@ -28,12 +32,13 @@ export function AddCategoryPopup({ isOpen, setOpen }: Props) {
         setOpen(false)
         setShowAddToast(true)
         setTitle('')
+        setSubmitted(false)
         await timeout(3000)
         setShowAddToast(false)
       }
     }
     handleAction()
-  }, [errorToString, fetcher.data, setOpen])
+  }, [errorToString, fetcher.data, hasSubmitted, setOpen])
 
   const onCancelAdd = () => {
     setTitle('')
@@ -46,6 +51,7 @@ export function AddCategoryPopup({ isOpen, setOpen }: Props) {
   }
 
   const onSubmit = () => {
+    setSubmitted(true)
     fetcher.submit({ category: title }, { method: 'post' })
   }
 
