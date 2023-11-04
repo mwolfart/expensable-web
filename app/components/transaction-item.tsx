@@ -78,7 +78,7 @@ export function TransactionItem({
               <TransactionItemExpense key={id} title={title} amount={amount} />
             ))}
             {expenseTotal > 5 && (
-              <div className="flex flex-col gap-1">
+              <div className="flex items-center gap-1">
                 <span>+</span>
                 <p>{t('common.n-more', { value: expenseTotal - 5 })}</p>
               </div>

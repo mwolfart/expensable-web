@@ -32,7 +32,7 @@
         "page-n": "Page {number}",
         "expenses": "Expenses",
         "category": "Category",
-        "n-more": "{{value}} more",
+        "n-more": "{value} more",
         "optional-field": "{field} (optional)",
         "each": "{value}/ea",
         "select-option": "Select an option",
