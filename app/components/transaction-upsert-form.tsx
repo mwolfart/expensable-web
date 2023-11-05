@@ -13,6 +13,7 @@ import { cxFormInput, cxWithFade } from '~/utils'
 import { AiOutlinePlus } from 'react-icons/ai'
 import { BeatLoader } from 'react-spinners'
 import { TransactionNewExpenseRow } from './transaction-new-expense-row'
+import { FaTimes } from 'react-icons/fa'
 
 type Props = {
   onGoBack: () => unknown
@@ -48,7 +49,8 @@ export function UpsertTransactionForm({
     initialErrors,
   )
   const [expenses, setExpenses] = useState<TransactionExpenseInput[]>([])
-  const [isAddingExpense, setAddingExpense] = useState(false)
+  const [numOfDirtyExpenses, setNumOfDirtyExpenses] = useState(0)
+  const [expensesToAdd, setExpensesToAdd] = useState(0)
 
   useEffect(() => {
     if (initialExpenses) {
@@ -79,7 +81,7 @@ export function UpsertTransactionForm({
   useEffect(() => {
     updateFormErrors({ ...formErrors, expenses: '' })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isAddingExpense])
+  }, [numOfDirtyExpenses])
 
   const onSubmit: FormEventHandler<HTMLFormElement> = (evt) => {
     evt.preventDefault()
@@ -102,7 +104,12 @@ export function UpsertTransactionForm({
     const newExpenses = [...expenses]
     newExpenses.push(data)
     setExpenses(newExpenses)
-    setAddingExpense(false)
+    setNumOfDirtyExpenses(numOfDirtyExpenses - 1)
+  }
+
+  const onAddNewDirtyExpenses = () => {
+    setNumOfDirtyExpenses(numOfDirtyExpenses + expensesToAdd + 1)
+    setExpensesToAdd(0)
   }
 
   return (
@@ -150,7 +157,7 @@ export function UpsertTransactionForm({
             <BeatLoader color="grey" size={10} />
           ) : (
             <>
-              <div className="max-lg:bg-gradient-to-r from-grey to-primary flex flex-col gap-y-[1px] lg:gap-2 lg:grid lg:grid-cols-6-shrink-last">
+              <div className="max-lg:bg-gradient-to-r from-grey to-primary flex flex-col gap-y-[1px] lg:gap-2 lg:grid lg:grid-cols-transaction-expense-table">
                 <div className="hidden lg:grid lg:grid-cols-subgrid font-bold bg-foreground col-span-6">
                   <span>{t('common.name')}</span>
                   <span>
@@ -162,7 +169,7 @@ export function UpsertTransactionForm({
                   <span></span>
                 </div>
                 <div
-                  className={`bg-foreground grid max-lg:grid-rows-4 max-lg:grid-flow-col max-lg:py-2
+                  className={`bg-foreground grid max-lg:grid-rows-4 max-lg:grid-flow-col max-lg:py-2 lg:gap-y-2
                     lg:items-center lg:grid-cols-subgrid lg:col-span-6`}
                 >
                   {expenses.map((expense, index) => (
@@ -175,31 +182,61 @@ export function UpsertTransactionForm({
                     />
                   ))}
                 </div>
-                <div className="bg-foreground grid sm:max-lg:grid-cols-2 max-lg:gap-2 max-lg:py-2 lg:grid-cols-subgrid lg:col-span-6">
-                  {isAddingExpense && (
+                <div className="bg-foreground grid sm:max-lg:grid-cols-2 max-lg:gap-2 max-lg:py-2 lg:grid-cols-subgrid lg:col-span-6 lg:gap-y-2">
+                  {[...Array(numOfDirtyExpenses).keys()].map((i) => (
                     <TransactionNewExpenseRow
-                      onCancel={() => setAddingExpense(false)}
+                      key={i}
+                      onCancel={() =>
+                        setNumOfDirtyExpenses(numOfDirtyExpenses - 1)
+                      }
                       onAdd={onAddExpense}
                     />
-                  )}
+                  ))}
                 </div>
               </div>
-              <button
-                type="button"
-                className="btn-primary btn flex w-fit gap-2 text-white"
-                onClick={() => setAddingExpense(true)}
-                disabled={isAddingExpense}
-              >
-                <AiOutlinePlus size={24} />
-                {t('transactions.new-expense')}
-              </button>
+              <div className="flex gap-4">
+                <div className="flex gap-[2px]">
+                  <select
+                    className="input bg-primary rounded-tr-none rounded-br-none text-white focus:outline focus:outline-primary"
+                    value={expensesToAdd}
+                    onChange={(evt) =>
+                      setExpensesToAdd(parseInt(evt.target.value))
+                    }
+                  >
+                    {[...Array(9).keys()].map((i) => (
+                      <option key={i} value={i}>
+                        {i + 1}
+                      </option>
+                    ))}
+                  </select>
+                  <button
+                    type="button"
+                    className="btn-primary btn flex w-fit gap-2 text-white rounded-tl-none rounded-bl-none"
+                    onClick={onAddNewDirtyExpenses}
+                  >
+                    <AiOutlinePlus size={24} />
+                    {t('transactions.new-expense')}
+                  </button>
+                </div>
+                <button
+                  type="button"
+                  disabled={numOfDirtyExpenses === 0}
+                  className="btn-secondary btn flex w-fit gap-2 text-white"
+                  onClick={() => setNumOfDirtyExpenses(0)}
+                >
+                  <FaTimes size={24} />
+                  {t('transactions.cancel-all')}
+                </button>
+              </div>
             </>
           )}
         </div>
         <div className="flex w-full flex-col gap-4 lg:col-span-2">
           <button
             className="btn-primary btn w-full"
-            disabled={isLoadingExpenses || isAddingExpense || !expenses.length}
+            disabled={
+              isLoadingExpenses || numOfDirtyExpenses > 0 || !expenses.length
+            }
           >
             {t('common.submit')}
           </button>

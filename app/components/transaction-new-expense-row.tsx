@@ -13,7 +13,9 @@ type Props = {
 
 export function TransactionNewExpenseRow({ onCancel, onAdd }: Props) {
   const t = useTranslations()
-  const [data, setData] = useState<Partial<TransactionExpenseInput>>({})
+  const [data, setData] = useState<Partial<TransactionExpenseInput>>({
+    installments: 1,
+  })
   const { list: categories } = useContext(CategoryContext)
 
   const changeText = (
@@ -90,6 +92,7 @@ export function TransactionNewExpenseRow({ onCancel, onAdd }: Props) {
           name="installments"
           aria-label={t('common.installments')}
           placeholder={t('common.installments')}
+          value={1}
           onChange={changeNumber}
         />
       </div>

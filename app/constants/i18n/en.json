@@ -94,6 +94,7 @@
         "created": "Transaction created successfully!",
         "deleted": "Transaction deleted successfully!",
         "saved": "Transaction saved successfully!",
-        "new-expense": "New expense"
+        "new-expense": "New expense",
+        "cancel-all": "Cancel all"
     }
 }
