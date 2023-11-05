@@ -60,8 +60,8 @@ const getWhereClauseFromFilter = (
   { title, startDate, endDate, categoriesIds }: ExpenseFilters,
 ) => {
   const datetime = {
-    ...(startDate && { lte: startDate }),
-    ...(endDate && { gte: endDate }),
+    ...(startDate && { gte: startDate }),
+    ...(endDate && { lte: endDate }),
   }
   const categories = {
     some: {
@@ -75,6 +75,7 @@ const getWhereClauseFromFilter = (
     ...((startDate || endDate) && { datetime }),
     ...(categoriesIds && { categories }),
   }
+  console.log(where)
   return where
 }
 

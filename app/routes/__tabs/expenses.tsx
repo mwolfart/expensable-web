@@ -4,7 +4,6 @@ import type {
   TypedResponse,
 } from '@remix-run/server-runtime'
 import type { AddExpenseFormErrors, ExpenseWithCategory } from '~/utils/types'
-import type { Category } from '@prisma/client'
 import { useTranslations } from 'use-intl'
 import { AiOutlinePlus } from 'react-icons/ai'
 import {
@@ -319,7 +318,7 @@ export default function Expenses() {
           <AiOutlinePlus className="block text-white sm:hidden" size={24} />
         </button>
       </div>
-      <div className={cxWithGrowFadeLg('hidden md:block', showFilters)}>
+      <div className={cxWithGrowFadeLg('hidden md:block pb-8', showFilters)}>
         {FiltersBlock}
       </div>
       {!expenses.length && (

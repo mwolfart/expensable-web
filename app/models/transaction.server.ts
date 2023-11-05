@@ -45,8 +45,8 @@ const getWhereClauseFromFilter = (
   { startDate, endDate }: TransactionFilters,
 ) => {
   const datetime = {
-    ...(startDate && { lte: startDate }),
-    ...(endDate && { gte: endDate }),
+    ...(startDate && { gte: startDate }),
+    ...(endDate && { lte: endDate }),
   }
 
   const where = {

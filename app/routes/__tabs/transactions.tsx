@@ -223,7 +223,7 @@ export default function Transactions() {
           <AiOutlinePlus className="block text-white sm:hidden" size={24} />
         </button>
       </div>
-      <div className={cxWithGrowFadeLg('hidden md:block', showFilters)}>
+      <div className={cxWithGrowFadeLg('hidden md:block pb-8', showFilters)}>
         {FiltersBlock}
       </div>
       {!transactions.length && (
