@@ -1,7 +1,12 @@
-import type { TransactionExpenseInput, TransactionFilters } from '~/utils/types'
-import type { Expense, Transaction } from '@prisma/client'
+import type {
+  ExpenseCreate,
+  TransactionExpenseInput,
+  TransactionFilters,
+} from '~/utils/types'
+import type { Transaction } from '@prisma/client'
 import { prisma } from '~/db.server'
 import { DEFAULT_DATA_LIMIT } from '~/utils'
+import { createExpense } from './expenses.server'
 
 export const getUserTransactions = (
   id: string,
@@ -97,12 +102,10 @@ export const createTransaction = async (
   let total = 0
   const expensesPromise = expenses.map(async ({ categoryId, ...expense }) => {
     total += expense.amount
-    const exp = await prisma.expense.create({
-      data: {
-        datetime: transaction.datetime,
-        userId: transaction.userId,
-        ...expense,
-      },
+    const exp = await createExpense({
+      datetime: transaction.datetime,
+      userId: transaction.userId,
+      ...expense,
     })
     await prisma.categoriesOnExpense.create({
       data: {
@@ -142,10 +145,10 @@ const removeExpensesFromTransaction = async (transactionId: string) => {
 
 const createTransactionExpense = async (
   transactionId: string,
-  expense: Omit<Expense, 'id'>,
+  expense: ExpenseCreate,
   categoryId: string,
 ) => {
-  const { id } = await prisma.expense.create({ data: expense })
+  const { id } = await createExpense(expense)
   const categoryPromise = prisma.categoriesOnExpense.create({
     data: {
       expenseId: id,

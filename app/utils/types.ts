@@ -5,6 +5,16 @@ import type {
   Transaction,
 } from '@prisma/client'
 
+export type ExpenseUpdate = Omit<
+  Expense,
+  'isVisible' | 'parentExpenseId' | 'amountEffective'
+>
+
+export type ExpenseCreate = Omit<
+  Expense,
+  'id' | 'isVisible' | 'parentExpenseId' | 'amountEffective'
+>
+
 export type ExpenseWithCategory = Expense & {
   categories: CategoriesOnExpense[]
 }

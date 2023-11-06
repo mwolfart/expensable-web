@@ -1,7 +1,11 @@
-import type { Expense } from '@prisma/client'
 import { prisma } from '~/db.server'
 import { DEFAULT_DATA_LIMIT } from '~/utils'
-import type { CategoryInputArray, ExpenseFilters } from '~/utils/types'
+import type {
+  CategoryInputArray,
+  ExpenseCreate,
+  ExpenseFilters,
+  ExpenseUpdate,
+} from '~/utils/types'
 
 export const getUserExpenses = (id: string, offset?: number, limit?: number) =>
   prisma.expense.findMany({
@@ -10,6 +14,7 @@ export const getUserExpenses = (id: string, offset?: number, limit?: number) =>
     },
     where: {
       userId: id,
+      isVisible: true,
     },
     skip: offset || 0,
     take: limit || DEFAULT_DATA_LIMIT,
@@ -44,6 +49,7 @@ export const countUserExpenses = (id: string) =>
   prisma.expense.count({
     where: {
       userId: id,
+      isVisible: true,
     },
   })
 
@@ -75,7 +81,6 @@ const getWhereClauseFromFilter = (
     ...((startDate || endDate) && { datetime }),
     ...(categoriesIds && { categories }),
   }
-  console.log(where)
   return where
 }
 
@@ -85,7 +90,10 @@ export const getUserExpensesByFilter = (
   offset?: number,
   limit?: number,
 ) => {
-  const where = getWhereClauseFromFilter(userId, filters)
+  const where = {
+    ...getWhereClauseFromFilter(userId, filters),
+    isVisible: true,
+  }
   return prisma.expense.findMany({
     where,
     include: {
@@ -104,7 +112,10 @@ export const countUserExpensesByFilter = (
   userId: string,
   filters: ExpenseFilters,
 ) => {
-  const where = getWhereClauseFromFilter(userId, filters)
+  const where = {
+    ...getWhereClauseFromFilter(userId, filters),
+    isVisible: true,
+  }
   return prisma.expense.count({
     where,
     orderBy: {
@@ -146,16 +157,64 @@ export const getUserExpensesByYear = (userId: string, year: number) => {
   return getUserExpensesByFilter(userId, { startDate, endDate })
 }
 
+export const getUserExpenseTotalByMonthYear = async (
+  userId: string,
+  month: number,
+  year: number,
+) => {
+  if (month > 11) {
+    throw new Error('Month must be less than 11')
+  }
+  const startDate = new Date(year, month)
+  const endDate = new Date(year, month + 1, 0)
+  const where = getWhereClauseFromFilter(userId, { startDate, endDate })
+  return prisma.expense.aggregate({
+    where,
+    _sum: {
+      amountEffective: true,
+    },
+  })
+}
+
+const createInstallmentExpenses = async (parentExpense: ExpenseUpdate) => {
+  const { id, installments, datetime, amount, ...payload } = parentExpense
+  const installmentExpensesRes = [...Array(installments - 1).keys()].map(
+    (i) => {
+      const installmentDate = new Date(
+        new Date(datetime).setMonth(datetime.getMonth() + i + 1),
+      )
+      return prisma.expense.create({
+        data: {
+          ...payload,
+          amount,
+          installments,
+          parentExpenseId: parentExpense.id,
+          datetime: installmentDate,
+          isVisible: false,
+          amountEffective: amount / installments,
+        },
+      })
+    },
+  )
+  return Promise.all(installmentExpensesRes)
+}
+
 export const createExpense = async (
-  expense: Pick<
-    Expense,
-    'title' | 'amount' | 'unit' | 'userId' | 'datetime' | 'installments'
-  >,
+  expense: ExpenseCreate,
   categories?: CategoryInputArray,
 ) => {
+  const { amount, installments } = expense
+
+  // Root expense
   const expenseRes = await prisma.expense.create({
-    data: expense,
+    data: {
+      ...expense,
+      isVisible: true,
+      amountEffective: amount / (installments || 1),
+    },
   })
+
+  // Category relations
   const categoriesRes = categories?.map(({ id }) =>
     prisma.categoriesOnExpense.create({
       data: {
@@ -167,14 +226,31 @@ export const createExpense = async (
   if (categoriesRes) {
     await Promise.all(categoriesRes)
   }
+
+  // Installment expenses
+  if (installments > 1) {
+    await createInstallmentExpenses(expenseRes)
+  }
+
   return expenseRes
 }
 
 export const updateExpense = async (
-  expense: Expense,
+  expense: ExpenseUpdate,
   categories?: CategoryInputArray,
 ) => {
-  const { id, ...payload } = expense
+  const { id, amount, installments, ...payload } = expense
+
+  const oldInstallmentsRes = await prisma.expense.findUnique({
+    where: {
+      id: expense.id,
+    },
+    select: {
+      installments: true,
+    },
+  })
+
+  // Old category relationships
   const originalCategories = await prisma.categoriesOnExpense.findMany({
     where: {
       expenseId: id,
@@ -183,12 +259,21 @@ export const updateExpense = async (
   const removedCategories = originalCategories.filter(
     (before) => !categories?.find((after) => after.id == before.categoryId),
   )
+
+  // Main expense
   const expenseRes = await prisma.expense.update({
     where: {
       id: expense.id,
     },
-    data: payload,
+    data: {
+      ...payload,
+      amount,
+      installments,
+      amountEffective: amount / (installments || 1),
+    },
   })
+
+  // Category relationships updates
   const removedCatRes = removedCategories.map(({ id }) =>
     prisma.categoriesOnExpense.delete({ where: { id } }),
   )
@@ -216,6 +301,18 @@ export const updateExpense = async (
   if (removedCatRes) {
     await Promise.all(removedCatRes)
   }
+
+  // Installment updates
+  const oldInstallments = oldInstallmentsRes?.installments
+  if (oldInstallments && oldInstallments !== installments) {
+    await prisma.expense.deleteMany({
+      where: {
+        parentExpenseId: expense.id,
+      },
+    })
+    await createInstallmentExpenses(expenseRes)
+  }
+
   return expenseRes
 }
 

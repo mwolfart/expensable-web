@@ -151,6 +151,35 @@ export const formatCurrency = (amount: number) => {
 export const formatDate = (date: Date) =>
   date.toISOString().substring(0, 10).split('-').reverse().join('/')
 
+export const getMonthName = (month: number) => {
+  switch (month) {
+    case 0:
+      return 'January'
+    case 1:
+      return 'February'
+    case 2:
+      return 'March'
+    case 3:
+      return 'April'
+    case 4:
+      return 'May'
+    case 5:
+      return 'June'
+    case 6:
+      return 'July'
+    case 7:
+      return 'August'
+    case 8:
+      return 'September'
+    case 9:
+      return 'October'
+    case 10:
+      return 'November'
+    case 11:
+      return 'December'
+  }
+}
+
 export const trimStr = (longStr: string) =>
   longStr.length > 10 ? `${longStr.substring(0, 8)}...` : longStr
 

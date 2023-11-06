@@ -92,7 +92,7 @@ export function TransactionNewExpenseRow({ onCancel, onAdd }: Props) {
           name="installments"
           aria-label={t('common.installments')}
           placeholder={t('common.installments')}
-          value={1}
+          defaultValue={1}
           onChange={changeNumber}
         />
       </div>

@@ -42,16 +42,21 @@ model Category {
 }
 
 model Expense {
-  id            String @id @default(auto()) @map("_id") @db.ObjectId
-  title         String
-  amount        Float
-  unit          Float?
-  datetime      DateTime
-  installments  Int
-  categories    CategoriesOnExpense[]
-  transactions  ExpensesInTransaction[]
-  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  userId        String   @db.ObjectId
+  id              String @id @default(auto()) @map("_id") @db.ObjectId
+  title           String
+  amount          Float
+  unit            Float?
+  datetime        DateTime
+  installments    Int
+  amountEffective Float
+  isVisible       Boolean
+  parentExpenseId String? @db.ObjectId
+  parentExpense   Expense? @relation("installmentExpenses", fields: [parentExpenseId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  installmentExps Expense[] @relation("installmentExpenses") 
+  categories      CategoriesOnExpense[]
+  transactions    ExpensesInTransaction[]
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId          String   @db.ObjectId
 }
 
 model Transaction {

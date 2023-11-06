@@ -90,7 +90,6 @@ export function UpsertTransactionForm({
       data.set('id', initialData.id)
     }
     data.set('expenses', JSON.stringify(expenses))
-    debugger
     fetcher.submit(data, { method: 'put', action: '/transactions' })
   }
 
