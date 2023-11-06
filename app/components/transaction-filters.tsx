@@ -1,4 +1,4 @@
-import type { FormEventHandler } from 'react'
+import { useState, type FormEventHandler } from 'react'
 import type { TransactionFilters } from '~/utils/types'
 import { useTranslations } from 'use-intl'
 
@@ -14,11 +14,25 @@ export function TransactionFilterComponent({
   initialFilters,
 }: Props) {
   const t = useTranslations()
+  const initialStartDate = initialFilters?.startDate?.toISOString().slice(0, 10)
+  const initialEndDate = initialFilters?.endDate?.toISOString().slice(0, 10)
+  const [startDate, setStartDate] = useState(initialStartDate)
+  const [endDate, setEndDate] = useState(initialEndDate)
+
+  const clear = () => {
+    setStartDate('')
+    setEndDate('')
+    onClearFilters()
+  }
 
   const submit: FormEventHandler<HTMLFormElement> = (evt) => {
     evt.preventDefault()
-    const formData = new FormData(evt.currentTarget)
-    onApplyFilters(formData)
+    if (startDate && endDate) {
+      const formData = new FormData()
+      formData.set('startDate', startDate)
+      formData.set('endDate', endDate)
+      onApplyFilters(formData)
+    }
   }
 
   return (
@@ -32,7 +46,8 @@ export function TransactionFilterComponent({
           className="input"
           name="startDate"
           type="date"
-          defaultValue={initialFilters?.startDate?.toISOString().slice(0, 10)}
+          value={startDate}
+          onChange={(evt) => setStartDate(evt.target.value)}
         />
       </label>
       <label>
@@ -41,7 +56,8 @@ export function TransactionFilterComponent({
           className="input"
           name="endDate"
           type="date"
-          defaultValue={initialFilters?.endDate?.toISOString().slice(0, 10)}
+          value={endDate}
+          onChange={(evt) => setEndDate(evt.target.value)}
         />
       </label>
       <div className="flex w-full flex-row items-end gap-4 md:max-lg:col-span-2">
@@ -51,7 +67,7 @@ export function TransactionFilterComponent({
         <button
           type="button"
           className="btn-outline btn-primary btn flex-grow"
-          onClick={onClearFilters}
+          onClick={clear}
         >
           {t('common.clear')}
         </button>

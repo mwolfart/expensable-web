@@ -21,6 +21,13 @@ export function ExpenseFilterComponent({
   initialFilters,
 }: Props) {
   const t = useTranslations()
+
+  const initialStartDate = initialFilters?.startDate?.toISOString().slice(0, 10)
+  const initialEndDate = initialFilters?.endDate?.toISOString().slice(0, 10)
+  const [startDate, setStartDate] = useState(initialStartDate)
+  const [endDate, setEndDate] = useState(initialEndDate)
+  const [title, setTitle] = useState(initialFilters?.title ?? '')
+
   const [selectedOptions, setSelectedOptions] = useState<SelectOption[]>([])
   const { list: categories, map: categoryMap } = useContext(CategoryContext)
 
@@ -46,6 +53,14 @@ export function ExpenseFilterComponent({
     onApplyFilters(formData)
   }
 
+  const clear = () => {
+    setTitle('')
+    setStartDate('')
+    setEndDate('')
+    setSelectedOptions([])
+    onClearFilters()
+  }
+
   return (
     <form
       className="grid gap-4 max-md:grid-cols-1 md:max-3xl:grid-cols-4 md:max-3xl:grid-rows-2 3xl:grid-cols-5"
@@ -54,28 +69,31 @@ export function ExpenseFilterComponent({
       <label className="md:max-3xl:col-span-2">
         {t('common.title')}
         <input
-          className="input"
+          className="input bg-white"
           name="title"
           placeholder={t('common.title')}
-          defaultValue={initialFilters?.title || ''}
+          value={title}
+          onChange={(evt) => setTitle(evt.target.value)}
         />
       </label>
       <label>
         {t('common.start-date')}
         <input
-          className="input"
+          className="input bg-white"
           name="startDate"
           type="date"
-          defaultValue={initialFilters?.startDate?.toISOString().slice(0, 10)}
+          value={startDate}
+          onChange={(evt) => setStartDate(evt.target.value)}
         />
       </label>
       <label>
         {t('common.end-date')}
         <input
-          className="input"
+          className="input bg-white"
           name="endDate"
           type="date"
-          defaultValue={initialFilters?.endDate?.toISOString().slice(0, 10)}
+          value={endDate}
+          onChange={(evt) => setEndDate(evt.target.value)}
         />
       </label>
       <label className="md:max-3xl:row-start-2 md:max-lg:col-span-2 lg:max-3xl:col-span-3">
@@ -100,7 +118,7 @@ export function ExpenseFilterComponent({
         <button
           type="button"
           className="btn-outline btn-primary btn flex-grow"
-          onClick={onClearFilters}
+          onClick={clear}
         >
           {t('common.clear')}
         </button>
