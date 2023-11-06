@@ -180,9 +180,10 @@ const createInstallmentExpenses = async (parentExpense: ExpenseUpdate) => {
   const { id, installments, datetime, amount, ...payload } = parentExpense
   const installmentExpensesRes = [...Array(installments - 1).keys()].map(
     (i) => {
-      const installmentDate = new Date(
-        new Date(datetime).setMonth(datetime.getMonth() + i + 1),
-      )
+      const installmentDate = new Date(datetime)
+      installmentDate.setDate(1)
+      installmentDate.setMonth(datetime.getMonth() + i + 1)
+      installmentDate.setHours(0, 0, 0)
       return prisma.expense.create({
         data: {
           ...payload,
