@@ -96,5 +96,9 @@
         "saved": "Transaction saved successfully!",
         "new-expense": "New expense",
         "cancel-all": "Cancel all"
+    },
+    "dashboard": {
+        "previous-months": "Expenses in previous months",
+        "upcoming-months": "Expenses in upcoming months"
     }
 }

@@ -1,5 +1,5 @@
 import { prisma } from '~/db.server'
-import { DEFAULT_DATA_LIMIT } from '~/utils'
+import { DEFAULT_DATA_LIMIT, getMonthName } from '~/utils'
 import type {
   CategoryInputArray,
   ExpenseCreate,
@@ -174,6 +174,86 @@ export const getUserExpenseTotalByMonthYear = async (
       amountEffective: true,
     },
   })
+}
+
+const buildMonthYearExpenseCorrelation = (
+  totalAmount: number,
+  { month, year }: { month: number; year: number },
+) => {
+  const period = new Date()
+  period.setMonth(month)
+  period.setFullYear(year)
+  return {
+    period: `${getMonthName(period.getMonth())} ${period.getFullYear()}`,
+    total: totalAmount ? parseFloat(totalAmount.toFixed(2)) : 0,
+  }
+}
+
+export const getUserExpensesInPreviousMonths = async (
+  userId: string,
+  amount?: number,
+) => {
+  const currentMonthYear = {
+    month: new Date().getMonth(),
+    year: new Date().getFullYear(),
+  }
+  const previousMonthYears = [...Array(amount || 6).keys()]
+    .map((i) => {
+      const subtractedMonth = currentMonthYear.month - i
+      const month =
+        subtractedMonth < 0 ? 11 - (1 + subtractedMonth) : subtractedMonth
+      const year =
+        subtractedMonth < 0 ? currentMonthYear.year - 1 : currentMonthYear.year
+      return {
+        month,
+        year,
+      }
+    })
+    .reverse()
+  const totalsPerMonthYearPromises = previousMonthYears.map((monthYear) =>
+    getUserExpenseTotalByMonthYear(userId, monthYear.month, monthYear.year),
+  )
+  const totalsPerMonthRaw = await Promise.all(totalsPerMonthYearPromises)
+  const totalsPerMonth = totalsPerMonthRaw.map(({ _sum }, i) => {
+    return buildMonthYearExpenseCorrelation(
+      _sum.amountEffective || 0,
+      previousMonthYears[i],
+    )
+  })
+
+  return totalsPerMonth
+}
+
+export const getUserExpensesInUpcomingMonths = async (
+  userId: string,
+  amount?: number,
+) => {
+  const currentMonthYear = {
+    month: new Date().getMonth(),
+    year: new Date().getFullYear(),
+  }
+  const upcomingMonthYears = [...Array(amount || 6).keys()].map((i) => {
+    const addedMonth = currentMonthYear.month + i + 1
+    const month = addedMonth > 11 ? addedMonth - 12 : addedMonth
+    const year =
+      addedMonth > 11 ? currentMonthYear.year + 1 : currentMonthYear.year
+    return {
+      month,
+      year,
+    }
+  })
+  const totalsPerMonthYearPromises = upcomingMonthYears.map((monthYear) =>
+    getUserExpenseTotalByMonthYear(userId, monthYear.month, monthYear.year),
+  )
+  const totalsPerMonthRaw = await Promise.all(totalsPerMonthYearPromises)
+  const totalsPerMonth = totalsPerMonthRaw.map(({ _sum }, i) => {
+    return buildMonthYearExpenseCorrelation(
+      _sum.amountEffective || 0,
+      upcomingMonthYears[i],
+    )
+  })
+
+  return totalsPerMonth
 }
 
 const createInstallmentExpenses = async (parentExpense: ExpenseUpdate) => {
