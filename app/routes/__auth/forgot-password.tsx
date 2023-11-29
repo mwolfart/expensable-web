@@ -28,7 +28,7 @@ export default function ForgotPassword() {
   const [error, setError] = useState('')
 
   const submit = async () => {
-    const isEmailValid = emailSchema.validate(email)
+    const isEmailValid = await emailSchema.isValid(email)
     if (!email) {
       setError(ErrorCodes.EMAIL_REQUIRED)
     } else if (!isEmailValid) {
