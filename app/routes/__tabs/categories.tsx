@@ -6,7 +6,7 @@ import type {
 } from '@remix-run/server-runtime'
 import { json } from '@remix-run/server-runtime'
 import { useTranslations } from 'use-intl'
-import { getUserId } from '~/session.server'
+import { getLoggedUserId } from '~/session.server'
 import {
   createCategory,
   deleteCategory,
@@ -23,7 +23,7 @@ import { AddCategoryPopup } from '~/components/category-add-popup'
 import { timeout } from '~/utils/timeout'
 
 export async function loader({ request }: LoaderArgs) {
-  const userId = await getUserId(request)
+  const userId = await getLoggedUserId(request)
   if (userId) {
     const data = await getUserCategories(userId)
     if (data) {
@@ -57,7 +57,7 @@ export async function action({
     }
 
     try {
-      const userId = await getUserId(request)
+      const userId = await getLoggedUserId(request)
       if (!userId) {
         return json({ success: false, ...res }, { status: 403 })
       }

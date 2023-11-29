@@ -1,4 +1,3 @@
-import bcrypt from 'bcrypt'
 import { prisma } from '~/db.server'
 
 export const getUserByEmail = (email: string) =>
@@ -8,15 +7,10 @@ export const getUserByEmail = (email: string) =>
     },
   })
 
-export const createUser = (
-  email: string,
-  password: string,
-  fullName: string,
-) => {
+export const createUser = (email: string, fullName: string) => {
   const user = {
     email,
     fullName,
-    password: bcrypt.hashSync(password, 12),
   }
   return prisma.user.create({
     data: user,

@@ -1,102 +1,73 @@
 import type { User } from '@prisma/client'
-import { getUserById } from '~/models/user.server'
-import { createCookieSessionStorage, redirect } from '@remix-run/node'
+import { getUserByEmail } from '~/models/user.server'
+import { createCookie, redirect } from '@remix-run/node'
 import invariant from 'tiny-invariant'
+import { serverAuth } from './utils/firebase.server'
 
 invariant(process.env.SESSION_SECRET, 'SESSION_SECRET must be set')
 invariant(process.env.SESSION_TIMEOUT, 'SESSION_TIMEOUT must be set')
 
-const USER_SESSION_KEY = 'userId'
-const sessionTimeout = process.env.SESSION_TIMEOUT as unknown as number
+const sessionTimeoutMs =
+  (process.env.SESSION_TIMEOUT as unknown as number) * 1000
 
-export const sessionStorage = createCookieSessionStorage({
-  cookie: {
-    name: '__session',
-    httpOnly: true,
-    path: '/',
-    sameSite: 'lax',
-    secrets: [process.env.SESSION_SECRET],
-    secure: process.env.NODE_ENV === 'production',
-  },
+const session = createCookie('session', {
+  secrets: [process.env.SESSION_SECRET],
+  expires: new Date(Date.now() + sessionTimeoutMs),
+  path: '/',
 })
 
-export async function getSession(request: Request) {
-  const cookie = request.headers.get('Cookie')
-  return sessionStorage.getSession(cookie)
+export async function getSessionJwt(request: Request) {
+  const jwt = await session.parse(request.headers.get('Cookie'))
+  return jwt
 }
 
-export async function getUserId(
+export async function getLoggedUserProfile(
   request: Request,
-): Promise<User['id'] | undefined> {
-  const session = await getSession(request)
-  const userId = session.get(USER_SESSION_KEY)
-  return userId
-}
+): Promise<User | null> {
+  const jwt = await getSessionJwt(request)
 
-export async function getUser(request: Request) {
-  const userId = await getUserId(request)
-  if (userId === undefined) {
+  if (!jwt) {
     return null
   }
 
-  const user = await getUserById(userId)
-  if (user) {
-    return user
+  try {
+    const token = await serverAuth.verifySessionCookie(jwt)
+    if (token.email) {
+      const userProfile = await getUserByEmail(token.email)
+      return userProfile
+    }
+    return null
+  } catch (e) {
+    throw await logout()
   }
-
-  throw await logout(request)
 }
 
-export async function requireUserId(
-  request: Request,
-  redirectTo: string = new URL(request.url).pathname,
-) {
-  const userId = await getUserId(request)
-  if (!userId) {
-    const searchParams = new URLSearchParams([['redirectTo', redirectTo]])
-    throw redirect(`/login?${searchParams}`)
+export async function getLoggedUserId(request: Request) {
+  const profile = await getLoggedUserProfile(request)
+  if (profile) {
+    return profile.id
   }
-  return userId
+  return null
 }
 
-export async function requireUser(request: Request) {
-  const userId = await requireUserId(request)
+export async function createSession(idToken: string) {
+  const jwt = await serverAuth.createSessionCookie(idToken, {
+    expiresIn: sessionTimeoutMs,
+  })
 
-  const user = await getUserById(userId)
-  if (user) {
-    return user
-  }
-
-  throw await logout(request)
-}
-
-export async function createUserSession({
-  request,
-  userId,
-  remember,
-  redirectTo,
-}: {
-  request: Request
-  userId: string
-  remember: boolean
-  redirectTo: string
-}) {
-  const session = await getSession(request)
-  session.set(USER_SESSION_KEY, userId)
-  return redirect(redirectTo, {
+  return redirect('/', {
     headers: {
-      'Set-Cookie': await sessionStorage.commitSession(session, {
-        maxAge: remember ? sessionTimeout : undefined,
-      }),
+      'Set-Cookie': await session.serialize(jwt),
     },
   })
 }
 
-export async function logout(request: Request) {
-  const session = await getSession(request)
+export async function logout() {
   return redirect('/', {
     headers: {
-      'Set-Cookie': await sessionStorage.destroySession(session),
+      'Set-Cookie': await session.serialize('', {
+        expires: new Date(0),
+      }),
     },
   })
 }

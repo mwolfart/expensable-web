@@ -6,7 +6,20 @@ import { cxWithFade } from '~/utils'
 import { timeout } from '~/utils/timeout'
 import type { AuthContext } from '../__auth'
 
-export async function action({ request }: ActionArgs) {}
+const CONFIRMATION_TIMEOUT = 5000
+
+export async function action({ request }: ActionArgs) {
+  const formData = await request.formData()
+  const email = formData.get('email')
+
+  if (email && typeof email === 'string' && email.length > 1) {
+    // const result = sendPasswordResetEmail(email)
+    // return result
+    return false
+  }
+
+  return false
+}
 
 export const meta: MetaFunction = () => {
   return {
@@ -14,17 +27,15 @@ export const meta: MetaFunction = () => {
   }
 }
 
-export default function CreateUser() {
+export default function ForgotPassword() {
   const t = useTranslations()
   const navigate = useNavigate()
   const [transition] = useOutletContext<AuthContext>()
-  //   const [email, setEmail] = useState('')
   const [displayConfirmation, setConfirmation] = useState(false)
 
   const submit = async () => {
     setConfirmation(true)
-    // onSubmit
-    await timeout(3000)
+    await timeout(CONFIRMATION_TIMEOUT)
     setConfirmation(false)
   }
 
@@ -34,7 +45,7 @@ export default function CreateUser() {
   }
 
   const confirmationClasses = cxWithFade(
-    'font-bold text-primary',
+    'font-bold text-confirmation',
     displayConfirmation,
   )
 

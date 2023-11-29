@@ -59,7 +59,8 @@
         "already-have-account": "I already have an account",
         "errors": {
             "invalid-credentials": "The credentials entered are invalid.",
-            "account-exists": "This e-mail is already associated with another account. Try choosing a different e-mail."
+            "account-exists": "This e-mail is already associated with another account. Try choosing a different e-mail.",
+            "unknown-error": "An unknown error occured. Please refresh the page and try again or contact the website owner."
         }
     },
     "home": {

@@ -25,8 +25,13 @@ export const safeRedirect = (
   return to
 }
 
-const isUser = (user: any): user is User => {
-  return user && typeof user === 'object' && typeof user.email === 'string'
+const isUser = (user: unknown): user is User => {
+  return (
+    user !== null &&
+    typeof user === 'object' &&
+    'email' in user &&
+    typeof user.email === 'string'
+  )
 }
 
 export const useOptionalUser = (): User | undefined => {

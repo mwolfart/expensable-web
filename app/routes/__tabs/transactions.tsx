@@ -26,7 +26,7 @@ import {
   getUserTransactionsByFilter,
   updateTransaction,
 } from '~/models/transaction.server'
-import { getUserId } from '~/session.server'
+import { getLoggedUserId } from '~/session.server'
 import { areAllValuesEmpty, cxWithGrowFadeLg, parseExpenses } from '~/utils'
 import { timeout } from '~/utils/timeout'
 import { AiOutlinePlus } from 'react-icons/ai'
@@ -37,7 +37,7 @@ import { TransactionFilterComponent } from '~/components/transaction-filters'
 import { ErrorCodes } from '~/utils/schemas'
 
 export async function loader({ request }: LoaderArgs) {
-  const userId = await getUserId(request)
+  const userId = await getLoggedUserId(request)
   if (userId) {
     const url = new URL(request.url)
     const limit = parseInt(url.searchParams.get('limit') as string)
@@ -112,7 +112,7 @@ export async function action({ request }: ActionArgs): Promise<
     }
 
     try {
-      const userId = await getUserId(request)
+      const userId = await getLoggedUserId(request)
       if (!userId) {
         return typedjson({ success: false, ...res }, { status: 403 })
       }

@@ -1,7 +1,5 @@
 import { hashToken } from '~/utils/jwt'
-import { compare } from 'bcrypt'
 import { prisma } from '~/db.server'
-import { getUserByEmail } from './user.server'
 
 interface TokenInfo {
   jti: string
@@ -48,13 +46,3 @@ export const revokeTokens = (userId: string) =>
       revoked: true,
     },
   })
-
-export const verifyLogin = async (email: string, password: string) => {
-  const user = await getUserByEmail(email)
-  if (user) {
-    const validPassword = await compare(password, user.password)
-    if (validPassword) {
-      return user
-    }
-  }
-}

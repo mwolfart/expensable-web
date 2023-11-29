@@ -6,10 +6,10 @@ import {
   getUserExpensesInPreviousMonths,
   getUserExpensesInUpcomingMonths,
 } from '~/models/expenses.server'
-import { getUserId } from '~/session.server'
+import { getLoggedUserId } from '~/session.server'
 
 export async function loader({ request }: LoaderArgs) {
-  const userId = await getUserId(request)
+  const userId = await getLoggedUserId(request)
   if (userId) {
     const totalsPerPreviousMonthsPromise = getUserExpensesInPreviousMonths(
       userId,

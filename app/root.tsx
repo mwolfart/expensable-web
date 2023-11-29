@@ -10,13 +10,14 @@ import {
 } from '@remix-run/react'
 import { i18n } from '~/constants'
 
-import { getUser } from './session.server'
 import { IntlProvider } from 'use-intl'
 import tailwindStylesheetUrl from './styles/tailwind.css'
+import { getLoggedUserProfile } from './session.server'
 
 export const links: LinksFunction = () => {
   return [{ rel: 'stylesheet', href: tailwindStylesheetUrl }]
 }
+
 export const meta: MetaFunction = () => ({
   charset: 'utf-8',
   title: 'Expensable',
@@ -25,7 +26,7 @@ export const meta: MetaFunction = () => ({
 
 export async function loader({ request }: LoaderArgs) {
   return json({
-    user: await getUser(request),
+    user: await getLoggedUserProfile(request),
   })
 }
 

@@ -4,6 +4,7 @@ export enum ErrorCodes {
   EMAIL_INVALID = 'invalid_email',
   EMAIL_REQUIRED = 'required_email',
   LOGIN_INVALID = 'invalid_login',
+  LOGIN_UNKNOWN = 'unknown_login_error',
   PASSWORD_INVALID = 'invalid_password',
   PASSWORD_REQUIRED = 'required_password',
   PASSWORD_SHORT = 'short_password',

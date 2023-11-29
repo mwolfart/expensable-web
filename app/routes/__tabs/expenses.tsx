@@ -17,7 +17,7 @@ import {
   getUserExpensesByIds,
   updateExpense,
 } from '~/models/expenses.server'
-import { getUserId } from '~/session.server'
+import { getLoggedUserId } from '~/session.server'
 import { NoData } from '~/components/no-data'
 import { ExpenseList } from '~/components/expense-list'
 import { typedjson } from 'remix-typedjson'
@@ -45,7 +45,7 @@ import { FilterButton } from '~/components/filter-button'
 const MAX_INSTALLMENTS = 36
 
 export async function loader({ request }: LoaderArgs) {
-  const userId = await getUserId(request)
+  const userId = await getLoggedUserId(request)
   if (userId) {
     const url = new URL(request.url)
     const limit = parseInt(url.searchParams.get('limit') as string)
@@ -171,7 +171,7 @@ export async function action({ request }: ActionArgs): Promise<
     }
 
     try {
-      const userId = await getUserId(request)
+      const userId = await getLoggedUserId(request)
       if (!userId) {
         return typedjson({ success: false, ...res }, { status: 403 })
       }

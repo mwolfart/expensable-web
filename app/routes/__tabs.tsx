@@ -3,18 +3,17 @@ import { json, redirect } from '@remix-run/node'
 import { Outlet, useLoaderData, useLocation, useSubmit } from '@remix-run/react'
 import { useTranslations } from 'use-intl'
 import { DialogProvider } from '~/providers/dialog'
-import { getUser, getUserId } from '~/session.server'
+import { getLoggedUserProfile } from '~/session.server'
 import { MdOutlineCategory } from 'react-icons/md'
 import { GoCreditCard, GoGraph } from 'react-icons/go'
 import { AiOutlineShoppingCart } from 'react-icons/ai'
 import { CategoryProvider } from '~/providers/category'
 
 export async function loader({ request }: LoaderArgs) {
-  const userId = await getUserId(request)
-  if (!userId) {
+  const user = await getLoggedUserProfile(request)
+  if (!user) {
     return redirect('/login')
   }
-  const user = await getUser(request)
   return json(user)
 }
 

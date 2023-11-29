@@ -1,7 +1,7 @@
 import type { LoaderArgs } from '@remix-run/node'
 import { json, redirect } from '@remix-run/node'
 
-import { getUserId } from '~/session.server'
+import { getLoggedUserId } from '~/session.server'
 import { useState } from 'react'
 import cx from 'classnames'
 import { timeout } from '~/utils/timeout'
@@ -10,7 +10,7 @@ import { Outlet } from '@remix-run/react'
 export type AuthContext = [transition: () => Promise<void>]
 
 export async function loader({ request }: LoaderArgs) {
-  const userId = await getUserId(request)
+  const userId = await getLoggedUserId(request)
   if (userId) {
     return redirect('/')
   }

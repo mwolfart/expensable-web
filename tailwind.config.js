@@ -11,6 +11,7 @@ const colors = {
   grey: '#aaaaaa',
   'light-grey': '#cccccc',
   error: '#ff0000',
+  confirmation: '#7fa449',
 }
 
 module.exports = {

@@ -1,6 +1,6 @@
 import type { ActionArgs, MetaFunction, TypedResponse } from '@remix-run/node'
 import { json } from '@remix-run/node'
-import { createUser, getUserByEmail } from '~/models/user.server'
+import { getUserByEmail } from '~/models/user.server'
 import { useTranslations } from 'use-intl'
 import {
   Form,
@@ -60,9 +60,9 @@ export async function action({
     )
   }
 
-  try {
-    await createUser(email, password, name)
-  } catch (_) {
+  // const createdUser = await createAccount(email, password, name)
+  const createdUser = null
+  if (!createdUser) {
     return json({ success: false }, { status: 500 })
   }
   return json({ success: true }, { status: 200 })
