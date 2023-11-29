@@ -52,6 +52,8 @@
         "email-sent": "If there is an account associated with this e-mail, you will shortly receive a link to reset your password.",
         "account-created": "Your account was created successfully! You can now log in.",
         "reset-password": "Reset password",
+        "enter-new-password": "Enter your new password below to update it",
+        "password-updated": "Password updated successfully!",
         "send-recovery-email": "Send recovery e-mail",
         "login": "Log in",
         "create-account": "Create an account",
@@ -60,6 +62,7 @@
         "errors": {
             "invalid-credentials": "The credentials entered are invalid.",
             "account-exists": "This e-mail is already associated with another account. Try choosing a different e-mail.",
+            "no-password-reset-code": "The password reset code was not provided or is invalid.",
             "unknown-error": "An unknown error occured. Please refresh the page and try again or contact the website owner."
         }
     },

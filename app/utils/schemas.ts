@@ -31,6 +31,20 @@ export const emailSchema = yup
     ErrorCodes.EMAIL_INVALID,
   )
 
+export const passwordSchema = yup.object({
+  password: yup
+    .string()
+    .required(ErrorCodes.PASSWORD_REQUIRED)
+    .min(8, ErrorCodes.PASSWORD_SHORT)
+    .matches(
+      /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/,
+      ErrorCodes.PASSWORD_INVALID,
+    ),
+  passwordConfirmation: yup
+    .string()
+    .equals(['password'], ErrorCodes.PASSWORD_MISMATCH),
+})
+
 export const userSchema = yup.object({
   email: emailSchema,
   password: yup
