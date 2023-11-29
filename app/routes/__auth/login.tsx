@@ -93,7 +93,7 @@ export default function Login() {
       }
     }
     parseAction()
-  }, [actionData, errorToString, t])
+  }, [actionData, t])
 
   const goToCreateAccount = async () => {
     await transition()
@@ -111,7 +111,7 @@ export default function Login() {
   )
 
   return (
-    <Form method="post" className="flex flex-col gap-8" onSubmit={handleSubmit}>
+    <Form className="flex flex-col gap-8" onSubmit={handleSubmit}>
       <div className="flex flex-col">
         <span className="pl-6">{t('auth.welcome')}</span>
         <h2 className="font-bold">{t('auth.expensable')}</h2>

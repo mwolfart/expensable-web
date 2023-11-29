@@ -1,25 +1,16 @@
-import type { ActionArgs, MetaFunction } from '@remix-run/node'
+import type { MetaFunction } from '@remix-run/node'
 import { useTranslations } from 'use-intl'
-import { Form, useNavigate, useOutletContext } from '@remix-run/react'
+import { useNavigate, useOutletContext } from '@remix-run/react'
 import { useState } from 'react'
-import { cxWithFade } from '~/utils'
+import { cxFormInput, cxWithFade } from '~/utils'
 import { timeout } from '~/utils/timeout'
 import type { AuthContext } from '../__auth'
+import { ErrorCodes, emailSchema } from '~/utils/schemas'
+import { useErrorMessages } from '~/hooks'
+import { sendPasswordResetEmail } from 'firebase/auth'
+import { clientAuth } from '~/utils/firebase.client'
 
 const CONFIRMATION_TIMEOUT = 5000
-
-export async function action({ request }: ActionArgs) {
-  const formData = await request.formData()
-  const email = formData.get('email')
-
-  if (email && typeof email === 'string' && email.length > 1) {
-    // const result = sendPasswordResetEmail(email)
-    // return result
-    return false
-  }
-
-  return false
-}
 
 export const meta: MetaFunction = () => {
   return {
@@ -31,15 +22,31 @@ export default function ForgotPassword() {
   const t = useTranslations()
   const navigate = useNavigate()
   const [transition] = useOutletContext<AuthContext>()
+  const { errorToString } = useErrorMessages()
   const [displayConfirmation, setConfirmation] = useState(false)
+  const [email, setEmail] = useState('')
+  const [error, setError] = useState('')
 
   const submit = async () => {
-    setConfirmation(true)
-    await timeout(CONFIRMATION_TIMEOUT)
-    setConfirmation(false)
+    const isEmailValid = emailSchema.validate(email)
+    if (!email) {
+      setError(ErrorCodes.EMAIL_REQUIRED)
+    } else if (!isEmailValid) {
+      setError(ErrorCodes.EMAIL_INVALID)
+    } else {
+      setError('')
+      try {
+        await sendPasswordResetEmail(clientAuth, email)
+        setConfirmation(true)
+        await timeout(CONFIRMATION_TIMEOUT)
+        setConfirmation(false)
+      } catch (e) {
+        setError(ErrorCodes.PWD_RESET_UNKNOWN)
+      }
+    }
   }
 
-  const onGoToLogin = async () => {
+  const goToLogin = async () => {
     await transition()
     navigate('/login')
   }
@@ -50,7 +57,7 @@ export default function ForgotPassword() {
   )
 
   return (
-    <Form method="post" className="flex flex-col gap-8">
+    <div className="flex flex-col gap-8">
       <div className="flex flex-col gap-4">
         <h2 className="font-bold">{t('auth.reset-password')}</h2>
         <p>{t('auth.forgot-password-copy')}</p>
@@ -58,8 +65,11 @@ export default function ForgotPassword() {
       <input
         type="email"
         name="email"
-        placeholder={t('common.email')}
-        className="input w-full bg-white"
+        value={email}
+        placeholder={error ? errorToString(error) : t('common.email')}
+        className={cxFormInput({ hasError: error })}
+        onChange={(e) => setEmail(e.target.value)}
+        onBlur={() => setError('')}
       />
       <p className={confirmationClasses}>{t('auth.email-sent')}</p>
       <div className="flex flex-col gap-4">
@@ -69,11 +79,11 @@ export default function ForgotPassword() {
         <button
           className="btn-outline btn-primary btn"
           type="button"
-          onClick={onGoToLogin}
+          onClick={goToLogin}
         >
           {t('common.back')}
         </button>
       </div>
-    </Form>
+    </div>
   )
 }

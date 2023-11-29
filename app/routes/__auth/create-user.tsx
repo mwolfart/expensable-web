@@ -1,78 +1,47 @@
 import type { ActionArgs, MetaFunction, TypedResponse } from '@remix-run/node'
 import { json } from '@remix-run/node'
-import { getUserByEmail } from '~/models/user.server'
+import { createUser } from '~/models/user.server'
 import { useTranslations } from 'use-intl'
 import {
   Form,
   useActionData,
+  useFetcher,
   useNavigate,
   useOutletContext,
 } from '@remix-run/react'
-import { useEffect, useReducer, useState } from 'react'
+import { useEffect, useState } from 'react'
 import type { AuthContext } from '../__auth'
-import { cxFormInput, cxWithGrowFadeMd, getYupErrors } from '~/utils'
+import { cxFormInput, cxWithGrowFadeMd } from '~/utils'
 import { useErrorMessages } from '~/hooks'
 import { ErrorCodes, userSchema } from '~/utils/schemas'
 import { timeout } from '~/utils/timeout'
-
-type FormErrors = {
-  email?: string
-  name?: string
-  password?: string
-}
-
-const errorsReducer = (state: FormErrors, action: FormErrors) => ({
-  ...state,
-  ...action,
-})
+import { useFormik } from 'formik'
+import { createUserWithEmailAndPassword, getIdToken } from 'firebase/auth'
+import { clientAuth } from '~/utils/firebase.client'
+import { serverAuth } from '~/utils/firebase.server'
 
 export async function action({
   request,
-}: ActionArgs): Promise<
-  TypedResponse<{ errors?: FormErrors; success?: boolean }>
-> {
-  const formData = await request.formData()
-  const email = formData.get('email') as string
-  const password = formData.get('password') as string
-  const passwordConfirmation = formData.get('passwordConfirmation') as string
-  const name = formData.get('name') as string
-  // const redirectTo = safeRedirect(formData.get('redirectTo'), '/')
-
+}: ActionArgs): Promise<TypedResponse<{ error?: string; success?: boolean }>> {
   try {
-    await userSchema.validate({ email, password, name }, { abortEarly: false })
+    const formData = await request.formData()
+    const idToken = formData.get('idToken') as string
+    const email = formData.get('email') as string
+    const name = formData.get('name') as string
+
+    if (!idToken) {
+      return json({ error: ErrorCodes.LOGIN_INVALID }, { status: 400 })
+    }
+    await serverAuth.verifyIdToken(idToken)
+    const createdUser = await createUser(email, name)
+
+    if (!createdUser) {
+      return json({ error: ErrorCodes.REGISTER_UNKNOWN }, { status: 500 })
+    }
+    return json({ success: true }, { status: 200 })
   } catch (e) {
-    const errors = getYupErrors(e)
-    return json({ errors }, { status: 400 })
+    return json({ error: ErrorCodes.BAD_FORMAT }, { status: 400 })
   }
-
-  if (passwordConfirmation !== password) {
-    return json(
-      { errors: { password: ErrorCodes.PASSWORD_MISMATCH } },
-      { status: 400 },
-    )
-  }
-
-  const existingUser = await getUserByEmail(email)
-  if (existingUser) {
-    return json(
-      { errors: { email: ErrorCodes.DUPLICATE_USER } },
-      { status: 400 },
-    )
-  }
-
-  // const createdUser = await createAccount(email, password, name)
-  const createdUser = null
-  if (!createdUser) {
-    return json({ success: false }, { status: 500 })
-  }
-  return json({ success: true }, { status: 200 })
-
-  // return createUserSession({
-  //   request,
-  //   userId: user.id,
-  //   remember: false,
-  //   redirectTo,
-  // })
 }
 
 export const meta: MetaFunction = () => {
@@ -84,31 +53,57 @@ export const meta: MetaFunction = () => {
 export default function CreateUser() {
   const t = useTranslations()
   const navigate = useNavigate()
+  const fetcher = useFetcher()
   const [transition] = useOutletContext<AuthContext>()
   const actionData = useActionData<typeof action>()
   const { errorToString } = useErrorMessages()
   const [showConfirmation, setConfirmation] = useState(false)
+  const [showErrorMessage, setShowErrorMessage] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
 
-  const initialErrors = {
+  const initialValues = {
     email: '',
-    name: '',
     password: '',
-    duplicate: '',
+    passwordConfirmation: '',
+    name: '',
   }
 
-  const [userErrors, updateUserErrors] = useReducer(
-    errorsReducer,
-    initialErrors,
-  )
+  const { values, errors, handleSubmit, setFieldValue, setFieldError } =
+    useFormik({
+      initialValues,
+      validationSchema: userSchema,
+      validateOnChange: false,
+      validateOnBlur: false,
+      onSubmit: async (values) => {
+        setShowErrorMessage(false)
+        try {
+          const credentials = await createUserWithEmailAndPassword(
+            clientAuth,
+            values.email,
+            values.password,
+          )
+          const idToken = await getIdToken(credentials.user)
+          if (idToken) {
+            fetcher.submit(
+              { idToken, email: values.email, name: values.name },
+              { method: 'post' },
+            )
+          }
+        } catch (error) {
+          // show error with existing user
+          setShowErrorMessage(true)
+          setErrorMessage(t('auth.errors.unknown-error'))
+        }
+      },
+    })
 
   useEffect(() => {
     const parseAction = async () => {
-      if (actionData?.errors) {
-        updateUserErrors({
-          email: errorToString(actionData.errors.email),
-          name: errorToString(actionData.errors.name),
-          password: errorToString(actionData.errors.password),
-        })
+      if (actionData?.error) {
+        setShowErrorMessage(true)
+        setErrorMessage(actionData.error)
+        await timeout(5000)
+        setShowErrorMessage(false)
       } else if (actionData?.success) {
         setConfirmation(true)
         await timeout(5000)
@@ -116,7 +111,7 @@ export default function CreateUser() {
       }
     }
     parseAction()
-  }, [actionData, errorToString])
+  }, [actionData])
 
   const onGoToLogin = async () => {
     await transition()
@@ -124,7 +119,7 @@ export default function CreateUser() {
   }
 
   return (
-    <Form method="post" className="flex flex-col gap-8">
+    <Form className="flex flex-col gap-8" onSubmit={handleSubmit}>
       <div className="flex flex-col gap-4">
         <h2 className="font-bold">{t('auth.create-account')}</h2>
         <p>{t('auth.enter-data')}</p>
@@ -132,32 +127,43 @@ export default function CreateUser() {
       <input
         type="email"
         name="email"
-        placeholder={userErrors.email || t('common.email')}
-        className={cxFormInput({ hasError: userErrors.email })}
-        onChange={() => updateUserErrors({ email: '' })}
+        value={values.email}
+        placeholder={errors.email || t('common.email')}
+        className={cxFormInput({ hasError: errors.email })}
+        onChange={(e) => setFieldValue('email', e.target.value)}
+        onBlur={() => setFieldError('email', undefined)}
       />
       <input
         name="name"
-        placeholder={userErrors.name || t('common.name')}
-        className={cxFormInput({ hasError: userErrors.name })}
-        onChange={() => updateUserErrors({ name: '' })}
+        value={values.name}
+        placeholder={errors.name || t('common.name')}
+        className={cxFormInput({ hasError: errors.name })}
+        onChange={(e) => setFieldValue('name', e.target.value)}
+        onBlur={() => setFieldError('name', undefined)}
       />
       <input
         type="password"
         name="password"
-        placeholder={userErrors.password || t('common.password')}
-        className={cxFormInput({ hasError: userErrors.password })}
-        onChange={() => updateUserErrors({ password: '' })}
+        value={values.password}
+        placeholder={errors.password || t('common.password')}
+        className={cxFormInput({ hasError: errors.password })}
+        onChange={(e) => setFieldValue('password', e.target.value)}
+        onBlur={() => setFieldError('password', undefined)}
       />
       <input
         type="password"
         name="passwordConfirmation"
-        placeholder={userErrors.password || t('common.password-check')}
-        className={cxFormInput({ hasError: userErrors.password })}
-        onChange={() => updateUserErrors({ password: '' })}
+        value={values.passwordConfirmation}
+        placeholder={errors.password || t('common.password-check')}
+        className={cxFormInput({ hasError: errors.password })}
+        onChange={(e) => setFieldValue('passwordConfirmation', e.target.value)}
+        onBlur={() => setFieldError('password', undefined)}
       />
       <p className={cxWithGrowFadeMd('', showConfirmation)}>
         {t('auth.account-created')}
+      </p>
+      <p className={cxWithGrowFadeMd('', showErrorMessage)}>
+        {errorToString(errorMessage)}
       </p>
       <div className="flex flex-col gap-4">
         <button className="btn-primary btn" type="submit">

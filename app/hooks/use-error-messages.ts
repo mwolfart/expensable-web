@@ -34,6 +34,12 @@ export const useErrorMessages = () => {
         return t('category.errors.duplicate')
       case ErrorCodes.CATEGORY_EMPTY:
         return t('category.errors.empty')
+      case ErrorCodes.LOGIN_UNKNOWN:
+        return t('auth.errors.unknown-error')
+      case ErrorCodes.REGISTER_UNKNOWN:
+        return t('auth.errors.unknown-error')
+      case ErrorCodes.PWD_RESET_UNKNOWN:
+        return t('auth.errors.unknown-error')
       default:
         return code
     }

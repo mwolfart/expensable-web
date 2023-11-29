@@ -5,10 +5,12 @@ export enum ErrorCodes {
   EMAIL_REQUIRED = 'required_email',
   LOGIN_INVALID = 'invalid_login',
   LOGIN_UNKNOWN = 'unknown_login_error',
+  REGISTER_UNKNOWN = 'unknown_register_error',
   PASSWORD_INVALID = 'invalid_password',
   PASSWORD_REQUIRED = 'required_password',
   PASSWORD_SHORT = 'short_password',
   PASSWORD_MISMATCH = 'password_mismatch',
+  PWD_RESET_UNKNOWN = 'password_reset_unknown',
   NAME_REQUIRED = 'required_name',
   TITLE_REQUIRED = 'required_title',
   AMOUNT_REQUIRED = 'amount_required',
@@ -21,7 +23,7 @@ export enum ErrorCodes {
   BAD_FORMAT = 'bad_format',
 }
 
-const emailSchema = yup
+export const emailSchema = yup
   .string()
   .required(ErrorCodes.EMAIL_REQUIRED)
   .matches(
@@ -39,6 +41,9 @@ export const userSchema = yup.object({
       /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/,
       ErrorCodes.PASSWORD_INVALID,
     ),
+  passwordConfirmation: yup
+    .string()
+    .equals(['password'], ErrorCodes.PASSWORD_MISMATCH),
   name: yup.string().required(ErrorCodes.NAME_REQUIRED),
 })
 
