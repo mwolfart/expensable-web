@@ -105,7 +105,7 @@
     "dashboard": {
         "previous-months": "Expenses in previous months",
         "upcoming-months": "Expenses in upcoming months",
-        "categories-current": "Most categories with expenses in current month",
-        "categories-last": "Most categories with expenses in last month"
+        "categories-current": "Categories with most expenses this month",
+        "categories-last": "Categories with most expenses last month"
     }
 }

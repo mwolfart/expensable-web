@@ -52,19 +52,20 @@ export default function Dashboard() {
     totalsPerCategoryCurrentMonth,
   } = useTypedLoaderData<typeof loader>()
   const t = useTranslations()
-  // Category with the most amount in last month
+  const chartClasses =
+    'w-[90%] lg:w-[50%] xl:w-[33%] 2xl:w-[25%] aspect-square text-center'
   return (
     <div className="flex flex-wrap w-full h-auto p-4">
-      <div className="w-[600px] h-[400px] text-center">
+      <div className={chartClasses}>
         <h4 className="pb-4">{t('dashboard.previous-months')}</h4>
         <TotalPerMonthsChart data={totalsPerPreviousMonths} />
       </div>
-      <div className="w-[600px] h-[400px] text-center">
+      <div className={chartClasses}>
         <h4 className="pb-4">{t('dashboard.upcoming-months')}</h4>
         <TotalPerMonthsChart data={totalsPerUpcomingMonths} />
       </div>
-      <div className="w-[600px] h-[400px] text-center">
-        <h4 className="pb-4">{t('dashboard.categories-current')}</h4>
+      <div className={chartClasses}>
+        <h4 className="pb-4 text-md">{t('dashboard.categories-current')}</h4>
         <TotalPerCategoriesChart data={totalsPerCategoryCurrentMonth} />
       </div>
     </div>
