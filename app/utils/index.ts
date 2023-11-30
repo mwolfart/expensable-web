@@ -180,6 +180,45 @@ export const getMonthName = (month: number) => {
   }
 }
 
+export const getUpcomingMonthYears = (amount?: number) => {
+  const currentMonthYear = {
+    month: new Date().getMonth(),
+    year: new Date().getFullYear(),
+  }
+  const upcomingMonthYears = [...Array(amount || 6).keys()].map((i) => {
+    const addedMonth = currentMonthYear.month + i + 1
+    const month = addedMonth > 11 ? addedMonth - 12 : addedMonth
+    const year =
+      addedMonth > 11 ? currentMonthYear.year + 1 : currentMonthYear.year
+    return {
+      month,
+      year,
+    }
+  })
+  return upcomingMonthYears
+}
+
+export const getPreviousMonthYears = (amount?: number) => {
+  const currentMonthYear = {
+    month: new Date().getMonth(),
+    year: new Date().getFullYear(),
+  }
+  const previousMonthYears = [...Array(amount || 6).keys()]
+    .map((i) => {
+      const subtractedMonth = currentMonthYear.month - i
+      const month =
+        subtractedMonth < 0 ? 11 - (1 + subtractedMonth) : subtractedMonth
+      const year =
+        subtractedMonth < 0 ? currentMonthYear.year - 1 : currentMonthYear.year
+      return {
+        month,
+        year,
+      }
+    })
+    .reverse()
+  return previousMonthYears
+}
+
 export const trimStr = (longStr: string) =>
   longStr.length > 10 ? `${longStr.substring(0, 8)}...` : longStr
 

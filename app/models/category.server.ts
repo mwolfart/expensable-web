@@ -18,6 +18,13 @@ export const getUserCategoriesByQuery = (id: string, text: string) =>
     },
   })
 
+export const getCategoryById = (id: string) =>
+  prisma.category.findUnique({
+    where: {
+      id,
+    },
+  })
+
 export const getCategoryByTitle = (title: string) =>
   prisma.category.findUnique({
     where: {

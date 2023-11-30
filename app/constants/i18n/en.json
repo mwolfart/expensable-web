@@ -103,6 +103,8 @@
     },
     "dashboard": {
         "previous-months": "Expenses in previous months",
-        "upcoming-months": "Expenses in upcoming months"
+        "upcoming-months": "Expenses in upcoming months",
+        "categories-current": "Most categories with expenses in current month",
+        "categories-last": "Most categories with expenses in last month"
     }
 }

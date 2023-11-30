@@ -1,22 +1,32 @@
 import {
-  LineChart,
-  Line,
+  BarChart,
+  Bar,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
   Legend,
   ResponsiveContainer,
+  Cell,
 } from 'recharts'
 
 type Props = {
-  data: { period: string; total: number }[]
+  data: { categoryName: string; total: number }[]
 }
 
-export function TotalPerPreviousMonthsChart({ data }: Props) {
+const barColors = [
+  '#6c7eba',
+  '#6cbab0',
+  '#6cbd70',
+  '#c9b475',
+  '#bd774f',
+  '#c93838',
+]
+
+export function TotalPerCategoriesChart({ data }: Props) {
   return (
     <ResponsiveContainer width="100%" height="100%">
-      <LineChart
+      <BarChart
         width={500}
         height={300}
         data={data}
@@ -28,18 +38,16 @@ export function TotalPerPreviousMonthsChart({ data }: Props) {
         }}
       >
         <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="period" />
+        <XAxis dataKey="categoryName" />
         <YAxis />
         <Tooltip />
         <Legend />
-        <Line
-          type="monotone"
-          dataKey="total"
-          name="Amount of expenses"
-          stroke="#8884d8"
-          activeDot={{ r: 8 }}
-        />
-      </LineChart>
+        <Bar dataKey="total" fill="white" legendType="none">
+          {data.map((_, index) => (
+            <Cell key={`cell-${index}`} fill={barColors[index % 10]} />
+          ))}
+        </Bar>
+      </BarChart>
     </ResponsiveContainer>
   )
 }

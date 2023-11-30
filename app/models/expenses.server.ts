@@ -1,11 +1,17 @@
 import { prisma } from '~/db.server'
-import { DEFAULT_DATA_LIMIT, getMonthName } from '~/utils'
+import {
+  DEFAULT_DATA_LIMIT,
+  getMonthName,
+  getPreviousMonthYears,
+  getUpcomingMonthYears,
+} from '~/utils'
 import type {
   CategoryInputArray,
   ExpenseCreate,
   ExpenseFilters,
   ExpenseUpdate,
 } from '~/utils/types'
+import { getCategoryById } from './category.server'
 
 export const getUserExpenses = (id: string, offset?: number, limit?: number) =>
   prisma.expense.findMany({
@@ -193,23 +199,7 @@ export const getUserExpensesInPreviousMonths = async (
   userId: string,
   amount?: number,
 ) => {
-  const currentMonthYear = {
-    month: new Date().getMonth(),
-    year: new Date().getFullYear(),
-  }
-  const previousMonthYears = [...Array(amount || 6).keys()]
-    .map((i) => {
-      const subtractedMonth = currentMonthYear.month - i
-      const month =
-        subtractedMonth < 0 ? 11 - (1 + subtractedMonth) : subtractedMonth
-      const year =
-        subtractedMonth < 0 ? currentMonthYear.year - 1 : currentMonthYear.year
-      return {
-        month,
-        year,
-      }
-    })
-    .reverse()
+  const previousMonthYears = getPreviousMonthYears(amount)
   const totalsPerMonthYearPromises = previousMonthYears.map((monthYear) =>
     getUserExpenseTotalByMonthYear(userId, monthYear.month, monthYear.year),
   )
@@ -228,20 +218,7 @@ export const getUserExpensesInUpcomingMonths = async (
   userId: string,
   amount?: number,
 ) => {
-  const currentMonthYear = {
-    month: new Date().getMonth(),
-    year: new Date().getFullYear(),
-  }
-  const upcomingMonthYears = [...Array(amount || 6).keys()].map((i) => {
-    const addedMonth = currentMonthYear.month + i + 1
-    const month = addedMonth > 11 ? addedMonth - 12 : addedMonth
-    const year =
-      addedMonth > 11 ? currentMonthYear.year + 1 : currentMonthYear.year
-    return {
-      month,
-      year,
-    }
-  })
+  const upcomingMonthYears = getUpcomingMonthYears(amount)
   const totalsPerMonthYearPromises = upcomingMonthYears.map((monthYear) =>
     getUserExpenseTotalByMonthYear(userId, monthYear.month, monthYear.year),
   )
@@ -256,15 +233,116 @@ export const getUserExpensesInUpcomingMonths = async (
   return totalsPerMonth
 }
 
-const createInstallmentExpenses = async (parentExpense: ExpenseUpdate) => {
+export const getUserTotalsPerCategoryInCurrentMonth = async (
+  userId: string,
+  max?: number,
+) => {
+  const currentDate = new Date()
+  currentDate.setHours(0, 0, 0, 0)
+  currentDate.setDate(1)
+  const startDate = new Date(currentDate)
+  currentDate.setMonth(currentDate.getMonth() + 1)
+  currentDate.setDate(0)
+  const endDate = new Date(currentDate)
+
+  const query = await prisma.categoriesOnExpense.aggregateRaw({
+    pipeline: [
+      {
+        $lookup: {
+          from: 'Expense',
+          localField: 'expenseId',
+          foreignField: '_id',
+          as: 'expenseDetails',
+        },
+      },
+      {
+        $unwind: '$expenseDetails',
+      },
+      {
+        $match: {
+          $and: [
+            {
+              $expr: {
+                $gte: [
+                  '$expenseDetails.datetime',
+                  {
+                    $dateFromString: {
+                      dateString: startDate.toISOString(),
+                    },
+                  },
+                ],
+              },
+            },
+            {
+              $expr: {
+                $lte: [
+                  '$expenseDetails.datetime',
+                  {
+                    $dateFromString: {
+                      dateString: endDate.toISOString(),
+                    },
+                  },
+                ],
+              },
+            },
+            {
+              'expenseDetails.userId': { $oid: userId },
+            },
+          ],
+        },
+      },
+      {
+        $group: {
+          _id: '$categoryId',
+          totalAmount: {
+            $sum: '$expenseDetails.amountEffective',
+          },
+        },
+      },
+      {
+        $limit: max || 6,
+      },
+      {
+        $sort: {
+          totalAmount: 1,
+        },
+      },
+    ],
+  })
+
+  if (query && Array.isArray(query)) {
+    const correlationPromises = query
+      .filter((item) =>
+        Boolean(
+          item._id && item._id.$oid && typeof item.totalAmount !== 'undefined',
+        ),
+      )
+      .map(async ({ _id: { $oid: categoryId }, totalAmount }) => {
+        const category = await getCategoryById(categoryId)
+        return {
+          categoryName: category?.title || '',
+          total: totalAmount as number,
+        }
+      })
+
+    const correlations = await Promise.all(correlationPromises)
+    return correlations
+  }
+  return []
+}
+
+const createInstallmentExpenses = async (
+  parentExpense: ExpenseUpdate,
+  categories?: CategoryInputArray,
+) => {
   const { id, installments, datetime, amount, ...payload } = parentExpense
   const installmentExpensesRes = [...Array(installments - 1).keys()].map(
-    (i) => {
+    async (i) => {
       const installmentDate = new Date(datetime)
       installmentDate.setDate(1)
       installmentDate.setMonth(datetime.getMonth() + i + 1)
       installmentDate.setHours(0, 0, 0)
-      return prisma.expense.create({
+      const expenseRes = await prisma.expense.create({
         data: {
           ...payload,
           amount,
@@ -275,6 +353,22 @@ const createInstallmentExpenses = async (parentExpense: ExpenseUpdate) => {
           amountEffective: amount / installments,
         },
       })
+
+      // Mirror categories
+      const categoriesRes = categories?.map(({ id }) =>
+        prisma.categoriesOnExpense.create({
+          data: {
+            expenseId: expenseRes.id,
+            categoryId: id,
+          },
+        }),
+      )
+
+      if (categoriesRes) {
+        await Promise.all(categoriesRes)
+      }
+
+      return expenseRes
     },
   )
   return Promise.all(installmentExpensesRes)
@@ -310,7 +404,7 @@ export const createExpense = async (
 
   // Installment expenses
   if (installments > 1) {
-    await createInstallmentExpenses(expenseRes)
+    await createInstallmentExpenses(expenseRes, categories)
   }
 
   return expenseRes
@@ -328,6 +422,7 @@ export const updateExpense = async (
     },
     select: {
       installments: true,
+      amount: true,
     },
   })
 
@@ -385,13 +480,14 @@ export const updateExpense = async (
 
   // Installment updates
   const oldInstallments = oldInstallmentsRes?.installments
-  if (oldInstallments && oldInstallments !== installments) {
+  const oldAmount = oldInstallmentsRes?.amount
+  if (oldInstallments !== installments || oldAmount !== amount) {
     await prisma.expense.deleteMany({
       where: {
         parentExpenseId: expense.id,
       },
     })
-    await createInstallmentExpenses(expenseRes)
+    await createInstallmentExpenses(expenseRes, categories)
   }
 
   return expenseRes
