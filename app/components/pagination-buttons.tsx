@@ -1,6 +1,7 @@
 import type { Pagination } from '~/hooks/use-pagination'
 import { useTranslations } from 'use-intl'
 import { useSearchParams } from '@remix-run/react'
+import { GrLinkPrevious, GrLinkNext } from 'react-icons/gr'
 import { DEFAULT_DATA_LIMIT } from '~/utils'
 
 type Props = {
@@ -18,8 +19,12 @@ export function PaginationButtons({ total, ...pagination }: Props) {
         className="btn-outline btn-primary btn"
         disabled={!pagination.hasPrev}
         onClick={pagination.goToPrevPage}
+        aria-label={t('common.previous')}
       >
-        {t('common.previous')}
+        <div className="hidden sm:block">{t('common.previous')}</div>
+        <div className="block sm:hidden">
+          <GrLinkPrevious size={16} />
+        </div>
       </button>
       <select
         className="input"
@@ -35,8 +40,12 @@ export function PaginationButtons({ total, ...pagination }: Props) {
         className="btn-outline btn-primary btn"
         disabled={!pagination.hasNext}
         onClick={pagination.goToNextPage}
+        aria-label={t('common.next')}
       >
-        {t('common.next')}
+        <div className="hidden sm:block">{t('common.next')}</div>
+        <div className="block sm:hidden">
+          <GrLinkNext size={16} />
+        </div>
       </button>
     </div>
   )

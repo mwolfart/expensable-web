@@ -33,7 +33,7 @@ export default function Index() {
   return (
     <CategoryProvider>
       <DialogProvider>
-        <main className="relative flex h-full flex-grow flex-col p-8 sm:p-16 sm:pt-0">
+        <main className="relative flex h-full flex-grow flex-col xs:p-8 sm:p-16 sm:pt-0">
           <div className="hidden flex-row justify-end gap-8 p-4 sm:flex">
             <p className="flex items-center text-sm text-primary">
               {t('home.logged-in-as', { user: user?.fullName })}
@@ -48,7 +48,7 @@ export default function Index() {
               {t('common.logout')}
             </button>
           </div>
-          <div className="flex flex-grow flex-col rounded-2xl bg-foreground">
+          <div className="flex flex-grow flex-col xs:rounded-2xl bg-foreground">
             <div className="tabs gap-4 p-4">
               <a className={getTabClass('/')} href="/">
                 <div className="hidden md:block">{t('home.dashboard')}</div>

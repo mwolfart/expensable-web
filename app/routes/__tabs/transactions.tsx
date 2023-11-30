@@ -200,7 +200,7 @@ export default function Transactions() {
   )
 
   return (
-    <div className="m-8 mt-0 md:mt-4">
+    <div className="m-4 mt-0 md:mt-4 md:m-8">
       {showDeletedToast && (
         <Toast message={t('transactions.deleted')} severity="alert-info" />
       )}
@@ -210,7 +210,7 @@ export default function Transactions() {
           onClose={() => setShowFilters(false)}
         />
       )}
-      <div className="mb-8 flex items-end justify-between">
+      <div className="mb-8 flex flex-col justify-between gap-4 sm:flex-row sm:gap-0 sm:items-end">
         <div className="flex items-end gap-4">
           <FilterButton
             onClick={() => setShowFilters(!showFilters)}
@@ -219,8 +219,8 @@ export default function Transactions() {
           <PaginationLimitSelect onChangeLimit={pagination.onChangeLimit} />
         </div>
         <button className="btn-primary btn" onClick={onAddTransaction}>
-          <div className="hidden sm:block">{t('transactions.add')}</div>
           <AiOutlinePlus className="block text-white sm:hidden" size={24} />
+          {t('transactions.add')}
         </button>
       </div>
       <div className={cxWithGrowFadeLg('hidden md:block pb-8', showFilters)}>

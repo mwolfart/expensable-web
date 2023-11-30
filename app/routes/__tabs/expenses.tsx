@@ -292,7 +292,7 @@ export default function Expenses() {
   )
 
   return (
-    <div className="m-8 mt-0 md:mt-4">
+    <div className="m-4 mt-0 md:mt-4 md:m-8">
       {showUpsertToast && (
         <Toast message={upsertText} severity="alert-success" />
       )}
@@ -305,7 +305,7 @@ export default function Expenses() {
           onClose={() => setShowFilters(false)}
         />
       )}
-      <div className="mb-8 flex items-end justify-between">
+      <div className="mb-8 flex flex-col justify-between gap-4 sm:flex-row sm:gap-0 sm:items-end">
         <div className="flex items-end gap-4">
           <FilterButton
             onClick={() => setShowFilters(!showFilters)}
@@ -314,8 +314,8 @@ export default function Expenses() {
           <PaginationLimitSelect onChangeLimit={pagination.onChangeLimit} />
         </div>
         <button className="btn-primary btn" onClick={onAddExpense}>
-          <div className="hidden sm:block">{t('expenses.add')}</div>
           <AiOutlinePlus className="block text-white sm:hidden" size={24} />
+          {t('expenses.add')}
         </button>
       </div>
       <div className={cxWithGrowFadeLg('hidden md:block pb-8', showFilters)}>

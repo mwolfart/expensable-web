@@ -33,6 +33,7 @@
         "expenses": "Expenses",
         "category": "Category",
         "n-more": "{value} more",
+        "n-items": "{value} items",
         "optional-field": "{field} (optional)",
         "each": "{value}/ea",
         "select-option": "Select an option",

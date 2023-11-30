@@ -74,15 +74,24 @@ export function TransactionItem({
           <BeatLoader color="grey" size={10} />
         ) : (
           <>
-            {expenses.map(({ id, title, amount }) => (
-              <TransactionItemExpense key={id} title={title} amount={amount} />
-            ))}
-            {expenseTotal > 5 && (
-              <div className="flex items-center gap-1">
-                <span>+</span>
-                <p>{t('common.n-more', { value: expenseTotal - 5 })}</p>
-              </div>
-            )}
+            <div className="hidden lg:flex flex-row flex-nowrap gap-2">
+              {expenses.map(({ id, title, amount }) => (
+                <TransactionItemExpense
+                  key={id}
+                  title={title}
+                  amount={amount}
+                />
+              ))}
+              {expenseTotal > 5 && (
+                <div className="flex items-center gap-1">
+                  <span>+</span>
+                  <p>{t('common.n-more', { value: expenseTotal - 5 })}</p>
+                </div>
+              )}
+            </div>
+            <div className="flex items-center lg:hidden">
+              <span>{t('common.n-items', { value: expenseTotal })}</span>
+            </div>
           </>
         )}
       </div>

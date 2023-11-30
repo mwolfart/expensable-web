@@ -101,7 +101,7 @@ export function UpsertExpenseDialog({ onUpserted, initialData }: Props) {
 
   return (
     <Form
-      className="grid grid-cols-4 gap-4"
+      className="grid grid-cols-4 gap-4 items-end"
       onSubmit={onSubmit}
       onChange={() => updateFormErrors({})}
     >
@@ -131,7 +131,7 @@ export function UpsertExpenseDialog({ onUpserted, initialData }: Props) {
           value={initialUnit?.toString()}
         />
       </label>
-      <label className="col-span-3">
+      <label className="col-span-4 sm:col-span-3">
         {t('common.date')}
         <input
           type="date"
@@ -140,7 +140,7 @@ export function UpsertExpenseDialog({ onUpserted, initialData }: Props) {
           defaultValue={initialData?.datetime.toISOString().substring(0, 10)}
         />
       </label>
-      <label>
+      <label className="col-span-4 sm:col-span-1">
         {t('common.installments')}
         <input
           type="number"
