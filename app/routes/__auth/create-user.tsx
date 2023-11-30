@@ -18,7 +18,7 @@ import { timeout } from '~/utils/timeout'
 import { useFormik } from 'formik'
 import { createUserWithEmailAndPassword, getIdToken } from 'firebase/auth'
 import { clientAuth } from '~/utils/firebase.client'
-import { serverAuth } from '~/utils/firebase.server'
+import { serverAuth } from '~/models/firebase.server'
 
 export async function action({
   request,

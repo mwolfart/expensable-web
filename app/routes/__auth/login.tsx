@@ -17,7 +17,7 @@ import type { AuthContext } from '../__auth'
 import { getIdToken, signInWithEmailAndPassword } from 'firebase/auth'
 import { useFormik } from 'formik'
 import { clientAuth } from '~/utils/firebase.client'
-import { serverAuth } from '~/utils/firebase.server'
+import { serverAuth } from '~/models/firebase.server'
 import { createSession } from '~/session.server'
 
 export async function action({ request }: ActionArgs) {
