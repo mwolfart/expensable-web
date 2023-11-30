@@ -2,7 +2,7 @@ import type { User } from '@prisma/client'
 import { getUserByEmail } from '~/models/user.server'
 import { createCookie, redirect } from '@remix-run/node'
 import invariant from 'tiny-invariant'
-import { serverAuth } from './models/firebase.server'
+import { serverAuth } from './firebase.server'
 
 invariant(process.env.SESSION_SECRET, 'SESSION_SECRET must be set')
 invariant(process.env.SESSION_TIMEOUT, 'SESSION_TIMEOUT must be set')
