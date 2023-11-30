@@ -1,8 +1,7 @@
 import type { Category } from '@prisma/client'
 import type { PropsWithChildren } from 'react'
 import { useFetcher } from '@remix-run/react'
-import { useEffect, useMemo, useState } from 'react'
-import { createContext } from 'react'
+import { useEffect, useMemo, useState, createContext } from 'react'
 
 export const CategoryContext = createContext({
   list: [] as Category[],
