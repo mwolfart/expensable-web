@@ -219,6 +219,19 @@ export const getPreviousMonthYears = (amount?: number) => {
   return previousMonthYears
 }
 
+export const getIntervalForMonthYear = (month: number, year: number) => {
+  const currentDate = new Date()
+  currentDate.setFullYear(year, month, 1)
+  currentDate.setHours(0, 0, 0, 0)
+  const startDate = new Date(currentDate)
+  currentDate.setMonth(currentDate.getMonth() + 1, 0)
+  const endDate = new Date(currentDate)
+  return {
+    startDate,
+    endDate,
+  }
+}
+
 export const trimStr = (longStr: string) =>
   longStr.length > 10 ? `${longStr.substring(0, 8)}...` : longStr
 

@@ -7,6 +7,7 @@ import {
   getUserExpensesInPreviousMonths,
   getUserExpensesInUpcomingMonths,
   getUserTotalsPerCategoryInCurrentMonth,
+  getUserTotalsPerCategoryInLastMonth,
   // getUserTotalsPerCategoryInLastMonth,
 } from '~/models/expenses.server'
 import { getLoggedUserId } from '~/session.server'
@@ -24,12 +25,13 @@ export async function loader({ request }: LoaderArgs) {
     )
     const totalsPerCategoryCurrentMonthPromise =
       getUserTotalsPerCategoryInCurrentMonth(userId)
-    const totalsPerCategoryLastMonth = [{}]
-    // getUserTotalsPerCategoryInLastMonth(userId)
+    const totalsPerCategoryLastMonthPromise =
+      getUserTotalsPerCategoryInLastMonth(userId)
     const totalsPerPreviousMonths = await totalsPerPreviousMonthsPromise
     const totalsPerUpcomingMonths = await totalsPerUpcomingMonthsPromise
     const totalsPerCategoryCurrentMonth =
       await totalsPerCategoryCurrentMonthPromise
+    const totalsPerCategoryLastMonth = await totalsPerCategoryLastMonthPromise
     return typedjson({
       totalsPerPreviousMonths,
       totalsPerUpcomingMonths,
@@ -50,6 +52,7 @@ export default function Dashboard() {
     totalsPerPreviousMonths,
     totalsPerUpcomingMonths,
     totalsPerCategoryCurrentMonth,
+    totalsPerCategoryLastMonth,
   } = useTypedLoaderData<typeof loader>()
   const t = useTranslations()
   const chartClasses =
@@ -67,6 +70,10 @@ export default function Dashboard() {
       <div className={chartClasses}>
         <h4 className="pb-4 text-md">{t('dashboard.categories-current')}</h4>
         <TotalPerCategoriesChart data={totalsPerCategoryCurrentMonth} />
+      </div>
+      <div className={chartClasses}>
+        <h4 className="pb-4 text-md">{t('dashboard.categories-last')}</h4>
+        <TotalPerCategoriesChart data={totalsPerCategoryLastMonth} />
       </div>
     </div>
   )

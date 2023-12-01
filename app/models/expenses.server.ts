@@ -1,6 +1,7 @@
 import { prisma } from '~/db.server'
 import {
   DEFAULT_DATA_LIMIT,
+  getIntervalForMonthYear,
   getMonthName,
   getPreviousMonthYears,
   getUpcomingMonthYears,
@@ -233,18 +234,12 @@ export const getUserExpensesInUpcomingMonths = async (
   return totalsPerMonth
 }
 
-export const getUserTotalsPerCategoryInCurrentMonth = async (
+const getUserExpensesByCategoriesInInterval = async (
   userId: string,
-  max?: number,
+  startDate: Date,
+  endDate: Date,
+  limit?: number,
 ) => {
-  const currentDate = new Date()
-  currentDate.setHours(0, 0, 0, 0)
-  currentDate.setDate(1)
-  const startDate = new Date(currentDate)
-  currentDate.setMonth(currentDate.getMonth() + 1)
-  currentDate.setDate(0)
-  const endDate = new Date(currentDate)
-
   const query = await prisma.categoriesOnExpense.aggregateRaw({
     pipeline: [
       {
@@ -300,7 +295,7 @@ export const getUserTotalsPerCategoryInCurrentMonth = async (
         },
       },
       {
-        $limit: max || 6,
+        $limit: limit || 6,
       },
       {
         $sort: {
@@ -309,26 +304,74 @@ export const getUserTotalsPerCategoryInCurrentMonth = async (
       },
     ],
   })
+  return query
+}
 
+const getExpensePerCategoryCorrelationFromQueryResult = async (
+  query: Array<{ _id: { $oid: string }; totalAmount: number }>,
+) => {
+  const correlationPromises = query
+    .filter((item) =>
+      Boolean(
+        item._id && item._id.$oid && typeof item.totalAmount !== 'undefined',
+      ),
+    )
+    .map(async ({ _id: { $oid: categoryId }, totalAmount }) => {
+      const category = await getCategoryById(categoryId)
+      return {
+        categoryName: category?.title || '',
+        total: totalAmount as number,
+      }
+    })
+
+  const correlations = await Promise.all(correlationPromises)
+  return correlations
+}
+
+export const getUserTotalsPerCategoryInMonthYear = async (
+  month: number,
+  year: number,
+  userId: string,
+  limit?: number,
+) => {
+  const { startDate, endDate } = getIntervalForMonthYear(month, year)
+  const query = await getUserExpensesByCategoriesInInterval(
+    userId,
+    startDate,
+    endDate,
+    limit,
+  )
   if (query && Array.isArray(query)) {
-    const correlationPromises = query
-      .filter((item) =>
-        Boolean(
-          item._id && item._id.$oid && typeof item.totalAmount !== 'undefined',
-        ),
-      )
-      .map(async ({ _id: { $oid: categoryId }, totalAmount }) => {
-        const category = await getCategoryById(categoryId)
-        return {
-          categoryName: category?.title || '',
-          total: totalAmount as number,
-        }
-      })
-
-    const correlations = await Promise.all(correlationPromises)
-    return correlations
+    return await getExpensePerCategoryCorrelationFromQueryResult(query)
   }
   return []
+}
+
+export const getUserTotalsPerCategoryInCurrentMonth = async (
+  userId: string,
+  limit?: number,
+) => {
+  const currentDate = new Date()
+  return getUserTotalsPerCategoryInMonthYear(
+    currentDate.getMonth(),
+    currentDate.getFullYear(),
+    userId,
+    limit,
+  )
+}
+
+export const getUserTotalsPerCategoryInLastMonth = (
+  userId: string,
+  limit?: number,
+) => {
+  const currentDate = new Date()
+  currentDate.setMonth(currentDate.getMonth() - 1)
+  return getUserTotalsPerCategoryInMonthYear(
+    currentDate.getMonth(),
+    currentDate.getFullYear(),
+    userId,
+    limit,
+  )
 }
 
 const createInstallmentExpenses = async (
@@ -339,8 +382,7 @@ const createInstallmentExpenses = async (
   const installmentExpensesRes = [...Array(installments - 1).keys()].map(
     async (i) => {
       const installmentDate = new Date(datetime)
-      installmentDate.setDate(1)
-      installmentDate.setMonth(datetime.getMonth() + i + 1)
+      installmentDate.setMonth(datetime.getMonth() + i + 1, 1)
       installmentDate.setHours(0, 0, 0)
       const expenseRes = await prisma.expense.create({
         data: {
