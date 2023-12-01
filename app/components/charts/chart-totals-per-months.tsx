@@ -30,7 +30,13 @@ export function TotalPerMonthsChart({ data }: Props) {
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="period" />
         <YAxis />
-        <Tooltip />
+        <Tooltip
+          formatter={(value) => {
+            if (typeof value === 'number') {
+              return `R$ ${value.toFixed(2)}`
+            }
+          }}
+        />
         <Legend />
         <Line
           type="monotone"

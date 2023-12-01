@@ -40,9 +40,15 @@ export function TotalPerCategoriesChart({ data }: Props) {
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="categoryName" />
         <YAxis />
-        <Tooltip />
+        <Tooltip
+          formatter={(value) => {
+            if (typeof value === 'number') {
+              return `R$ ${value.toFixed(2)}`
+            }
+          }}
+        />
         <Legend />
-        <Bar dataKey="total" fill="white" legendType="none">
+        <Bar dataKey="total" fill="#475569" legendType="none" name="Total">
           {data.map((_, index) => (
             <Cell key={`cell-${index}`} fill={barColors[index % 10]} />
           ))}
