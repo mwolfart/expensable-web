@@ -50,7 +50,7 @@ export default function Index() {
           </div>
           <div className="flex flex-grow flex-col xs:rounded-2xl bg-foreground">
             <div className="tabs gap-4 p-4">
-              <a className={getTabClass('/')} href="/">
+              <a className={getTabClass('/dashboard')} href="/">
                 <div className="hidden md:block">{t('home.dashboard')}</div>
                 <GoGraph className="block md:hidden" size={24} />
               </a>

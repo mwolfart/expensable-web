@@ -3,7 +3,6 @@ import {
   DEFAULT_DATA_LIMIT,
   getIntervalForMonthYear,
   getMonthName,
-  getPreviousMonthYears,
   getUpcomingMonthYears,
 } from '~/utils'
 import type {
@@ -196,30 +195,12 @@ const buildMonthYearExpenseCorrelation = (
   }
 }
 
-export const getUserExpensesInPreviousMonths = async (
+export const getUserExpensesInNumOfMonths = async (
   userId: string,
-  amount?: number,
+  startDate: Date,
+  amountOfMonths?: number,
 ) => {
-  const previousMonthYears = getPreviousMonthYears(amount)
-  const totalsPerMonthYearPromises = previousMonthYears.map((monthYear) =>
-    getUserExpenseTotalByMonthYear(userId, monthYear.month, monthYear.year),
-  )
-  const totalsPerMonthRaw = await Promise.all(totalsPerMonthYearPromises)
-  const totalsPerMonth = totalsPerMonthRaw.map(({ _sum }, i) => {
-    return buildMonthYearExpenseCorrelation(
-      _sum.amountEffective || 0,
-      previousMonthYears[i],
-    )
-  })
-
-  return totalsPerMonth
-}
-
-export const getUserExpensesInUpcomingMonths = async (
-  userId: string,
-  amount?: number,
-) => {
-  const upcomingMonthYears = getUpcomingMonthYears(amount)
+  const upcomingMonthYears = getUpcomingMonthYears(startDate, amountOfMonths)
   const totalsPerMonthYearPromises = upcomingMonthYears.map((monthYear) =>
     getUserExpenseTotalByMonthYear(userId, monthYear.month, monthYear.year),
   )

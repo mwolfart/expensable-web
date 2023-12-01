@@ -29,6 +29,8 @@
         "entries": "Entries per page: ",
         "previous": "Previous",
         "next": "Next",
+        "previous-month": "Previous month",
+        "next-month": "Previous month",
         "page-n": "Page {number}",
         "expenses": "Expenses",
         "category": "Category",
@@ -103,9 +105,8 @@
         "cancel-all": "Cancel all"
     },
     "dashboard": {
-        "previous-months": "Expenses in previous months",
-        "upcoming-months": "Expenses in upcoming months",
-        "categories-current": "Categories with most expenses this month",
-        "categories-last": "Categories with most expenses last month"
+        "viewing-data-for": "Viewing data for:",
+        "expenses-during-months": "Expenses per months",
+        "categories-this-month": "Categories with most expenses this month"
     }
 }
