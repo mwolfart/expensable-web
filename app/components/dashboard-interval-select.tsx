@@ -29,7 +29,7 @@ export function DashboardIntervalSelect({
   }
 
   return (
-    <select className="input" onChange={onChange} defaultValue={0}>
+    <select className="input" onChange={onChange} value={0}>
       {[...Array(7).keys()].map((i) => {
         const id = i - 3
         const date = hasDate ? new Date(year, month) : new Date()
