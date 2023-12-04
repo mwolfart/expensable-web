@@ -1,4 +1,4 @@
-import { prisma } from '~/db.server'
+import { prisma } from '~/infra/db.server'
 
 export const getUserByEmail = (email: string) =>
   prisma.user.findUnique({

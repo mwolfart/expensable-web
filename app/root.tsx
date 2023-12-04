@@ -12,7 +12,7 @@ import { i18n } from '~/constants'
 
 import { IntlProvider } from 'use-intl'
 import tailwindStylesheetUrl from './styles/tailwind.css'
-import { getLoggedUserProfile } from './session.server'
+import { getLoggedUserProfile } from './infra/session.server'
 
 export const links: LinksFunction = () => {
   return [{ rel: 'stylesheet', href: tailwindStylesheetUrl }]

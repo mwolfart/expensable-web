@@ -1,7 +1,7 @@
 import type { LoaderArgs } from '@remix-run/node'
 import { json, redirect } from '@remix-run/node'
 
-import { getLoggedUserId } from '~/session.server'
+import { getLoggedUserId } from '~/infra/session.server'
 import { useState } from 'react'
 import cx from 'classnames'
 import { timeout } from '~/utils/timeout'

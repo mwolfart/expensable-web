@@ -1,4 +1,4 @@
-import { prisma } from '~/db.server'
+import { prisma } from '~/infra/db.server'
 import {
   DEFAULT_DATA_LIMIT,
   getIntervalForMonthYear,

@@ -42,7 +42,7 @@ export default function handleRequest(
         },
         onError: (error: unknown) => {
           didError = true
-
+          // eslint-disable-next-line no-console
           console.error(error)
         },
       },

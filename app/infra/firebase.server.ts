@@ -2,7 +2,7 @@ import type { App, ServiceAccount } from 'firebase-admin/app'
 import type { Auth } from 'firebase-admin/auth'
 import { initializeApp, getApps, cert, getApp } from 'firebase-admin/app'
 import { getAuth } from 'firebase-admin/auth'
-import sdk from '../expensable-firebase-adminsdk.json'
+import sdk from '../../expensable-firebase-adminsdk.json'
 
 let app: App
 let auth: Auth

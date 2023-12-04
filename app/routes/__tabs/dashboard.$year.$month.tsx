@@ -9,7 +9,7 @@ import {
   getUserExpensesInNumOfMonths,
   getUserTotalsPerCategoryInMonthYear,
 } from '~/models/expenses.server'
-import { getLoggedUserId } from '~/session.server'
+import { getLoggedUserId } from '~/infra/session.server'
 import { IoArrowBack, IoArrowForward } from 'react-icons/io5'
 
 const MIN_YEAR = 2003

@@ -17,8 +17,8 @@ import { ErrorCodes, userSchema } from '~/utils/schemas'
 import { timeout } from '~/utils/timeout'
 import { useFormik } from 'formik'
 import { createUserWithEmailAndPassword, getIdToken } from 'firebase/auth'
-import { clientAuth } from '~/firebase.client'
-import { serverAuth } from '~/firebase.server'
+import { clientAuth } from '~/infra/firebase.client'
+import { serverAuth } from '~/infra/firebase.server'
 
 export async function action({
   request,

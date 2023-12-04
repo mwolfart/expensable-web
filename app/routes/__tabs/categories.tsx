@@ -6,7 +6,7 @@ import type {
 } from '@remix-run/server-runtime'
 import { json } from '@remix-run/server-runtime'
 import { useTranslations } from 'use-intl'
-import { getLoggedUserId } from '~/session.server'
+import { getLoggedUserId } from '~/infra/session.server'
 import {
   createCategory,
   deleteCategory,

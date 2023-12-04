@@ -4,7 +4,7 @@ import { BeatLoader } from 'react-spinners'
 import { typedjson, useTypedLoaderData } from 'remix-typedjson'
 import { UpsertTransactionForm } from '~/components/transaction-upsert-form'
 import { getUserTransactionById } from '~/models/transaction.server'
-import { getLoggedUserId } from '~/session.server'
+import { getLoggedUserId } from '~/infra/session.server'
 import { useEffect, useState } from 'react'
 
 export async function loader({ request, params }: LoaderArgs) {

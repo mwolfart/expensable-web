@@ -1,4 +1,4 @@
-import { prisma } from '~/db.server'
+import { prisma } from '~/infra/db.server'
 
 export const getUserCategories = (id: string) =>
   prisma.user.findUnique({

@@ -16,9 +16,9 @@ import { ErrorCodes, loginSchema } from '~/utils/schemas'
 import type { AuthContext } from '../__auth'
 import { getIdToken, signInWithEmailAndPassword } from 'firebase/auth'
 import { useFormik } from 'formik'
-import { clientAuth } from '~/firebase.client'
-import { serverAuth } from '~/firebase.server'
-import { createSession } from '~/session.server'
+import { clientAuth } from '~/infra/firebase.client'
+import { serverAuth } from '~/infra/firebase.server'
+import { createSession } from '~/infra/session.server'
 
 export async function action({ request }: ActionArgs) {
   try {

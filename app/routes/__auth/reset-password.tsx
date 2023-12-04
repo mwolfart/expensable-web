@@ -13,7 +13,7 @@ import { useErrorMessages } from '~/hooks'
 import { passwordSchema } from '~/utils/schemas'
 import { useFormik } from 'formik'
 import { confirmPasswordReset } from 'firebase/auth'
-import { clientAuth } from '~/firebase.client'
+import { clientAuth } from '~/infra/firebase.client'
 
 export const meta: MetaFunction = () => {
   return {

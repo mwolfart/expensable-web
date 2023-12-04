@@ -17,7 +17,7 @@ import {
   getUserExpensesByIds,
   updateExpense,
 } from '~/models/expenses.server'
-import { getLoggedUserId } from '~/session.server'
+import { getLoggedUserId } from '~/infra/session.server'
 import { NoData } from '~/components/no-data'
 import { ExpenseList } from '~/components/expense-list'
 import { typedjson } from 'remix-typedjson'

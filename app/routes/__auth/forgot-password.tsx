@@ -8,7 +8,7 @@ import type { AuthContext } from '../__auth'
 import { ErrorCodes, emailSchema } from '~/utils/schemas'
 import { useErrorMessages } from '~/hooks'
 import { sendPasswordResetEmail } from 'firebase/auth'
-import { clientAuth } from '~/firebase.client'
+import { clientAuth } from '~/infra/firebase.client'
 
 const CONFIRMATION_TIMEOUT = 5000
 

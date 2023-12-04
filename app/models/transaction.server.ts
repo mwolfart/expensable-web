@@ -4,7 +4,7 @@ import type {
   TransactionFilters,
 } from '~/utils/types'
 import type { Transaction } from '@prisma/client'
-import { prisma } from '~/db.server'
+import { prisma } from '~/infra/db.server'
 import { DEFAULT_DATA_LIMIT } from '~/utils'
 import { createExpense } from './expenses.server'
 

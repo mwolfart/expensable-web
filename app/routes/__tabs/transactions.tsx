@@ -26,7 +26,7 @@ import {
   getUserTransactionsByFilter,
   updateTransaction,
 } from '~/models/transaction.server'
-import { getLoggedUserId } from '~/session.server'
+import { getLoggedUserId } from '~/infra/session.server'
 import { areAllValuesEmpty, cxWithGrowFadeLg, parseExpenses } from '~/utils'
 import { timeout } from '~/utils/timeout'
 import { AiOutlinePlus } from 'react-icons/ai'

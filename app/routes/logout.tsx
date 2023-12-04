@@ -1,6 +1,6 @@
 import { redirect } from '@remix-run/node'
 
-import { logout } from '~/session.server'
+import { logout } from '~/infra/session.server'
 
 export async function action() {
   return logout()
