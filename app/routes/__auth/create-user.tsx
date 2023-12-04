@@ -1,6 +1,6 @@
 import type { ActionArgs, MetaFunction, TypedResponse } from '@remix-run/node'
 import { json } from '@remix-run/node'
-import { createUser } from '~/models/user.server'
+import { createUser } from '~/infra/models/user.server'
 import { useTranslations } from 'use-intl'
 import {
   Form,
@@ -11,10 +11,9 @@ import {
 } from '@remix-run/react'
 import { useEffect, useState } from 'react'
 import type { AuthContext } from '../__auth'
-import { cxFormInput, cxWithGrowFadeMd } from '~/utils'
+import { cxFormInput, cxWithGrowFadeMd, timeout } from '~/utils/helpers'
 import { useErrorMessages } from '~/presentation/hooks'
 import { ErrorCodes, userSchema } from '~/utils/schemas'
-import { timeout } from '~/utils/timeout'
 import { useFormik } from 'formik'
 import { createUserWithEmailAndPassword, getIdToken } from 'firebase/auth'
 import { clientAuth } from '~/infra/firebase.client'

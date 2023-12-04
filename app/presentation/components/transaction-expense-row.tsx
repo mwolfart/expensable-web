@@ -1,7 +1,7 @@
 import type { TransactionExpenseInput } from '~/utils/types'
 import { useContext } from 'react'
 import { BsTrash } from 'react-icons/bs'
-import { formatCurrency } from '~/utils'
+import { formatCurrency } from '~/utils/helpers'
 import { CategoryContext } from '~/presentation/providers/category'
 import { useTranslations } from 'use-intl'
 

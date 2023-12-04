@@ -1,5 +1,5 @@
 import type { ChangeEventHandler } from 'react'
-import { getMonthName } from '~/utils'
+import { getMonthName } from '~/utils/helpers'
 
 type Props = {
   onChangeInterval: (month: number, year: number) => void

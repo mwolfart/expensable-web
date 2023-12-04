@@ -16,7 +16,7 @@ import {
   getUserExpensesByFilter,
   getUserExpensesByIds,
   updateExpense,
-} from '~/models/expenses.server'
+} from '~/infra/models/expenses.server'
 import { getLoggedUserId } from '~/infra/session.server'
 import { NoData } from '~/presentation/components/no-data'
 import { ExpenseList } from '~/presentation/components/expense-list'
@@ -30,8 +30,8 @@ import {
   areAllValuesEmpty,
   cxWithGrowFadeLg,
   parseCategoryInput,
-} from '~/utils'
-import { timeout } from '~/utils/timeout'
+  timeout,
+} from '~/utils/helpers'
 import { useRevalidator, useSearchParams } from '@remix-run/react'
 import { ExpenseFilterComponent } from '~/presentation/components/expense-filters'
 import { usePagination } from '~/presentation/hooks/use-pagination'

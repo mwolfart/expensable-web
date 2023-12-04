@@ -4,7 +4,7 @@ import { json, redirect } from '@remix-run/node'
 import { getLoggedUserId } from '~/infra/session.server'
 import { useState } from 'react'
 import cx from 'classnames'
-import { timeout } from '~/utils/timeout'
+import { timeout } from '~/utils/helpers'
 import { Outlet } from '@remix-run/react'
 
 export type AuthContext = [transition: () => Promise<void>]

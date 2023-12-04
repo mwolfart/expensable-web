@@ -1,6 +1,6 @@
 import type { ChangeEvent } from 'react'
 import { useNavigate, useSearchParams } from '@remix-run/react'
-import { DEFAULT_DATA_LIMIT } from '~/utils'
+import { DEFAULT_DATA_LIMIT } from '~/constants'
 
 type Props = {
   url: string

@@ -1,10 +1,9 @@
 import { prisma } from '~/infra/db.server'
 import {
-  DEFAULT_DATA_LIMIT,
   getIntervalForMonthYear,
   getMonthName,
   getUpcomingMonthYears,
-} from '~/utils'
+} from '~/utils/helpers'
 import type {
   CategoryInputArray,
   ExpenseCreate,
@@ -12,6 +11,7 @@ import type {
   ExpenseUpdate,
 } from '~/utils/types'
 import { getCategoryById } from './category.server'
+import { DEFAULT_DATA_LIMIT } from '~/constants'
 
 export const getUserExpenses = (id: string, offset?: number, limit?: number) =>
   prisma.expense.findMany({

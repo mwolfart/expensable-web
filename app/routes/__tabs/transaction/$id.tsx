@@ -3,7 +3,7 @@ import { useFetcher, useNavigate, useNavigation } from '@remix-run/react'
 import { BeatLoader } from 'react-spinners'
 import { typedjson, useTypedLoaderData } from 'remix-typedjson'
 import { UpsertTransactionForm } from '~/presentation/components/transaction-upsert-form'
-import { getUserTransactionById } from '~/models/transaction.server'
+import { getUserTransactionById } from '~/infra/models/transaction.server'
 import { getLoggedUserId } from '~/infra/session.server'
 import { useEffect, useState } from 'react'
 

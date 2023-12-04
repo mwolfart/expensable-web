@@ -1,5 +1,5 @@
 import type { User } from '@prisma/client'
-import { getUserByEmail } from '~/models/user.server'
+import { getUserByEmail } from '~/infra/models/user.server'
 import { createCookie, redirect } from '@remix-run/node'
 import invariant from 'tiny-invariant'
 import { serverAuth } from './firebase.server'

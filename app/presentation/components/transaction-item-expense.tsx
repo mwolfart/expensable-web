@@ -1,4 +1,4 @@
-import { formatCurrency, trimStr } from '~/utils'
+import { formatCurrency, trimStr } from '~/utils/helpers'
 
 type Props = {
   title: string

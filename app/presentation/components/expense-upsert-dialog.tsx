@@ -6,7 +6,7 @@ import { useTranslations } from 'use-intl'
 import { CurrencyInput } from './currency-input'
 import { Form, useFetcher } from '@remix-run/react'
 import { DialogContext } from '~/presentation/providers/dialog'
-import { cxFormInput, formatCurrency } from '~/utils'
+import { cxFormInput, formatCurrency } from '~/utils/helpers'
 import { CategoryContext } from '~/presentation/providers/category'
 import { TagInput } from './tag-input'
 

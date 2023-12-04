@@ -1,7 +1,6 @@
 import type { ActionArgs, MetaFunction } from '@remix-run/node'
 import { json } from '@remix-run/node'
 import { useEffect, useState } from 'react'
-import { timeout } from '~/utils/timeout'
 import {
   Form,
   useActionData,
@@ -10,7 +9,7 @@ import {
   useOutletContext,
 } from '@remix-run/react'
 import { useTranslations } from 'use-intl'
-import { cxFormInput, cxWithFade } from '~/utils'
+import { cxFormInput, cxWithFade, timeout } from '~/utils/helpers'
 import { useErrorMessages } from '~/presentation/hooks'
 import { ErrorCodes, loginSchema } from '~/utils/schemas'
 import type { AuthContext } from '../__auth'

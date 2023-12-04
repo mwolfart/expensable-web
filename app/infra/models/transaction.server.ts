@@ -5,7 +5,7 @@ import type {
 } from '~/utils/types'
 import type { Transaction } from '@prisma/client'
 import { prisma } from '~/infra/db.server'
-import { DEFAULT_DATA_LIMIT } from '~/utils'
+import { DEFAULT_DATA_LIMIT } from '~/constants'
 import { createExpense } from './expenses.server'
 
 export const getUserTransactions = (

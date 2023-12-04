@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react'
 import { BsTrash } from 'react-icons/bs'
 import { MdOutlineEdit } from 'react-icons/md'
 import { useTranslations } from 'use-intl'
-import { cxFormInput } from '~/utils'
+import { cxFormInput } from '~/utils/helpers'
 
 type Props = {
   category: Category

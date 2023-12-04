@@ -2,7 +2,7 @@ import type { Pagination } from '~/presentation/hooks/use-pagination'
 import { useTranslations } from 'use-intl'
 import { useSearchParams } from '@remix-run/react'
 import { GrLinkPrevious, GrLinkNext } from 'react-icons/gr'
-import { DEFAULT_DATA_LIMIT } from '~/utils'
+import { DEFAULT_DATA_LIMIT } from '~/constants'
 
 type Props = {
   total: number

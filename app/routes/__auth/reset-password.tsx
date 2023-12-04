@@ -8,7 +8,7 @@ import {
 } from '@remix-run/react'
 import { useEffect, useState } from 'react'
 import type { AuthContext } from '../__auth'
-import { cxFormInput, cxWithGrowFadeMd } from '~/utils'
+import { cxFormInput, cxWithGrowFadeMd } from '~/utils/helpers'
 import { useErrorMessages } from '~/presentation/hooks'
 import { passwordSchema } from '~/utils/schemas'
 import { useFormik } from 'formik'

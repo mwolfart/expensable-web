@@ -13,14 +13,14 @@ import {
   getCategoryByTitle,
   getUserCategories,
   updateCategory,
-} from '~/models/category.server'
+} from '~/infra/models/category.server'
 import { NoData } from '~/presentation/components/no-data'
 import { useState } from 'react'
 import { AiOutlinePlus } from 'react-icons/ai'
 import { ErrorCodes } from '~/utils/schemas'
 import { CategoryList } from '~/presentation/components/category-list'
 import { AddCategoryPopup } from '~/presentation/components/category-add-popup'
-import { timeout } from '~/utils/timeout'
+import { timeout } from '~/utils/helpers'
 
 export async function loader({ request }: LoaderArgs) {
   const userId = await getLoggedUserId(request)

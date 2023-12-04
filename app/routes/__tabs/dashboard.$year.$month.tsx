@@ -8,7 +8,7 @@ import { DashboardIntervalSelect } from '~/presentation/components/dashboard-int
 import {
   getUserExpensesInNumOfMonths,
   getUserTotalsPerCategoryInMonthYear,
-} from '~/models/expenses.server'
+} from '~/infra/models/expenses.server'
 import { getLoggedUserId } from '~/infra/session.server'
 import { IoArrowBack, IoArrowForward } from 'react-icons/io5'
 
