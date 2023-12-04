@@ -107,6 +107,7 @@
     "dashboard": {
         "viewing-data-for": "Viewing data for:",
         "expenses-during-months": "Expenses per months",
-        "categories-this-month": "Categories with most expenses this month"
+        "categories-this-month": "Categories with most expenses this month",
+        "no-data": "There's no data for the selected month"
     }
 }

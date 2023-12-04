@@ -73,7 +73,7 @@ export default function Dashboard() {
   }
 
   const chartClasses =
-    'w-[90%] lg:w-[50%] xl:w-[33%] 2xl:w-[25%] aspect-square text-center'
+    'w-[90%] lg:w-[50%] xl:w-[33%] 2xl:w-[25%] flex flex-col aspect-square text-center items-center'
 
   return (
     <div className="flex flex-col w-full gap-4">
