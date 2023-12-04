@@ -1,6 +1,5 @@
 import type { ChangeEventHandler, InputHTMLAttributes } from 'react'
-import { useEffect } from 'react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 type Props = {
   value?: string
