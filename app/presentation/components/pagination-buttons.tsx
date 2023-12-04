@@ -1,4 +1,4 @@
-import type { Pagination } from '~/hooks/use-pagination'
+import type { Pagination } from '~/presentation/hooks/use-pagination'
 import { useTranslations } from 'use-intl'
 import { useSearchParams } from '@remix-run/react'
 import { GrLinkPrevious, GrLinkNext } from 'react-icons/gr'

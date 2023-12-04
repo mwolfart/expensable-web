@@ -5,9 +5,9 @@ import { useContext, useEffect, useId, useReducer, useState } from 'react'
 import { useTranslations } from 'use-intl'
 import { CurrencyInput } from './currency-input'
 import { Form, useFetcher } from '@remix-run/react'
-import { DialogContext } from '~/providers/dialog'
+import { DialogContext } from '~/presentation/providers/dialog'
 import { cxFormInput, formatCurrency } from '~/utils'
-import { CategoryContext } from '~/providers/category'
+import { CategoryContext } from '~/presentation/providers/category'
 import { TagInput } from './tag-input'
 
 const MAX_CATEGORIES = 3

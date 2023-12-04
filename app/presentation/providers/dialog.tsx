@@ -1,6 +1,5 @@
 import type { FC, PropsWithChildren, ReactNode } from 'react'
-import { useCallback } from 'react'
-import { createContext, useState } from 'react'
+import { createContext, useState, useCallback } from 'react'
 import cx from 'classnames'
 
 export const DialogContext = createContext({

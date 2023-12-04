@@ -6,7 +6,7 @@ import { cxFormInput, cxWithFade } from '~/utils'
 import { timeout } from '~/utils/timeout'
 import type { AuthContext } from '../__auth'
 import { ErrorCodes, emailSchema } from '~/utils/schemas'
-import { useErrorMessages } from '~/hooks'
+import { useErrorMessages } from '~/presentation/hooks'
 import { sendPasswordResetEmail } from 'firebase/auth'
 import { clientAuth } from '~/infra/firebase.client'
 

@@ -18,13 +18,13 @@ import {
   updateExpense,
 } from '~/models/expenses.server'
 import { getLoggedUserId } from '~/infra/session.server'
-import { NoData } from '~/components/no-data'
-import { ExpenseList } from '~/components/expense-list'
+import { NoData } from '~/presentation/components/no-data'
+import { ExpenseList } from '~/presentation/components/expense-list'
 import { typedjson } from 'remix-typedjson'
 import { useTypedLoaderData } from 'remix-typedjson/dist/remix'
 import { useContext, useState } from 'react'
-import { DialogContext } from '~/providers/dialog'
-import { UpsertExpenseDialog } from '~/components/expense-upsert-dialog'
+import { DialogContext } from '~/presentation/providers/dialog'
+import { UpsertExpenseDialog } from '~/presentation/components/expense-upsert-dialog'
 import { ErrorCodes } from '~/utils/schemas'
 import {
   areAllValuesEmpty,
@@ -33,14 +33,14 @@ import {
 } from '~/utils'
 import { timeout } from '~/utils/timeout'
 import { useRevalidator, useSearchParams } from '@remix-run/react'
-import { ExpenseFilterComponent } from '~/components/expense-filters'
-import { usePagination } from '~/hooks/use-pagination'
-import { useFilter } from '~/hooks/use-filter'
-import { PaginationButtons } from '~/components/pagination-buttons'
-import { MobileCancelDialog } from '~/components/mobile-cancel-dialog'
-import { Toast } from '~/components/toast'
-import { PaginationLimitSelect } from '~/components/pagination-limit-select'
-import { FilterButton } from '~/components/filter-button'
+import { ExpenseFilterComponent } from '~/presentation/components/expense-filters'
+import { usePagination } from '~/presentation/hooks/use-pagination'
+import { useFilter } from '~/presentation/hooks/use-filter'
+import { PaginationButtons } from '~/presentation/components/pagination-buttons'
+import { MobileCancelDialog } from '~/presentation/components/mobile-cancel-dialog'
+import { Toast } from '~/presentation/components/toast'
+import { PaginationLimitSelect } from '~/presentation/components/pagination-limit-select'
+import { FilterButton } from '~/presentation/components/filter-button'
 
 const MAX_INSTALLMENTS = 36
 

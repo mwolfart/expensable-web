@@ -5,7 +5,7 @@ import { useEffect } from 'react'
 import { useState } from 'react'
 import { useTranslations } from 'use-intl'
 import Select, { components } from 'react-select'
-import { CategoryContext } from '~/providers/category'
+import { CategoryContext } from '~/presentation/providers/category'
 
 type Props = {
   onApplyFilters: (formData: FormData) => void

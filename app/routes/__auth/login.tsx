@@ -11,7 +11,7 @@ import {
 } from '@remix-run/react'
 import { useTranslations } from 'use-intl'
 import { cxFormInput, cxWithFade } from '~/utils'
-import { useErrorMessages } from '~/hooks'
+import { useErrorMessages } from '~/presentation/hooks'
 import { ErrorCodes, loginSchema } from '~/utils/schemas'
 import type { AuthContext } from '../__auth'
 import { getIdToken, signInWithEmailAndPassword } from 'firebase/auth'

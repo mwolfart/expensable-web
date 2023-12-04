@@ -2,9 +2,9 @@ import type { LoaderArgs } from '@remix-run/server-runtime'
 import { useNavigate, useParams } from '@remix-run/react'
 import { typedjson, useTypedLoaderData } from 'remix-typedjson'
 import { useTranslations } from 'use-intl'
-import { TotalPerCategoriesChart } from '~/components/charts/chart-totals-per-categories'
-import { TotalPerMonthsChart } from '~/components/charts/chart-totals-per-months'
-import { DashboardIntervalSelect } from '~/components/dashboard-interval-select'
+import { TotalPerCategoriesChart } from '~/presentation/components/charts/chart-totals-per-categories'
+import { TotalPerMonthsChart } from '~/presentation/components/charts/chart-totals-per-months'
+import { DashboardIntervalSelect } from '~/presentation/components/dashboard-interval-select'
 import {
   getUserExpensesInNumOfMonths,
   getUserTotalsPerCategoryInMonthYear,

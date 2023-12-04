@@ -2,12 +2,12 @@ import type { LoaderArgs } from '@remix-run/node'
 import { json, redirect } from '@remix-run/node'
 import { Outlet, useLoaderData, useLocation, useSubmit } from '@remix-run/react'
 import { useTranslations } from 'use-intl'
-import { DialogProvider } from '~/providers/dialog'
+import { DialogProvider } from '~/presentation/providers/dialog'
 import { getLoggedUserProfile } from '~/infra/session.server'
 import { MdOutlineCategory } from 'react-icons/md'
 import { GoCreditCard, GoGraph } from 'react-icons/go'
 import { AiOutlineShoppingCart } from 'react-icons/ai'
-import { CategoryProvider } from '~/providers/category'
+import { CategoryProvider } from '~/presentation/providers/category'
 
 export async function loader({ request }: LoaderArgs) {
   const user = await getLoggedUserProfile(request)

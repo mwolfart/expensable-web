@@ -5,7 +5,7 @@ import { BsTrash } from 'react-icons/bs'
 import { MdOutlineEdit } from 'react-icons/md'
 import { useFetcher } from '@remix-run/react'
 import { useContext, useEffect } from 'react'
-import { CategoryContext } from '~/providers/category'
+import { CategoryContext } from '~/presentation/providers/category'
 
 type Props = {
   expense: ExpenseWithCategory
