@@ -103,11 +103,15 @@ export default function Dashboard() {
       </div>
       <div className="flex flex-wrap w-full h-auto p-4">
         <div className={chartClasses}>
-          <h6 className="pb-4">{t('dashboard.expenses-during-months')}</h6>
+          <h6 className="pb-4 font-bold">
+            {t('dashboard.expenses-during-months')}
+          </h6>
           <TotalPerMonthsChart data={totalsPerMonthInterval} />
         </div>
         <div className={chartClasses}>
-          <h6 className="pb-4">{t('dashboard.categories-this-month')}</h6>
+          <h6 className="pb-4 font-bold">
+            {t('dashboard.categories-this-month')}
+          </h6>
           <TotalPerCategoriesChart data={totalsPerCategory} />
         </div>
       </div>
