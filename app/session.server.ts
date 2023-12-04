@@ -16,7 +16,7 @@ const session = createCookie('session', {
   path: '/',
 })
 
-export async function getSessionJwt(request: Request) {
+async function getSessionJwt(request: Request) {
   const jwt = await session.parse(request.headers.get('Cookie'))
   return jwt
 }
