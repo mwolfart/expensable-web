@@ -18,6 +18,8 @@ import { useFormik } from 'formik'
 import { clientAuth } from '~/infra/firebase.client'
 import { serverAuth } from '~/infra/firebase.server'
 import { createSession } from '~/infra/session.server'
+import { BeatLoader } from 'react-spinners'
+import cx from 'classnames'
 
 export async function action({ request }: ActionFunctionArgs) {
   try {
@@ -52,6 +54,7 @@ export default function Login() {
   const { errorToString } = useErrorMessages()
   const [showErrorMessage, setShowErrorMessage] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
+  const [isLoading, setLoading] = useState(false)
 
   const initialValues = { email: '', password: '' }
 
@@ -62,6 +65,7 @@ export default function Login() {
     validateOnBlur: false,
     onSubmit: async ({ email, password }) => {
       setShowErrorMessage(false)
+      setLoading(true)
       try {
         const credentials = await signInWithEmailAndPassword(
           clientAuth,
@@ -75,6 +79,8 @@ export default function Login() {
       } catch (e) {
         setShowErrorMessage(true)
         setErrorMessage(t('auth.errors.invalid-credentials'))
+      } finally {
+        setLoading(false)
       }
     },
   })
@@ -133,6 +139,11 @@ export default function Login() {
         className={cxFormInput({ hasError: errors.password })}
         onChange={(e) => setFieldValue('password', e.target.value)}
       />
+      <div
+        className={cx('text-center', isLoading ? 'opacity-100' : 'opacity-0')}
+      >
+        <BeatLoader />
+      </div>
       <p className={invalidCredentialClasses}>{errorMessage}</p>
       <div className="flex flex-col gap-4">
         <button className="btn-primary btn" type="submit">
