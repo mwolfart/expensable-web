@@ -1,6 +1,5 @@
-import type { LoaderArgs } from '@remix-run/server-runtime'
-import { useNavigate, useParams } from '@remix-run/react'
-import { typedjson, useTypedLoaderData } from 'remix-typedjson'
+import { json, type LoaderFunctionArgs } from '@remix-run/server-runtime'
+import { useLoaderData, useNavigate, useParams } from '@remix-run/react'
 import { useTranslations } from 'use-intl'
 import { TotalPerCategoriesChart } from '~/presentation/components/charts/chart-totals-per-categories'
 import { TotalPerMonthsChart } from '~/presentation/components/charts/chart-totals-per-months'
@@ -15,7 +14,7 @@ import { IoArrowBack, IoArrowForward } from 'react-icons/io5'
 const MIN_YEAR = 2003
 const MAX_YEAR = 2053
 
-export async function loader({ request, params }: LoaderArgs) {
+export async function loader({ request, params }: LoaderFunctionArgs) {
   const userId = await getLoggedUserId(request)
   const month =
     typeof params.month === 'string'
@@ -42,12 +41,12 @@ export async function loader({ request, params }: LoaderArgs) {
     )
     const totalsPerMonthInterval = await totalsPerMonthIntervalPromise
     const totalsPerCategory = await totalsPerCategoryPromise
-    return typedjson({
+    return json({
       totalsPerMonthInterval,
       totalsPerCategory,
     })
   }
-  return typedjson({
+  return json({
     totalsPerMonthInterval: [],
     totalsPerCategory: [],
   })
@@ -57,7 +56,7 @@ export default function Dashboard() {
   const t = useTranslations()
   const navigate = useNavigate()
   const { totalsPerMonthInterval, totalsPerCategory } =
-    useTypedLoaderData<typeof loader>()
+    useLoaderData<typeof loader>()
   const params = useParams()
   const year = params.year ? parseInt(params.year) : new Date().getFullYear()
   const month = params.month ? parseInt(params.month) : new Date().getMonth()

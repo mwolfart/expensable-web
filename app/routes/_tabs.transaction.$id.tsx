@@ -1,35 +1,44 @@
-import type { LoaderArgs } from '@remix-run/server-runtime'
-import { useFetcher, useNavigate, useNavigation } from '@remix-run/react'
+import { json, type LoaderFunctionArgs } from '@remix-run/server-runtime'
+import type { ExpenseWithCategory, FetcherResponse } from '~/utils/types'
+import {
+  useFetcher,
+  useLoaderData,
+  useNavigate,
+  useNavigation,
+} from '@remix-run/react'
 import { BeatLoader } from 'react-spinners'
-import { typedjson, useTypedLoaderData } from 'remix-typedjson'
 import { UpsertTransactionForm } from '~/presentation/components/transaction-upsert-form'
 import { getUserTransactionById } from '~/infra/models/transaction.server'
 import { getLoggedUserId } from '~/infra/session.server'
 import { useEffect, useState } from 'react'
 
-export async function loader({ request, params }: LoaderArgs) {
+type ExpensesFetcher = FetcherResponse & {
+  expenses: unknown
+}
+
+export async function loader({ request, params }: LoaderFunctionArgs) {
   const userId = await getLoggedUserId(request)
   const transactionId = params.id
   if (userId && transactionId) {
     const transaction = await getUserTransactionById(transactionId)
     if (transaction) {
-      return typedjson({ transaction })
+      return json({ transaction })
     }
   }
-  return typedjson({ transaction: null })
+  return json({ transaction: null })
 }
 
 export default function TransactionId() {
   const navigate = useNavigate()
-  const { transaction } = useTypedLoaderData<typeof loader>()
+  const { transaction } = useLoaderData<typeof loader>()
   const { state } = useNavigation()
-  const expensesFetcher = useFetcher()
+  const expensesFetcher = useFetcher<ExpensesFetcher>()
   const [isLoadingExpenses, setLoadingExpenses] = useState(true)
-  const [expenses, setExpenses] = useState([])
+  const [expenses, setExpenses] = useState<ExpenseWithCategory[]>([])
 
   useEffect(() => {
     if (expensesFetcher.data) {
-      setExpenses(expensesFetcher.data.expenses)
+      setExpenses(expensesFetcher.data.expenses as ExpenseWithCategory[])
       setLoadingExpenses(false)
     }
   }, [expensesFetcher.data])

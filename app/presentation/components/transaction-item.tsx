@@ -1,5 +1,6 @@
 import type {
   ExpenseWithCategory,
+  FetcherResponse,
   TransactionWithExpenses,
 } from '~/utils/types'
 import { useTranslations } from 'use-intl'
@@ -17,14 +18,19 @@ type Props = {
   renderEditDialog: (transaction: TransactionWithExpenses) => void
 }
 
+type ExpensesFetcher = FetcherResponse & {
+  expenses: unknown
+  total: number
+}
+
 export function TransactionItem({
   transaction,
   renderDeleteToast,
   renderEditDialog,
 }: Props) {
   const t = useTranslations()
-  const fetcher = useFetcher()
-  const expensesFetcher = useFetcher()
+  const fetcher = useFetcher<FetcherResponse>()
+  const expensesFetcher = useFetcher<ExpensesFetcher>()
   const [expenses, setExpenses] = useState<ExpenseWithCategory[]>([])
   const [expenseTotal, setExpenseTotal] = useState(0)
 
@@ -36,7 +42,7 @@ export function TransactionItem({
 
   useEffect(() => {
     if (expensesFetcher.data) {
-      setExpenses(expensesFetcher.data.expenses)
+      setExpenses(expensesFetcher.data.expenses as ExpenseWithCategory[])
       setExpenseTotal(expensesFetcher.data.total)
     }
   }, [expensesFetcher.data])

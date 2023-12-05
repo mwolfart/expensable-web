@@ -1,5 +1,6 @@
-import { useFetcher } from '@remix-run/react'
 import type { ChangeEvent } from 'react'
+import type { FetcherResponse } from '~/utils/types'
+import { useFetcher } from '@remix-run/react'
 import { useEffect, useState } from 'react'
 import { useTranslations } from 'use-intl'
 import { useErrorMessages } from '~/presentation/hooks'
@@ -18,7 +19,7 @@ type Props = {
 
 export function AddCategoryPopup({ isOpen, setOpen }: Props) {
   const t = useTranslations()
-  const fetcher = useFetcher()
+  const fetcher = useFetcher<FetcherResponse>()
   const { errorToString } = useErrorMessages()
   const [showAddToast, setShowAddToast] = useState(false)
   const [hasSubmitted, setSubmitted] = useState(false)

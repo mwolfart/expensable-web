@@ -1,5 +1,7 @@
+import type { SerializeFrom } from '@remix-run/server-runtime'
 import type { FormEventHandler } from 'react'
 import type {
+  FetcherResponse,
   AddTransactionFormErrors,
   ExpenseWithCategory,
   TransactionExpenseInput,
@@ -17,7 +19,7 @@ import { FaTimes } from 'react-icons/fa'
 
 type Props = {
   onGoBack: () => unknown
-  initialData?: TransactionWithExpenses
+  initialData?: SerializeFrom<TransactionWithExpenses>
   initialExpenses?: ExpenseWithCategory[]
   isLoadingExpenses?: boolean
 }
@@ -37,7 +39,7 @@ export function UpsertTransactionForm({
   isLoadingExpenses,
 }: Props) {
   const t = useTranslations()
-  const fetcher = useFetcher()
+  const fetcher = useFetcher<FetcherResponse>()
 
   const initialErrors = {
     title: '',
@@ -133,7 +135,10 @@ export function UpsertTransactionForm({
           className={cxFormInput({ hasError: formErrors.date })}
           name="date"
           type="date"
-          defaultValue={initialData?.datetime.toISOString().substring(0, 10)}
+          defaultValue={
+            initialData?.datetime &&
+            new Date(initialData.datetime).toISOString().substring(0, 10)
+          }
           onChange={() =>
             updateFormErrors({ ...formErrors, date: '', expenses: '' })
           }

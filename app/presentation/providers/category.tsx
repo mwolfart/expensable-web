@@ -1,5 +1,6 @@
 import type { Category } from '@prisma/client'
 import type { PropsWithChildren } from 'react'
+import type { FetcherResponse } from '~/utils/types'
 import { useFetcher } from '@remix-run/react'
 import { useEffect, useMemo, useState, createContext } from 'react'
 
@@ -8,8 +9,12 @@ export const CategoryContext = createContext({
   map: new Map(),
 })
 
+type CategoryFetcher = FetcherResponse & {
+  categories: unknown
+}
+
 export function CategoryProvider({ children }: PropsWithChildren) {
-  const fetcher = useFetcher()
+  const fetcher = useFetcher<CategoryFetcher>()
   const [categories, setCategories] = useState<Category[]>([])
   const map = useMemo(() => new Map<string, string>(), [])
 

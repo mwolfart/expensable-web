@@ -1,5 +1,10 @@
+import type { SerializeFrom } from '@remix-run/server-runtime'
 import type { FormEventHandler } from 'react'
-import type { AddExpenseFormErrors, ExpenseWithCategory } from '~/utils/types'
+import type {
+  AddExpenseFormErrors,
+  ExpenseWithCategory,
+  FetcherResponse,
+} from '~/utils/types'
 import type { Tag } from './tag-input'
 import { useContext, useEffect, useId, useReducer, useState } from 'react'
 import { useTranslations } from 'use-intl'
@@ -14,7 +19,7 @@ const MAX_CATEGORIES = 3
 
 type Props = {
   onUpserted: () => unknown
-  initialData?: ExpenseWithCategory
+  initialData?: SerializeFrom<ExpenseWithCategory>
 }
 
 const errorsReducer = (
@@ -27,7 +32,7 @@ const errorsReducer = (
 
 export function UpsertExpenseDialog({ onUpserted, initialData }: Props) {
   const t = useTranslations()
-  const fetcher = useFetcher()
+  const fetcher = useFetcher<FetcherResponse>()
   const { list: categories, map: categoryMap } = useContext(CategoryContext)
   const tagInputId = useId()
 
@@ -137,7 +142,10 @@ export function UpsertExpenseDialog({ onUpserted, initialData }: Props) {
           type="date"
           className={cxFormInput({ hasError: formErrors.date })}
           name="date"
-          defaultValue={initialData?.datetime.toISOString().substring(0, 10)}
+          defaultValue={
+            initialData?.datetime &&
+            new Date(initialData.datetime).toISOString().substring(0, 10)
+          }
         />
       </label>
       <label className="col-span-4 sm:col-span-1">

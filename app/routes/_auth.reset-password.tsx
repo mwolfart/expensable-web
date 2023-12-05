@@ -7,7 +7,7 @@ import {
   useSearchParams,
 } from '@remix-run/react'
 import { useEffect, useState } from 'react'
-import type { AuthContext } from '../__auth'
+import type { AuthContext } from './_auth'
 import { cxFormInput, cxWithGrowFadeMd } from '~/utils/helpers'
 import { useErrorMessages } from '~/presentation/hooks'
 import { passwordSchema } from '~/utils/schemas'
@@ -16,9 +16,11 @@ import { confirmPasswordReset } from 'firebase/auth'
 import { clientAuth } from '~/infra/firebase.client'
 
 export const meta: MetaFunction = () => {
-  return {
-    title: 'Reset Password',
-  }
+  return [
+    {
+      title: 'Reset Password',
+    },
+  ]
 }
 
 export default function ResetPassword() {

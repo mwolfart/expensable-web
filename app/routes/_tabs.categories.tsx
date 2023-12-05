@@ -1,7 +1,7 @@
 import { useLoaderData } from '@remix-run/react'
 import type {
-  ActionArgs,
-  LoaderArgs,
+  ActionFunctionArgs,
+  LoaderFunctionArgs,
   TypedResponse,
 } from '@remix-run/server-runtime'
 import { json } from '@remix-run/server-runtime'
@@ -22,7 +22,7 @@ import { CategoryList } from '~/presentation/components/category-list'
 import { AddCategoryPopup } from '~/presentation/components/category-add-popup'
 import { timeout } from '~/utils/helpers'
 
-export async function loader({ request }: LoaderArgs) {
+export async function loader({ request }: LoaderFunctionArgs) {
   const userId = await getLoggedUserId(request)
   if (userId) {
     const data = await getUserCategories(userId)
@@ -35,7 +35,7 @@ export async function loader({ request }: LoaderArgs) {
 
 export async function action({
   request,
-}: ActionArgs): Promise<
+}: ActionFunctionArgs): Promise<
   TypedResponse<{ error?: string; success?: boolean; method?: string }>
 > {
   const { method } = request

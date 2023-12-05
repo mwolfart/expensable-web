@@ -1,4 +1,8 @@
-import type { LinksFunction, LoaderArgs, MetaFunction } from '@remix-run/node'
+import type {
+  LinksFunction,
+  LoaderFunctionArgs,
+  MetaFunction,
+} from '@remix-run/node'
 import { json } from '@remix-run/node'
 import {
   Links,
@@ -18,13 +22,15 @@ export const links: LinksFunction = () => {
   return [{ rel: 'stylesheet', href: tailwindStylesheetUrl }]
 }
 
-export const meta: MetaFunction = () => ({
-  charset: 'utf-8',
-  title: 'Expensable',
-  viewport: 'width=device-width,initial-scale=1',
-})
+export const meta: MetaFunction = () => [
+  {
+    charset: 'utf-8',
+    title: 'Expensable',
+    viewport: 'width=device-width,initial-scale=1',
+  },
+]
 
-export async function loader({ request }: LoaderArgs) {
+export async function loader({ request }: LoaderFunctionArgs) {
   return json({
     user: await getLoggedUserProfile(request),
   })

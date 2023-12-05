@@ -54,9 +54,17 @@ export type AddTransactionFormErrors = {
   date?: string
   expenses?: string
   message?: string
+  categories?: string
 }
 
 export type TransactionFilters = {
   startDate?: Date | null
   endDate?: Date | null
+}
+
+export type FetcherResponse = {
+  success?: boolean
+  method?: string
+  error?: string
+  errors?: object
 }

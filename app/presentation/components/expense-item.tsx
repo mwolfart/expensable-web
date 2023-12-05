@@ -1,4 +1,5 @@
-import type { ExpenseWithCategory } from '~/utils/types'
+import type { SerializeFrom } from '@remix-run/server-runtime'
+import type { ExpenseWithCategory, FetcherResponse } from '~/utils/types'
 import { useTranslations } from 'use-intl'
 import { formatCurrency, formatDate } from '~/utils/helpers'
 import { BsTrash } from 'react-icons/bs'
@@ -8,9 +9,9 @@ import { useContext, useEffect } from 'react'
 import { CategoryContext } from '~/presentation/providers/category'
 
 type Props = {
-  expense: ExpenseWithCategory
+  expense: SerializeFrom<ExpenseWithCategory>
   renderDeleteToast: () => void
-  renderEditDialog: (expense: ExpenseWithCategory) => void
+  renderEditDialog: (expense: SerializeFrom<ExpenseWithCategory>) => void
 }
 
 export function ExpenseItem({
@@ -19,7 +20,7 @@ export function ExpenseItem({
   renderEditDialog,
 }: Props) {
   const t = useTranslations()
-  const fetcher = useFetcher()
+  const fetcher = useFetcher<FetcherResponse>()
   const { map: categoryMap } = useContext(CategoryContext)
 
   useEffect(() => {
@@ -39,7 +40,7 @@ export function ExpenseItem({
     renderEditDialog(expense)
   }
 
-  const date = formatDate(expense.datetime)
+  const date = formatDate(new Date(expense.datetime))
 
   return (
     <div className="grid items-center gap-2 bg-foreground py-4 sm:grid-cols-2">

@@ -1,8 +1,10 @@
 import type {
-  ActionArgs,
-  LoaderArgs,
+  SerializeFrom,
+  ActionFunctionArgs,
+  LoaderFunctionArgs,
   TypedResponse,
 } from '@remix-run/server-runtime'
+import { json } from '@remix-run/server-runtime'
 import type { AddExpenseFormErrors, ExpenseWithCategory } from '~/utils/types'
 import { useTranslations } from 'use-intl'
 import { AiOutlinePlus } from 'react-icons/ai'
@@ -20,8 +22,6 @@ import {
 import { getLoggedUserId } from '~/infra/session.server'
 import { NoData } from '~/presentation/components/no-data'
 import { ExpenseList } from '~/presentation/components/expense-list'
-import { typedjson } from 'remix-typedjson'
-import { useTypedLoaderData } from 'remix-typedjson/dist/remix'
 import { useContext, useState } from 'react'
 import { DialogContext } from '~/presentation/providers/dialog'
 import { UpsertExpenseDialog } from '~/presentation/components/expense-upsert-dialog'
@@ -32,7 +32,11 @@ import {
   parseCategoryInput,
   timeout,
 } from '~/utils/helpers'
-import { useRevalidator, useSearchParams } from '@remix-run/react'
+import {
+  useLoaderData,
+  useRevalidator,
+  useSearchParams,
+} from '@remix-run/react'
 import { ExpenseFilterComponent } from '~/presentation/components/expense-filters'
 import { usePagination } from '~/presentation/hooks/use-pagination'
 import { useFilter } from '~/presentation/hooks/use-filter'
@@ -44,7 +48,7 @@ import { FilterButton } from '~/presentation/components/filter-button'
 
 const MAX_INSTALLMENTS = 36
 
-export async function loader({ request }: LoaderArgs) {
+export async function loader({ request }: LoaderFunctionArgs) {
   const userId = await getLoggedUserId(request)
   if (userId) {
     const url = new URL(request.url)
@@ -55,7 +59,7 @@ export async function loader({ request }: LoaderArgs) {
     if (ids) {
       const count = await countUserExpensesByIds(userId, ids)
       const data = await getUserExpensesByIds(userId, ids, 0, limit)
-      return typedjson({ expenses: data, total: count })
+      return json({ expenses: data, total: count })
     }
 
     const filter = {
@@ -80,20 +84,20 @@ export async function loader({ request }: LoaderArgs) {
         limit,
       )
       if (data) {
-        return typedjson({ expenses: data, total: count })
+        return json({ expenses: data, total: count })
       }
     } else {
       const count = await countUserExpenses(userId)
       const data = await getUserExpenses(userId, offset, limit)
       if (data) {
-        return typedjson({ expenses: data, total: count })
+        return json({ expenses: data, total: count })
       }
     }
   }
-  return typedjson({ expenses: [], total: 0 })
+  return json({ expenses: [], total: 0 })
 }
 
-export async function action({ request }: ActionArgs): Promise<
+export async function action({ request }: ActionFunctionArgs): Promise<
   TypedResponse<{
     errors?: AddExpenseFormErrors
     success?: boolean
@@ -113,21 +117,21 @@ export async function action({ request }: ActionArgs): Promise<
     const categories = formData.get('categories')
 
     if (typeof name !== 'string' || !name.length) {
-      return typedjson(
+      return json(
         { errors: { name: ErrorCodes.NAME_REQUIRED }, ...res },
         { status: 400 },
       )
     }
 
     if (typeof amount !== 'string' || !amount.length) {
-      return typedjson(
+      return json(
         { errors: { amount: ErrorCodes.AMOUNT_REQUIRED }, ...res },
         { status: 400 },
       )
     }
 
     if (typeof unit !== 'string') {
-      return typedjson(
+      return json(
         { errors: { unit: ErrorCodes.BAD_FORMAT }, ...res },
         { status: 400 },
       )
@@ -138,21 +142,21 @@ export async function action({ request }: ActionArgs): Promise<
       isNaN(parseInt(installments)) ||
       parseInt(installments) > MAX_INSTALLMENTS
     ) {
-      return typedjson(
+      return json(
         { errors: { installments: ErrorCodes.BAD_FORMAT }, ...res },
         { status: 400 },
       )
     }
 
     if (typeof date !== 'string' || isNaN(Date.parse(date))) {
-      return typedjson(
+      return json(
         { errors: { date: ErrorCodes.BAD_DATE_FORMAT }, ...res },
         { status: 400 },
       )
     }
 
     if (typeof categories !== 'undefined' && typeof categories !== 'string') {
-      return typedjson(
+      return json(
         { errors: { categories: ErrorCodes.BAD_CATEGORY_DATA }, ...res },
         { status: 400 },
       )
@@ -163,7 +167,7 @@ export async function action({ request }: ActionArgs): Promise<
       try {
         parsedCategories = parseCategoryInput(categories)
       } catch (_) {
-        return typedjson(
+        return json(
           { errors: { categories: ErrorCodes.BAD_CATEGORY_DATA }, ...res },
           { status: 400 },
         )
@@ -173,7 +177,7 @@ export async function action({ request }: ActionArgs): Promise<
     try {
       const userId = await getLoggedUserId(request)
       if (!userId) {
-        return typedjson({ success: false, ...res }, { status: 403 })
+        return json({ success: false, ...res }, { status: 403 })
       }
 
       if (typeof id === 'string' && id !== '') {
@@ -203,18 +207,18 @@ export async function action({ request }: ActionArgs): Promise<
         )
       }
     } catch (e) {
-      return typedjson(
+      return json(
         { success: false, message: JSON.stringify(e), ...res },
         { status: 500 },
       )
     }
-    return typedjson({ success: true, ...res }, { status: 200 })
+    return json({ success: true, ...res }, { status: 200 })
   }
   if (method === 'DELETE') {
     const formData = await request.formData()
     const id = formData.get('id')
     if (typeof id !== 'string' || id === '') {
-      return typedjson(
+      return json(
         { errors: { categories: ErrorCodes.INVALID_ID }, ...res },
         { status: 400 },
       )
@@ -223,18 +227,18 @@ export async function action({ request }: ActionArgs): Promise<
     try {
       await deleteExpense(id)
     } catch (e) {
-      return typedjson(
+      return json(
         { success: false, message: JSON.stringify(e), ...res },
         { status: 500 },
       )
     }
-    return typedjson({ success: true, ...res }, { status: 200 })
+    return json({ success: true, ...res }, { status: 200 })
   }
-  return typedjson({ success: false, ...res }, { status: 405 })
+  return json({ success: false, ...res }, { status: 405 })
 }
 
 export default function Expenses() {
-  const { expenses, total } = useTypedLoaderData<typeof loader>()
+  const { expenses, total } = useLoaderData<typeof loader>()
   const t = useTranslations()
   const revalidator = useRevalidator()
 
@@ -274,7 +278,7 @@ export default function Expenses() {
     setShowDeletedToast(false)
   }
 
-  const onEditExpense = (expense: ExpenseWithCategory) => {
+  const onEditExpense = (expense: SerializeFrom<ExpenseWithCategory>) => {
     openDialog(
       <UpsertExpenseDialog
         onUpserted={() => onExpenseUpserted(true)}

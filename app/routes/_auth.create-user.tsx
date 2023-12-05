@@ -1,4 +1,8 @@
-import type { ActionArgs, MetaFunction, TypedResponse } from '@remix-run/node'
+import type {
+  ActionFunctionArgs,
+  MetaFunction,
+  TypedResponse,
+} from '@remix-run/node'
 import { json } from '@remix-run/node'
 import { createUser } from '~/infra/models/user.server'
 import { useTranslations } from 'use-intl'
@@ -10,7 +14,7 @@ import {
   useOutletContext,
 } from '@remix-run/react'
 import { useEffect, useState } from 'react'
-import type { AuthContext } from '../__auth'
+import type { AuthContext } from './_auth'
 import { cxFormInput, cxWithGrowFadeMd, timeout } from '~/utils/helpers'
 import { useErrorMessages } from '~/presentation/hooks'
 import { ErrorCodes, userSchema } from '~/utils/schemas'
@@ -21,7 +25,9 @@ import { serverAuth } from '~/infra/firebase.server'
 
 export async function action({
   request,
-}: ActionArgs): Promise<TypedResponse<{ error?: string; success?: boolean }>> {
+}: ActionFunctionArgs): Promise<
+  TypedResponse<{ error?: string; success?: boolean }>
+> {
   try {
     const formData = await request.formData()
     const idToken = formData.get('idToken') as string
@@ -44,9 +50,11 @@ export async function action({
 }
 
 export const meta: MetaFunction = () => {
-  return {
-    title: 'Sign Up',
-  }
+  return [
+    {
+      title: 'Sign Up',
+    },
+  ]
 }
 
 export default function CreateUser() {

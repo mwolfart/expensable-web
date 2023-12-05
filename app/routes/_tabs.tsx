@@ -1,4 +1,4 @@
-import type { LoaderArgs } from '@remix-run/node'
+import type { LoaderFunctionArgs } from '@remix-run/node'
 import { json, redirect } from '@remix-run/node'
 import { Outlet, useLoaderData, useLocation, useSubmit } from '@remix-run/react'
 import { useTranslations } from 'use-intl'
@@ -9,7 +9,7 @@ import { GoCreditCard, GoGraph } from 'react-icons/go'
 import { AiOutlineShoppingCart } from 'react-icons/ai'
 import { CategoryProvider } from '~/presentation/providers/category'
 
-export async function loader({ request }: LoaderArgs) {
+export async function loader({ request }: LoaderFunctionArgs) {
   const user = await getLoggedUserProfile(request)
   if (!user) {
     return redirect('/login')
@@ -49,7 +49,7 @@ export default function Index() {
             </button>
           </div>
           <div className="flex flex-grow flex-col xs:rounded-2xl bg-foreground">
-            <div className="tabs gap-4 p-4">
+            <div className="flex gap-4 p-4">
               <a className={getTabClass('/dashboard')} href="/">
                 <div className="hidden md:block">{t('home.dashboard')}</div>
                 <GoGraph className="block md:hidden" size={24} />

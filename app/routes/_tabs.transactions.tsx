@@ -2,14 +2,14 @@ import type {
   AddTransactionFormErrors,
   TransactionWithExpenses,
 } from '~/utils/types'
-import type {
-  ActionArgs,
-  LoaderArgs,
-  TypedResponse,
+import {
+  json,
+  type ActionFunctionArgs,
+  type LoaderFunctionArgs,
+  type TypedResponse,
 } from '@remix-run/server-runtime'
-import { useNavigate, useSearchParams } from '@remix-run/react'
+import { useLoaderData, useNavigate, useSearchParams } from '@remix-run/react'
 import { useState } from 'react'
-import { typedjson, useTypedLoaderData } from 'remix-typedjson'
 import { useTranslations } from 'use-intl'
 import { NoData } from '~/presentation/components/no-data'
 import { PaginationButtons } from '~/presentation/components/pagination-buttons'
@@ -40,7 +40,7 @@ import { MobileCancelDialog } from '~/presentation/components/mobile-cancel-dial
 import { TransactionFilterComponent } from '~/presentation/components/transaction-filters'
 import { ErrorCodes } from '~/utils/schemas'
 
-export async function loader({ request }: LoaderArgs) {
+export async function loader({ request }: LoaderFunctionArgs) {
   const userId = await getLoggedUserId(request)
   if (userId) {
     const url = new URL(request.url)
@@ -63,20 +63,20 @@ export async function loader({ request }: LoaderArgs) {
         limit,
       )
       if (data) {
-        return typedjson({ transactions: data, total: count })
+        return json({ transactions: data, total: count })
       }
     } else {
       const count = await countUserTransactions(userId)
       const data = await getUserTransactions(userId, offset, limit)
       if (data) {
-        return typedjson({ transactions: data, total: count })
+        return json({ transactions: data, total: count })
       }
     }
   }
-  return typedjson({ transactions: [], total: 0 })
+  return json({ transactions: [], total: 0 })
 }
 
-export async function action({ request }: ActionArgs): Promise<
+export async function action({ request }: ActionFunctionArgs): Promise<
   TypedResponse<{
     errors?: AddTransactionFormErrors
     success?: boolean
@@ -93,14 +93,14 @@ export async function action({ request }: ActionArgs): Promise<
     const expensesJson = formData.get('expenses')
 
     if (typeof title !== 'string' || !title.length) {
-      return typedjson(
+      return json(
         { errors: { title: ErrorCodes.TITLE_REQUIRED }, ...res },
         { status: 400 },
       )
     }
 
     if (typeof date !== 'string' || isNaN(Date.parse(date))) {
-      return typedjson(
+      return json(
         { errors: { date: ErrorCodes.BAD_DATE_FORMAT }, ...res },
         { status: 400 },
       )
@@ -109,7 +109,7 @@ export async function action({ request }: ActionArgs): Promise<
     const expenses =
       typeof expensesJson === 'string' && parseExpenses(expensesJson)
     if (!expenses) {
-      return typedjson(
+      return json(
         { errors: { expenses: ErrorCodes.BAD_FORMAT }, ...res },
         { status: 400 },
       )
@@ -118,7 +118,7 @@ export async function action({ request }: ActionArgs): Promise<
     try {
       const userId = await getLoggedUserId(request)
       if (!userId) {
-        return typedjson({ success: false, ...res }, { status: 403 })
+        return json({ success: false, ...res }, { status: 403 })
       }
 
       const transaction = {
@@ -133,18 +133,18 @@ export async function action({ request }: ActionArgs): Promise<
         await createTransaction(transaction, expenses)
       }
     } catch (e) {
-      return typedjson(
+      return json(
         { success: false, message: JSON.stringify(e), ...res },
         { status: 500 },
       )
     }
-    return typedjson({ success: true, ...res }, { status: 200 })
+    return json({ success: true, ...res }, { status: 200 })
   }
   if (method === 'DELETE') {
     const formData = await request.formData()
     const id = formData.get('id')
     if (typeof id !== 'string' || id === '') {
-      return typedjson(
+      return json(
         { errors: { categories: ErrorCodes.INVALID_ID }, ...res },
         { status: 400 },
       )
@@ -153,18 +153,18 @@ export async function action({ request }: ActionArgs): Promise<
     try {
       await deleteTransaction(id)
     } catch (e) {
-      return typedjson(
+      return json(
         { success: false, message: JSON.stringify(e), ...res },
         { status: 500 },
       )
     }
-    return typedjson({ success: true, ...res }, { status: 200 })
+    return json({ success: true, ...res }, { status: 200 })
   }
-  return typedjson({ success: false, ...res }, { status: 405 })
+  return json({ success: false, ...res }, { status: 405 })
 }
 
 export default function Transactions() {
-  const { transactions, total } = useTypedLoaderData<typeof loader>()
+  const { transactions, total } = useLoaderData<typeof loader>()
   const t = useTranslations()
   const navigate = useNavigate()
 

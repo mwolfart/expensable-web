@@ -1,4 +1,4 @@
-import type { ActionArgs, MetaFunction } from '@remix-run/node'
+import type { ActionFunctionArgs, MetaFunction } from '@remix-run/node'
 import { json } from '@remix-run/node'
 import { useEffect, useState } from 'react'
 import {
@@ -12,14 +12,14 @@ import { useTranslations } from 'use-intl'
 import { cxFormInput, cxWithFade, timeout } from '~/utils/helpers'
 import { useErrorMessages } from '~/presentation/hooks'
 import { ErrorCodes, loginSchema } from '~/utils/schemas'
-import type { AuthContext } from '../__auth'
+import type { AuthContext } from './_auth'
 import { getIdToken, signInWithEmailAndPassword } from 'firebase/auth'
 import { useFormik } from 'formik'
 import { clientAuth } from '~/infra/firebase.client'
 import { serverAuth } from '~/infra/firebase.server'
 import { createSession } from '~/infra/session.server'
 
-export async function action({ request }: ActionArgs) {
+export async function action({ request }: ActionFunctionArgs) {
   try {
     const formData = await request.formData()
     const idToken = formData.get('idToken')?.toString()
@@ -36,9 +36,11 @@ export async function action({ request }: ActionArgs) {
 }
 
 export const meta: MetaFunction = () => {
-  return {
-    title: 'Login',
-  }
+  return [
+    {
+      title: 'Login',
+    },
+  ]
 }
 
 export default function Login() {

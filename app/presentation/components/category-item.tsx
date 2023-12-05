@@ -1,6 +1,7 @@
 import type { Category } from '@prisma/client'
-import { useFetcher } from '@remix-run/react'
+import type { FetcherResponse } from '~/utils/types'
 import type { KeyboardEventHandler } from 'react'
+import { useFetcher } from '@remix-run/react'
 import { useEffect, useState } from 'react'
 import { BsTrash } from 'react-icons/bs'
 import { MdOutlineEdit } from 'react-icons/md'
@@ -14,7 +15,7 @@ type Props = {
 
 export function CategoryItem({ category, renderDeleteToast }: Props) {
   const t = useTranslations()
-  const fetcher = useFetcher()
+  const fetcher = useFetcher<FetcherResponse>()
   const [isEditing, setEditing] = useState(false)
   const [value, setValue] = useState(category.title)
   const [hasUpdateError, setUpdateError] = useState('')

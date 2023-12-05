@@ -3,7 +3,7 @@ import { useTranslations } from 'use-intl'
 import { useNavigate, useOutletContext } from '@remix-run/react'
 import { useState } from 'react'
 import { cxFormInput, cxWithFade, timeout } from '~/utils/helpers'
-import type { AuthContext } from '../__auth'
+import type { AuthContext } from './_auth'
 import { ErrorCodes, emailSchema } from '~/utils/schemas'
 import { useErrorMessages } from '~/presentation/hooks'
 import { sendPasswordResetEmail } from 'firebase/auth'
@@ -12,9 +12,11 @@ import { clientAuth } from '~/infra/firebase.client'
 const CONFIRMATION_TIMEOUT = 5000
 
 export const meta: MetaFunction = () => {
-  return {
-    title: 'Forgot Password',
-  }
+  return [
+    {
+      title: 'Forgot Password',
+    },
+  ]
 }
 
 export default function ForgotPassword() {

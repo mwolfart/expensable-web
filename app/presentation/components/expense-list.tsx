@@ -1,10 +1,11 @@
 import type { ExpenseWithCategory } from '~/utils/types'
+import type { SerializeFrom } from '@remix-run/server-runtime'
 import { ExpenseItem } from './expense-item'
 
 type Props = {
-  expenses: ExpenseWithCategory[]
+  expenses: SerializeFrom<ExpenseWithCategory>[]
   renderDeleteToast: () => void
-  renderEditDialog: (expense: ExpenseWithCategory) => void
+  renderEditDialog: (expense: SerializeFrom<ExpenseWithCategory>) => void
 }
 
 export function ExpenseList({
