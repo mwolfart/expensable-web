@@ -36,6 +36,8 @@ export async function loader({ request }: LoaderFunctionArgs) {
   })
 }
 
+const timeZone = 'Brazil/East'
+
 export default function App() {
   return (
     <html
@@ -48,7 +50,7 @@ export default function App() {
         <Links />
       </head>
       <body className="flex h-full flex-grow flex-col bg-gradient-to-tr from-green-200 via-orange-200 to-red-200">
-        <IntlProvider messages={i18n.en} locale="en">
+        <IntlProvider messages={i18n.en} locale="en" timeZone={timeZone}>
           <Outlet />
         </IntlProvider>
         <ScrollRestoration />
