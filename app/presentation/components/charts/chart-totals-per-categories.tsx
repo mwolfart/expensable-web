@@ -10,14 +10,34 @@ import {
   Cell,
 } from 'recharts'
 import { useTranslations } from 'use-intl'
-import { generateRandomColors } from '~/utils/helpers'
 
 type Props = {
   data: { categoryName: string; total: number }[]
   currency?: boolean
 }
 
-const barColors = generateRandomColors()
+const barColors = [
+  '#1f78b4',
+  '#33a02c',
+  '#e31a1c',
+  '#ff7f00',
+  '#6a3d9a',
+  '#b15928',
+  '#a6cee3',
+  '#b2df8a',
+  '#fb9a99',
+  '#fdbf6f',
+  '#cab2d6',
+  '#ffff99',
+  '#636363',
+  '#525252',
+  '#d9d9d9',
+  '#969696',
+  '#bdbdbd',
+  '#74c476',
+  '#8c564b',
+  '#c7c7c7',
+]
 
 export function TotalPerCategoriesChart({ data, currency }: Props) {
   const t = useTranslations()
@@ -49,7 +69,7 @@ export function TotalPerCategoriesChart({ data, currency }: Props) {
           <Legend />
           <Bar dataKey="total" fill="#475569" legendType="none" name="Total">
             {data.map((_, index) => (
-              <Cell key={`cell-${index}`} fill={barColors[index % 10]} />
+              <Cell key={`cell-${index}`} fill={barColors[index % 20]} />
             ))}
           </Bar>
         </BarChart>

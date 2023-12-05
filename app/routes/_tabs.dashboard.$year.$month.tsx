@@ -1,5 +1,6 @@
-import { json, type LoaderFunctionArgs } from '@remix-run/server-runtime'
+import { defer, json, type LoaderFunctionArgs } from '@remix-run/server-runtime'
 import {
+  Await,
   useLoaderData,
   useNavigate,
   useParams,
@@ -16,6 +17,8 @@ import {
 } from '~/infra/models/expenses.server'
 import { getLoggedUserId } from '~/infra/session.server'
 import { IoArrowBack, IoArrowForward } from 'react-icons/io5'
+import { Suspense } from 'react'
+import { BeatLoader } from 'react-spinners'
 
 const MIN_YEAR = 2003
 const MAX_YEAR = 2053
@@ -54,22 +57,18 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
       -1,
     )
 
-    const totalsPerMonthInterval = await totalsPerMonthIntervalPromise
-    const totalsPerCategory = await totalsPerCategoryPromise
-    const totalsPerAllCategories = await totalsPerAllCategoriesPromise
-    const installmentsPerCategory = await installmentsPerCategoryPromise
-    return json({
-      totalsPerMonthInterval,
-      totalsPerCategory,
-      installmentsPerCategory,
-      totalsPerAllCategories,
+    return defer({
+      totalsPerMonthInterval: totalsPerMonthIntervalPromise,
+      totalsPerCategory: totalsPerCategoryPromise,
+      installmentsPerCategory: installmentsPerCategoryPromise,
+      totalsPerAllCategories: totalsPerAllCategoriesPromise,
     })
   }
   return json({
-    totalsPerMonthInterval: [],
-    totalsPerCategory: [],
-    installmentsPerCategory: [],
-    totalsPerAllCategories: [],
+    totalsPerMonthInterval: null,
+    totalsPerCategory: null,
+    installmentsPerCategory: null,
+    totalsPerAllCategories: null,
   })
 }
 
@@ -100,6 +99,18 @@ export default function Dashboard() {
 
   const chartClasses =
     'w-[90%] lg:w-[50%] xl:w-[33%] 2xl:w-[25%] flex flex-col aspect-square text-center items-center'
+
+  const errorElement = (
+    <div className="w-full h-full border rounded-xl border-error text-error font-semibold justify-center flex items-center">
+      Error loading data
+    </div>
+  )
+
+  const loaderElement = (
+    <div className="w-full h-full border rounded-xl justify-center flex items-center">
+      <BeatLoader />
+    </div>
+  )
 
   return (
     <div className="flex flex-col w-full gap-4">
@@ -132,25 +143,44 @@ export default function Dashboard() {
           <h6 className="pb-4 font-bold">
             {t('dashboard.expenses-during-months')}
           </h6>
-          <TotalPerMonthsChart data={totalsPerMonthInterval} />
+          <Suspense fallback={loaderElement}>
+            <Await resolve={totalsPerMonthInterval} errorElement={errorElement}>
+              {(data) => <TotalPerMonthsChart data={data ?? []} />}
+            </Await>
+          </Suspense>
         </div>
         <div className={chartClasses}>
           <h6 className="pb-4 font-bold">
             {t('dashboard.categories-this-month')}
           </h6>
-          <TotalPerCategoriesChart data={totalsPerCategory} currency />
+          <Suspense fallback={loaderElement}>
+            <Await resolve={totalsPerCategory} errorElement={errorElement}>
+              {(data) => <TotalPerCategoriesChart data={data ?? []} currency />}
+            </Await>
+          </Suspense>
         </div>
         <div className={chartClasses}>
           <h6 className="pb-4 font-bold">
             {t('dashboard.categories-installments-this-month')}
           </h6>
-          <TotalPerCategoriesChart data={installmentsPerCategory} />
+          <Suspense fallback={loaderElement}>
+            <Await
+              resolve={installmentsPerCategory}
+              errorElement={errorElement}
+            >
+              {(data) => <TotalPerCategoriesChart data={data ?? []} />}
+            </Await>
+          </Suspense>
         </div>
       </div>
-      <div className="flex flex-col gap-4 w-full px-8">
+      <div className="flex flex-col gap-4 w-full px-8 pb-8">
         <h4>{t('dashboard.total-amount-per-categories')}</h4>
-        <div className="w-[90%] aspect-4/1">
-          <TotalPerCategoriesChart data={totalsPerAllCategories} currency />
+        <div className="w-full aspect-4/1">
+          <Suspense fallback={loaderElement}>
+            <Await resolve={totalsPerAllCategories} errorElement={errorElement}>
+              {(data) => <TotalPerCategoriesChart data={data ?? []} currency />}
+            </Await>
+          </Suspense>
         </div>
       </div>
     </div>
