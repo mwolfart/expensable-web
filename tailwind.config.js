@@ -49,12 +49,14 @@ module.exports = {
         '2-grow-left': 'minmax(0, 1fr) min-content',
         'transaction-expense-table': 'repeat(4, minmax(0, 1fr)) min-content 128px',
         'subgrid': 'subgrid',
+        '4-shrink': 'repeat(4, min-content)',
       },
       gridTemplateRows: {
         'subgrid': 'subgrid',
       },
       aspectRatio: {
         '4/1': '4 / 1',
+        '1/4': '1 / 4',
       },
     },
   },

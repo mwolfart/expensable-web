@@ -114,8 +114,8 @@ export default function Dashboard() {
 
   return (
     <div className="flex flex-col w-full gap-4">
-      <div className="flex gap-4 py-4 px-8 items-center">
-        <h5>{t('dashboard.viewing-data-for')}</h5>
+      <div className="grid gap-4 py-4 px-8 items-center grid-cols-1 sm:grid-cols-2 md:grid-cols-4-shrink">
+        <h5 className="whitespace-nowrap">{t('dashboard.viewing-data-for')}</h5>
         <DashboardIntervalSelect
           onChangeInterval={onChangeInterval}
           year={year}
@@ -128,6 +128,7 @@ export default function Dashboard() {
           aria-label={t('common.previous-month')}
         >
           <IoArrowBack size={24} />
+          <span className="block md:hidden">{t('common.previous')}</span>
         </button>
         <button
           className="btn btn-primary btn"
@@ -136,9 +137,10 @@ export default function Dashboard() {
           aria-label={t('common.next-month')}
         >
           <IoArrowForward size={24} />
+          <span className="block md:hidden">{t('common.next')}</span>
         </button>
       </div>
-      <div className="flex flex-wrap w-full h-auto p-4">
+      <div className="flex flex-wrap w-full h-auto p-4 justify-center md:justify-start">
         <div className={chartClasses}>
           <h6 className="pb-4 font-bold">
             {t('dashboard.expenses-during-months')}
@@ -175,10 +177,23 @@ export default function Dashboard() {
       </div>
       <div className="flex flex-col gap-4 w-full px-8 pb-8">
         <h4>{t('dashboard.total-amount-per-categories')}</h4>
-        <div className="w-full aspect-4/1">
+        <div className="w-full aspect-square md:aspect-4/1">
           <Suspense fallback={loaderElement}>
             <Await resolve={totalsPerAllCategories} errorElement={errorElement}>
-              {(data) => <TotalPerCategoriesChart data={data ?? []} currency />}
+              {(data) => (
+                <>
+                  <div className="h-full hidden md:block">
+                    <TotalPerCategoriesChart data={data ?? []} currency />
+                  </div>
+                  <div className="h-full block md:hidden">
+                    <TotalPerCategoriesChart
+                      data={data ?? []}
+                      currency
+                      vertical
+                    />
+                  </div>
+                </>
+              )}
             </Await>
           </Suspense>
         </div>

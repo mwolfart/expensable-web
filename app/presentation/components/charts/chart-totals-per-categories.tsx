@@ -8,12 +8,22 @@ import {
   Legend,
   ResponsiveContainer,
   Cell,
+  Text,
 } from 'recharts'
 import { useTranslations } from 'use-intl'
 
 type Props = {
   data: { categoryName: string; total: number }[]
   currency?: boolean
+  vertical?: boolean
+}
+
+type TickProps = {
+  x: number
+  y: number
+  payload: {
+    value: string
+  }
 }
 
 const barColors = [
@@ -39,7 +49,25 @@ const barColors = [
   '#c7c7c7',
 ]
 
-export function TotalPerCategoriesChart({ data, currency }: Props) {
+const tickFormatter = (value: string) => {
+  if (value.length < 10) {
+    return value
+  }
+  return `${value.substring(0, 10)}...`
+}
+
+const CustomYAxisTick = ({ x, y, payload }: TickProps) => {
+  if (payload && payload.value) {
+    return (
+      <Text width={75} x={x} y={y} textAnchor="end" verticalAnchor="middle">
+        {payload.value}
+      </Text>
+    )
+  }
+  return null
+}
+
+export function TotalPerCategoriesChart({ data, currency, vertical }: Props) {
   const t = useTranslations()
   return (
     <ResponsiveContainer width="90%" height="90%">
@@ -48,6 +76,7 @@ export function TotalPerCategoriesChart({ data, currency }: Props) {
           width={500}
           height={300}
           data={data}
+          layout={vertical ? 'vertical' : 'horizontal'}
           margin={{
             top: 5,
             right: 30,
@@ -56,8 +85,23 @@ export function TotalPerCategoriesChart({ data, currency }: Props) {
           }}
         >
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="categoryName" />
-          <YAxis />
+          {vertical ? (
+            <>
+              <XAxis hide axisLine={false} type="number" />
+              <YAxis
+                type="category"
+                width={150}
+                dataKey="categoryName"
+                tickFormatter={tickFormatter}
+                tick={(props) => <CustomYAxisTick {...props} />}
+              />
+            </>
+          ) : (
+            <>
+              <XAxis dataKey="categoryName" />
+              <YAxis />
+            </>
+          )}
           <Tooltip
             formatter={(value) => {
               if (typeof value === 'number' && currency) {
