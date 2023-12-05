@@ -62,6 +62,7 @@ module.exports = {
           ...colors,
           '.btn': {
             transition: '0.5s',
+            'text-transform': 'uppercase',
           },
           '.btn-primary': {
             color: colors.white,

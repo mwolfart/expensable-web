@@ -1,3 +1,4 @@
+import type { SerializeFrom } from '@remix-run/server-runtime'
 import type {
   ExpenseWithCategory,
   FetcherResponse,
@@ -13,9 +14,11 @@ import { BeatLoader } from 'react-spinners'
 import { TransactionItemExpense } from './transaction-item-expense'
 
 type Props = {
-  transaction: TransactionWithExpenses
+  transaction: SerializeFrom<TransactionWithExpenses>
   renderDeleteToast: () => void
-  renderEditDialog: (transaction: TransactionWithExpenses) => void
+  renderEditDialog: (
+    transaction: SerializeFrom<TransactionWithExpenses>,
+  ) => void
 }
 
 type ExpensesFetcher = FetcherResponse & {
@@ -66,7 +69,7 @@ export function TransactionItem({
     renderEditDialog(transaction)
   }
 
-  const date = formatDate(transaction.datetime)
+  const date = formatDate(new Date(transaction.datetime))
 
   return (
     <div className="grid items-center gap-2 bg-foreground py-4 sm:grid-cols-2">

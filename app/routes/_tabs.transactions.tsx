@@ -2,12 +2,13 @@ import type {
   AddTransactionFormErrors,
   TransactionWithExpenses,
 } from '~/utils/types'
-import {
-  json,
-  type ActionFunctionArgs,
-  type LoaderFunctionArgs,
-  type TypedResponse,
+import type {
+  SerializeFrom,
+  LoaderFunctionArgs,
+  ActionFunctionArgs,
+  TypedResponse,
 } from '@remix-run/server-runtime'
+import { json } from '@remix-run/server-runtime'
 import { useLoaderData, useNavigate, useSearchParams } from '@remix-run/react'
 import { useState } from 'react'
 import { useTranslations } from 'use-intl'
@@ -191,7 +192,9 @@ export default function Transactions() {
     setShowDeletedToast(false)
   }
 
-  const onEditTransaction = (transaction: TransactionWithExpenses) => {
+  const onEditTransaction = (
+    transaction: SerializeFrom<TransactionWithExpenses>,
+  ) => {
     navigate(`/transaction/${transaction.id}`)
   }
 

@@ -1,10 +1,13 @@
+import type { SerializeFrom } from '@remix-run/server-runtime'
 import type { TransactionWithExpenses } from '~/utils/types'
 import { TransactionItem } from './transaction-item'
 
 type Props = {
-  transactions: TransactionWithExpenses[]
+  transactions: SerializeFrom<TransactionWithExpenses[]>
   renderDeleteToast: () => void
-  renderEditDialog: (transaction: TransactionWithExpenses) => void
+  renderEditDialog: (
+    transaction: SerializeFrom<TransactionWithExpenses>,
+  ) => void
 }
 
 export function TransactionList({
