@@ -12,7 +12,6 @@ const sessionTimeoutMs =
 
 const session = createCookie('session', {
   secrets: [process.env.SESSION_SECRET],
-  expires: new Date(Date.now() + sessionTimeoutMs),
   path: '/',
 })
 

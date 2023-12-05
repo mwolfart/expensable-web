@@ -1,5 +1,10 @@
 import { json, type LoaderFunctionArgs } from '@remix-run/server-runtime'
-import { useLoaderData, useNavigate, useParams } from '@remix-run/react'
+import {
+  useLoaderData,
+  useNavigate,
+  useParams,
+  useRevalidator,
+} from '@remix-run/react'
 import { useTranslations } from 'use-intl'
 import { TotalPerCategoriesChart } from '~/presentation/components/charts/chart-totals-per-categories'
 import { TotalPerMonthsChart } from '~/presentation/components/charts/chart-totals-per-months'
@@ -55,6 +60,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 export default function Dashboard() {
   const t = useTranslations()
   const navigate = useNavigate()
+  const revalidator = useRevalidator()
   const { totalsPerMonthInterval, totalsPerCategory } =
     useLoaderData<typeof loader>()
   const params = useParams()
@@ -69,6 +75,7 @@ export default function Dashboard() {
     } else {
       navigate(`/dashboard/${newYear}/${newMonth}`)
     }
+    revalidator.revalidate()
   }
 
   const chartClasses =
