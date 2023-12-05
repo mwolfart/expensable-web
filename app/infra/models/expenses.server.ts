@@ -1,3 +1,4 @@
+import type { Prisma } from '@prisma/client'
 import { prisma } from '~/infra/db.server'
 import {
   getIntervalForMonthYear,
@@ -221,7 +222,7 @@ const getPipelineMatchingCategoriesAndExpenses = (
   endDate: Date,
   limit?: number,
 ) => {
-  return [
+  const pipeline: Prisma.InputJsonValue[] = [
     {
       $lookup: {
         from: 'Expense',
@@ -267,14 +268,17 @@ const getPipelineMatchingCategoriesAndExpenses = (
       },
     },
     {
-      $limit: limit || 6,
-    },
-    {
       $sort: {
-        totalAmount: 1,
+        totalAmount: -1,
       },
     },
   ]
+  if (limit !== -1) {
+    pipeline.splice(4, 0, {
+      $limit: limit || 6,
+    })
+  }
+  return pipeline
 }
 
 const getUserExpensesPerCategoriesInInterval = async (
@@ -283,23 +287,23 @@ const getUserExpensesPerCategoriesInInterval = async (
   endDate: Date,
   limit?: number,
 ) => {
-  const query = await prisma.categoriesOnExpense.aggregateRaw({
-    pipeline: [
-      ...getPipelineMatchingCategoriesAndExpenses(
-        userId,
-        startDate,
-        endDate,
-        limit,
-      ),
-      {
-        $group: {
-          _id: '$categoryId',
-          totalAmount: {
-            $sum: '$expenseDetails.amountEffective',
-          },
-        },
+  const groupBy = {
+    $group: {
+      _id: '$categoryId',
+      totalAmount: {
+        $sum: '$expenseDetails.amountEffective',
       },
-    ],
+    },
+  }
+  const pipeline = getPipelineMatchingCategoriesAndExpenses(
+    userId,
+    startDate,
+    endDate,
+    limit,
+  )
+  pipeline.splice(3, 0, groupBy)
+  const query = await prisma.categoriesOnExpense.aggregateRaw({
+    pipeline,
   })
   return query
 }
@@ -310,37 +314,37 @@ const getUserInstallmentsPerCategoriesInInterval = async (
   endDate: Date,
   limit?: number,
 ) => {
-  const query = await prisma.categoriesOnExpense.aggregateRaw({
-    pipeline: [
-      ...getPipelineMatchingCategoriesAndExpenses(
-        userId,
-        startDate,
-        endDate,
-        limit,
-      ),
-      {
-        $match: {
-          $and: [
-            {
-              'expenseDetails.isVisible': true,
-            },
-            {
-              'expenseDetails.installments': {
-                $gt: 1,
-              },
-            },
-          ],
-        },
+  const groupBy = {
+    $group: {
+      _id: '$categoryId',
+      totalAmount: {
+        $sum: 1,
       },
-      {
-        $group: {
-          _id: '$categoryId',
-          totalAmount: {
-            $sum: 1,
+    },
+  }
+  const filter = {
+    $match: {
+      $and: [
+        {
+          'expenseDetails.isVisible': true,
+        },
+        {
+          'expenseDetails.installments': {
+            $gt: 1,
           },
         },
-      },
-    ],
+      ],
+    },
+  }
+  const pipeline = getPipelineMatchingCategoriesAndExpenses(
+    userId,
+    startDate,
+    endDate,
+    limit,
+  )
+  pipeline.splice(3, 0, filter, groupBy)
+  const query = await prisma.categoriesOnExpense.aggregateRaw({
+    pipeline,
   })
   return query
 }

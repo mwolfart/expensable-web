@@ -52,7 +52,10 @@ module.exports = {
       },
       gridTemplateRows: {
         'subgrid': 'subgrid',
-      }
+      },
+      aspectRatio: {
+        '4/1': '4 / 1',
+      },
     },
   },
   daisyui: {

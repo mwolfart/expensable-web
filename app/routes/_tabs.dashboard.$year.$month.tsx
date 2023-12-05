@@ -47,20 +47,29 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     )
     const installmentsPerCategoryPromise =
       getUserInstallmentsPerCategoryInMonthYear(month, year, userId)
+    const totalsPerAllCategoriesPromise = getUserTotalsPerCategoryInMonthYear(
+      month,
+      year,
+      userId,
+      -1,
+    )
 
     const totalsPerMonthInterval = await totalsPerMonthIntervalPromise
     const totalsPerCategory = await totalsPerCategoryPromise
+    const totalsPerAllCategories = await totalsPerAllCategoriesPromise
     const installmentsPerCategory = await installmentsPerCategoryPromise
     return json({
       totalsPerMonthInterval,
       totalsPerCategory,
       installmentsPerCategory,
+      totalsPerAllCategories,
     })
   }
   return json({
     totalsPerMonthInterval: [],
     totalsPerCategory: [],
     installmentsPerCategory: [],
+    totalsPerAllCategories: [],
   })
 }
 
@@ -68,8 +77,12 @@ export default function Dashboard() {
   const t = useTranslations()
   const navigate = useNavigate()
   const revalidator = useRevalidator()
-  const { totalsPerMonthInterval, totalsPerCategory, installmentsPerCategory } =
-    useLoaderData<typeof loader>()
+  const {
+    totalsPerMonthInterval,
+    totalsPerCategory,
+    installmentsPerCategory,
+    totalsPerAllCategories,
+  } = useLoaderData<typeof loader>()
   const params = useParams()
   const year = params.year ? parseInt(params.year) : new Date().getFullYear()
   const month = params.month ? parseInt(params.month) : new Date().getMonth()
@@ -132,6 +145,12 @@ export default function Dashboard() {
             {t('dashboard.categories-installments-this-month')}
           </h6>
           <TotalPerCategoriesChart data={installmentsPerCategory} />
+        </div>
+      </div>
+      <div className="flex flex-col gap-4 w-full px-8">
+        <h4>{t('dashboard.total-amount-per-categories')}</h4>
+        <div className="w-[90%] aspect-4/1">
+          <TotalPerCategoriesChart data={totalsPerAllCategories} currency />
         </div>
       </div>
     </div>

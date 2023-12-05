@@ -10,20 +10,14 @@ import {
   Cell,
 } from 'recharts'
 import { useTranslations } from 'use-intl'
+import { generateRandomColors } from '~/utils/helpers'
 
 type Props = {
   data: { categoryName: string; total: number }[]
   currency?: boolean
 }
 
-const barColors = [
-  '#6c7eba',
-  '#6cbab0',
-  '#6cbd70',
-  '#c9b475',
-  '#bd774f',
-  '#c93838',
-]
+const barColors = generateRandomColors()
 
 export function TotalPerCategoriesChart({ data, currency }: Props) {
   const t = useTranslations()
@@ -61,7 +55,7 @@ export function TotalPerCategoriesChart({ data, currency }: Props) {
         </BarChart>
       ) : (
         <div className="h-full p-8">
-          <div className="h-full flex items-center border border-primary rounded-xl text-primary p-16">
+          <div className="h-full flex items-center justify-center border border-primary rounded-xl text-primary p-16">
             {t('dashboard.no-data')}
           </div>
         </div>
