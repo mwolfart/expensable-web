@@ -11,6 +11,7 @@ import { TotalPerMonthsChart } from '~/presentation/components/charts/chart-tota
 import { DashboardIntervalSelect } from '~/presentation/components/dashboard-interval-select'
 import {
   getUserExpensesInNumOfMonths,
+  getUserInstallmentsPerCategoryInMonthYear,
   getUserTotalsPerCategoryInMonthYear,
 } from '~/infra/models/expenses.server'
 import { getLoggedUserId } from '~/infra/session.server'
@@ -44,16 +45,22 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
       year,
       userId,
     )
+    const installmentsPerCategoryPromise =
+      getUserInstallmentsPerCategoryInMonthYear(month, year, userId)
+
     const totalsPerMonthInterval = await totalsPerMonthIntervalPromise
     const totalsPerCategory = await totalsPerCategoryPromise
+    const installmentsPerCategory = await installmentsPerCategoryPromise
     return json({
       totalsPerMonthInterval,
       totalsPerCategory,
+      installmentsPerCategory,
     })
   }
   return json({
     totalsPerMonthInterval: [],
     totalsPerCategory: [],
+    installmentsPerCategory: [],
   })
 }
 
@@ -61,7 +68,7 @@ export default function Dashboard() {
   const t = useTranslations()
   const navigate = useNavigate()
   const revalidator = useRevalidator()
-  const { totalsPerMonthInterval, totalsPerCategory } =
+  const { totalsPerMonthInterval, totalsPerCategory, installmentsPerCategory } =
     useLoaderData<typeof loader>()
   const params = useParams()
   const year = params.year ? parseInt(params.year) : new Date().getFullYear()
@@ -118,7 +125,13 @@ export default function Dashboard() {
           <h6 className="pb-4 font-bold">
             {t('dashboard.categories-this-month')}
           </h6>
-          <TotalPerCategoriesChart data={totalsPerCategory} />
+          <TotalPerCategoriesChart data={totalsPerCategory} currency />
+        </div>
+        <div className={chartClasses}>
+          <h6 className="pb-4 font-bold">
+            {t('dashboard.categories-installments-this-month')}
+          </h6>
+          <TotalPerCategoriesChart data={installmentsPerCategory} />
         </div>
       </div>
     </div>

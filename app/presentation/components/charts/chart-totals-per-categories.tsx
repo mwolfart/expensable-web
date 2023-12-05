@@ -13,6 +13,7 @@ import { useTranslations } from 'use-intl'
 
 type Props = {
   data: { categoryName: string; total: number }[]
+  currency?: boolean
 }
 
 const barColors = [
@@ -24,7 +25,7 @@ const barColors = [
   '#c93838',
 ]
 
-export function TotalPerCategoriesChart({ data }: Props) {
+export function TotalPerCategoriesChart({ data, currency }: Props) {
   const t = useTranslations()
   return (
     <ResponsiveContainer width="90%" height="90%">
@@ -45,9 +46,10 @@ export function TotalPerCategoriesChart({ data }: Props) {
           <YAxis />
           <Tooltip
             formatter={(value) => {
-              if (typeof value === 'number') {
+              if (typeof value === 'number' && currency) {
                 return `R$ ${value.toFixed(2)}`
               }
+              return value
             }}
           />
           <Legend />

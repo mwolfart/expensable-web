@@ -215,7 +215,69 @@ export const getUserExpensesInNumOfMonths = async (
   return totalsPerMonth
 }
 
-const getUserExpensesByCategoriesInInterval = async (
+const getPipelineMatchingCategoriesAndExpenses = (
+  userId: string,
+  startDate: Date,
+  endDate: Date,
+  limit?: number,
+) => {
+  return [
+    {
+      $lookup: {
+        from: 'Expense',
+        localField: 'expenseId',
+        foreignField: '_id',
+        as: 'expenseDetails',
+      },
+    },
+    {
+      $unwind: '$expenseDetails',
+    },
+    {
+      $match: {
+        $and: [
+          {
+            $expr: {
+              $gte: [
+                '$expenseDetails.datetime',
+                {
+                  $dateFromString: {
+                    dateString: startDate.toISOString(),
+                  },
+                },
+              ],
+            },
+          },
+          {
+            $expr: {
+              $lte: [
+                '$expenseDetails.datetime',
+                {
+                  $dateFromString: {
+                    dateString: endDate.toISOString(),
+                  },
+                },
+              ],
+            },
+          },
+          {
+            'expenseDetails.userId': { $oid: userId },
+          },
+        ],
+      },
+    },
+    {
+      $limit: limit || 6,
+    },
+    {
+      $sort: {
+        totalAmount: 1,
+      },
+    },
+  ]
+}
+
+const getUserExpensesPerCategoriesInInterval = async (
   userId: string,
   startDate: Date,
   endDate: Date,
@@ -223,50 +285,12 @@ const getUserExpensesByCategoriesInInterval = async (
 ) => {
   const query = await prisma.categoriesOnExpense.aggregateRaw({
     pipeline: [
-      {
-        $lookup: {
-          from: 'Expense',
-          localField: 'expenseId',
-          foreignField: '_id',
-          as: 'expenseDetails',
-        },
-      },
-      {
-        $unwind: '$expenseDetails',
-      },
-      {
-        $match: {
-          $and: [
-            {
-              $expr: {
-                $gte: [
-                  '$expenseDetails.datetime',
-                  {
-                    $dateFromString: {
-                      dateString: startDate.toISOString(),
-                    },
-                  },
-                ],
-              },
-            },
-            {
-              $expr: {
-                $lte: [
-                  '$expenseDetails.datetime',
-                  {
-                    $dateFromString: {
-                      dateString: endDate.toISOString(),
-                    },
-                  },
-                ],
-              },
-            },
-            {
-              'expenseDetails.userId': { $oid: userId },
-            },
-          ],
-        },
-      },
+      ...getPipelineMatchingCategoriesAndExpenses(
+        userId,
+        startDate,
+        endDate,
+        limit,
+      ),
       {
         $group: {
           _id: '$categoryId',
@@ -275,12 +299,45 @@ const getUserExpensesByCategoriesInInterval = async (
           },
         },
       },
+    ],
+  })
+  return query
+}
+
+const getUserInstallmentsPerCategoriesInInterval = async (
+  userId: string,
+  startDate: Date,
+  endDate: Date,
+  limit?: number,
+) => {
+  const query = await prisma.categoriesOnExpense.aggregateRaw({
+    pipeline: [
+      ...getPipelineMatchingCategoriesAndExpenses(
+        userId,
+        startDate,
+        endDate,
+        limit,
+      ),
       {
-        $limit: limit || 6,
+        $match: {
+          $and: [
+            {
+              'expenseDetails.isVisible': true,
+            },
+            {
+              'expenseDetails.installments': {
+                $gt: 1,
+              },
+            },
+          ],
+        },
       },
       {
-        $sort: {
-          totalAmount: 1,
+        $group: {
+          _id: '$categoryId',
+          totalAmount: {
+            $sum: 1,
+          },
         },
       },
     ],
@@ -288,7 +345,7 @@ const getUserExpensesByCategoriesInInterval = async (
   return query
 }
 
-const getExpensePerCategoryCorrelationFromQueryResult = async (
+const getTotalPerCategoryCorrelationFromQueryResult = async (
   query: Array<{ _id: { $oid: string }; totalAmount: number }>,
 ) => {
   const correlationPromises = query
@@ -316,43 +373,35 @@ export const getUserTotalsPerCategoryInMonthYear = async (
   limit?: number,
 ) => {
   const { startDate, endDate } = getIntervalForMonthYear(month, year)
-  const query = await getUserExpensesByCategoriesInInterval(
+  const query = await getUserExpensesPerCategoriesInInterval(
     userId,
     startDate,
     endDate,
     limit,
   )
   if (query && Array.isArray(query)) {
-    return await getExpensePerCategoryCorrelationFromQueryResult(query)
+    return await getTotalPerCategoryCorrelationFromQueryResult(query)
   }
   return []
 }
 
-export const getUserTotalsPerCategoryInCurrentMonth = async (
+export const getUserInstallmentsPerCategoryInMonthYear = async (
+  month: number,
+  year: number,
   userId: string,
   limit?: number,
 ) => {
-  const currentDate = new Date()
-  return getUserTotalsPerCategoryInMonthYear(
-    currentDate.getMonth(),
-    currentDate.getFullYear(),
+  const { startDate, endDate } = getIntervalForMonthYear(month, year)
+  const query = await getUserInstallmentsPerCategoriesInInterval(
     userId,
+    startDate,
+    endDate,
     limit,
   )
-}
-
-export const getUserTotalsPerCategoryInLastMonth = (
-  userId: string,
-  limit?: number,
-) => {
-  const currentDate = new Date()
-  currentDate.setMonth(currentDate.getMonth() - 1)
-  return getUserTotalsPerCategoryInMonthYear(
-    currentDate.getMonth(),
-    currentDate.getFullYear(),
-    userId,
-    limit,
-  )
+  if (query && Array.isArray(query)) {
+    return await getTotalPerCategoryCorrelationFromQueryResult(query)
+  }
+  return []
 }
 
 const createInstallmentExpenses = async (

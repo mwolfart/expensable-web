@@ -108,6 +108,7 @@
         "viewing-data-for": "Viewing data for:",
         "expenses-during-months": "Expenses per months",
         "categories-this-month": "Categories with most expenses this month",
+        "categories-installments-this-month": "Categories with most installments this month",
         "no-data": "There's no data for the selected month"
     }
 }
