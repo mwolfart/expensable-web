@@ -7,7 +7,7 @@ type Props = {
 
 export function Toast({ message, severity }: Props) {
   return (
-    <div className="toast">
+    <div className="toast z-10">
       <div className={classNames('alert', severity)}>{message}</div>
     </div>
   )

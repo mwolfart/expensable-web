@@ -260,15 +260,6 @@ export default function Expenses() {
     )
   }
 
-  // const onEditExpense = (expense: SerializeFrom<ExpenseWithCategory>) => {
-  //   openDialog(
-  //     <UpsertExpenseDialog
-  //       onUpserted={() => revalidator.revalidate()}
-  //       initialData={expense}
-  //     />,
-  //   )
-  // }
-
   const FiltersBlock = (
     <ExpenseFilterComponent
       onApplyFilters={filter.onApplyFilters}

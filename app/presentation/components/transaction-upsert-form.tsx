@@ -7,7 +7,7 @@ import type {
   TransactionExpenseInput,
   TransactionWithExpenses,
 } from '~/utils/types'
-import { useState, useReducer, useEffect } from 'react'
+import { useState, useReducer, useEffect, useContext } from 'react'
 import { Form, useFetcher } from '@remix-run/react'
 import { useTranslations } from 'use-intl'
 import { TransactionExpenseRow } from './transaction-expense-row'
@@ -16,6 +16,7 @@ import { AiOutlinePlus } from 'react-icons/ai'
 import { BeatLoader } from 'react-spinners'
 import { TransactionNewExpenseRow } from './transaction-new-expense-row'
 import { FaTimes } from 'react-icons/fa'
+import { ToastContext, ToastType } from '../providers/toast'
 
 type Props = {
   onGoBack: () => unknown
@@ -40,6 +41,7 @@ export function UpsertTransactionForm({
 }: Props) {
   const t = useTranslations()
   const fetcher = useFetcher<FetcherResponse>()
+  const { showToast } = useContext(ToastContext)
 
   const initialErrors = {
     title: '',
@@ -75,14 +77,16 @@ export function UpsertTransactionForm({
     if (fetcher.data?.errors) {
       updateFormErrors(fetcher.data.errors)
     } else if (fetcher.data?.success) {
+      showToast(
+        ToastType.SUCCESS,
+        initialData ? t('transactions.saved') : t('transactions.created'),
+      )
       onGoBack()
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fetcher.data])
 
   useEffect(() => {
     updateFormErrors({ ...formErrors, expenses: '' })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [numOfDirtyExpenses])
 
   const onSubmit: FormEventHandler<HTMLFormElement> = (evt) => {
