@@ -492,16 +492,6 @@ export const updateExpense = async (
 ) => {
   const { id, amount, installments, ...payload } = expense
 
-  const oldInstallmentsRes = await prisma.expense.findUnique({
-    where: {
-      id: expense.id,
-    },
-    select: {
-      installments: true,
-      amount: true,
-    },
-  })
-
   // Old category relationships
   const originalCategories = await prisma.categoriesOnExpense.findMany({
     where: {
@@ -555,16 +545,12 @@ export const updateExpense = async (
   }
 
   // Installment updates
-  const oldInstallments = oldInstallmentsRes?.installments
-  const oldAmount = oldInstallmentsRes?.amount
-  if (oldInstallments !== installments || oldAmount !== amount) {
-    await prisma.expense.deleteMany({
-      where: {
-        parentExpenseId: expense.id,
-      },
-    })
-    await createInstallmentExpenses(expenseRes, categories)
-  }
+  await prisma.expense.deleteMany({
+    where: {
+      parentExpenseId: expense.id,
+    },
+  })
+  await createInstallmentExpenses(expenseRes, categories)
 
   return expenseRes
 }
