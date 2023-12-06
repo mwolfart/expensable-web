@@ -17,6 +17,7 @@ import { BeatLoader } from 'react-spinners'
 import { TransactionNewExpenseRow } from './transaction-new-expense-row'
 import { FaTimes } from 'react-icons/fa'
 import { ToastContext, ToastType } from '../providers/toast'
+import { v4 as uuidv4 } from 'uuid'
 
 type Props = {
   onGoBack: () => unknown
@@ -53,7 +54,7 @@ export function UpsertTransactionForm({
     initialErrors,
   )
   const [expenses, setExpenses] = useState<TransactionExpenseInput[]>([])
-  const [numOfDirtyExpenses, setNumOfDirtyExpenses] = useState(0)
+  const [dirtyExpenses, setDirtyExpenses] = useState<string[]>([])
   const [expensesToAdd, setExpensesToAdd] = useState(0)
 
   useEffect(() => {
@@ -87,7 +88,7 @@ export function UpsertTransactionForm({
 
   useEffect(() => {
     updateFormErrors({ ...formErrors, expenses: '' })
-  }, [numOfDirtyExpenses])
+  }, [dirtyExpenses])
 
   const onSubmit: FormEventHandler<HTMLFormElement> = (evt) => {
     evt.preventDefault()
@@ -99,22 +100,29 @@ export function UpsertTransactionForm({
     fetcher.submit(data, { method: 'put', action: '/transactions' })
   }
 
+  const onCancelDirtyExpense = (key: string) => {
+    setDirtyExpenses(dirtyExpenses.filter((k) => k !== key))
+  }
+
+  const onAddNewDirtyExpenses = () => {
+    setDirtyExpenses([
+      ...dirtyExpenses,
+      ...Array.from(Array(expensesToAdd + 1)).map(() => uuidv4()),
+    ])
+    setExpensesToAdd(0)
+  }
+
   const onRemoveExpense = (index: number) => {
     const newExpenses = [...expenses]
     newExpenses.splice(index, 1)
     setExpenses(newExpenses)
   }
 
-  const onAddExpense = (data: TransactionExpenseInput) => {
+  const onAddExpense = (key: string, data: TransactionExpenseInput) => {
     const newExpenses = [...expenses]
     newExpenses.push(data)
     setExpenses(newExpenses)
-    setNumOfDirtyExpenses(numOfDirtyExpenses - 1)
-  }
-
-  const onAddNewDirtyExpenses = () => {
-    setNumOfDirtyExpenses(numOfDirtyExpenses + expensesToAdd + 1)
-    setExpensesToAdd(0)
+    onCancelDirtyExpense(key)
   }
 
   return (
@@ -191,13 +199,11 @@ export function UpsertTransactionForm({
                   ))}
                 </div>
                 <div className="bg-foreground grid sm:max-lg:grid-cols-2 max-lg:gap-2 max-lg:py-2 lg:grid-cols-subgrid lg:col-span-6 lg:gap-y-2">
-                  {[...Array(numOfDirtyExpenses).keys()].map((i) => (
+                  {dirtyExpenses.map((key) => (
                     <TransactionNewExpenseRow
-                      key={i}
-                      onCancel={() =>
-                        setNumOfDirtyExpenses(numOfDirtyExpenses - 1)
-                      }
-                      onAdd={onAddExpense}
+                      key={key}
+                      onCancel={() => onCancelDirtyExpense(key)}
+                      onAdd={(expense) => onAddExpense(key, expense)}
                     />
                   ))}
                 </div>
@@ -228,9 +234,9 @@ export function UpsertTransactionForm({
                 </div>
                 <button
                   type="button"
-                  disabled={numOfDirtyExpenses === 0}
+                  disabled={dirtyExpenses.length === 0}
                   className="btn-secondary btn flex w-fit gap-2 text-white"
-                  onClick={() => setNumOfDirtyExpenses(0)}
+                  onClick={() => setDirtyExpenses([])}
                 >
                   <FaTimes size={24} />
                   {t('transactions.cancel-all')}
@@ -243,7 +249,7 @@ export function UpsertTransactionForm({
           <button
             className="btn-primary btn w-full"
             disabled={
-              isLoadingExpenses || numOfDirtyExpenses > 0 || !expenses.length
+              isLoadingExpenses || dirtyExpenses.length > 0 || !expenses.length
             }
           >
             {t('common.submit')}
