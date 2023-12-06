@@ -8,6 +8,7 @@ import { MdOutlineCategory } from 'react-icons/md'
 import { GoCreditCard, GoGraph } from 'react-icons/go'
 import { AiOutlineShoppingCart } from 'react-icons/ai'
 import { CategoryProvider } from '~/presentation/providers/category'
+import { ToastProvider } from '~/presentation/providers/toast'
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const user = await getLoggedUserProfile(request)
@@ -33,43 +34,55 @@ export default function Index() {
   return (
     <CategoryProvider>
       <DialogProvider>
-        <main className="relative flex h-full flex-grow flex-col xs:p-8 sm:p-16 sm:pt-0">
-          <div className="hidden flex-row justify-end gap-8 p-4 sm:flex">
-            <p className="flex items-center text-sm text-primary">
-              {t('home.logged-in-as', { user: user?.fullName })}
-            </p>
-            <div className="text-primary" aria-hidden={true}>
-              |
+        <ToastProvider>
+          <main className="relative flex h-full flex-grow flex-col xs:p-8 sm:p-16 sm:pt-0">
+            <div className="hidden flex-row justify-end gap-8 p-4 sm:flex">
+              <p className="flex items-center text-sm text-primary">
+                {t('home.logged-in-as', { user: user?.fullName })}
+              </p>
+              <div className="text-primary" aria-hidden={true}>
+                |
+              </div>
+              <button
+                className="btn-link btn px-0 text-sm"
+                onClick={() =>
+                  submit(null, { action: 'logout', method: 'post' })
+                }
+              >
+                {t('common.logout')}
+              </button>
             </div>
-            <button
-              className="btn-link btn px-0 text-sm"
-              onClick={() => submit(null, { action: 'logout', method: 'post' })}
-            >
-              {t('common.logout')}
-            </button>
-          </div>
-          <div className="flex flex-grow flex-col xs:rounded-2xl bg-foreground">
-            <div className="flex gap-4 p-4">
-              <a className={getTabClass('/dashboard')} href="/">
-                <div className="hidden md:block">{t('home.dashboard')}</div>
-                <GoGraph className="block md:hidden" size={24} />
-              </a>
-              <a className={getTabClass('/expenses')} href="/expenses">
-                <div className="hidden md:block">{t('home.expenses')}</div>
-                <GoCreditCard className="block md:hidden" size={24} />
-              </a>
-              <a className={getTabClass('/categories')} href="/categories">
-                <div className="hidden md:block">{t('home.categories')}</div>
-                <MdOutlineCategory className="block md:hidden" size={24} />
-              </a>
-              <a className={getTabClass('/transactions')} href="/transactions">
-                <div className="hidden md:block">{t('home.transactions')}</div>
-                <AiOutlineShoppingCart className="block md:hidden" size={24} />
-              </a>
+            <div className="flex flex-grow flex-col xs:rounded-2xl bg-foreground">
+              <div className="flex gap-4 p-4">
+                <a className={getTabClass('/dashboard')} href="/">
+                  <div className="hidden md:block">{t('home.dashboard')}</div>
+                  <GoGraph className="block md:hidden" size={24} />
+                </a>
+                <a className={getTabClass('/expenses')} href="/expenses">
+                  <div className="hidden md:block">{t('home.expenses')}</div>
+                  <GoCreditCard className="block md:hidden" size={24} />
+                </a>
+                <a className={getTabClass('/categories')} href="/categories">
+                  <div className="hidden md:block">{t('home.categories')}</div>
+                  <MdOutlineCategory className="block md:hidden" size={24} />
+                </a>
+                <a
+                  className={getTabClass('/transactions')}
+                  href="/transactions"
+                >
+                  <div className="hidden md:block">
+                    {t('home.transactions')}
+                  </div>
+                  <AiOutlineShoppingCart
+                    className="block md:hidden"
+                    size={24}
+                  />
+                </a>
+              </div>
+              <Outlet />
             </div>
-            <Outlet />
-          </div>
-        </main>
+          </main>
+        </ToastProvider>
       </DialogProvider>
     </CategoryProvider>
   )

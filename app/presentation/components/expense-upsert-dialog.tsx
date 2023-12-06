@@ -14,11 +14,12 @@ import { DialogContext } from '~/presentation/providers/dialog'
 import { cxFormInput, formatCurrency } from '~/utils/helpers'
 import { CategoryContext } from '~/presentation/providers/category'
 import { TagInput } from './tag-input'
+import { ToastContext, ToastType } from '../providers/toast'
 
 const MAX_CATEGORIES = 3
 
 type Props = {
-  onUpserted: () => unknown
+  onUpserted?: () => unknown
   initialData?: SerializeFrom<ExpenseWithCategory>
 }
 
@@ -37,6 +38,7 @@ export function UpsertExpenseDialog({ onUpserted, initialData }: Props) {
   const tagInputId = useId()
 
   const { closeDialog } = useContext(DialogContext)
+  const { showToast } = useContext(ToastContext)
   const [tags, setTags] = useState<Tag[]>([])
   const suggestions = categories.map(({ id, title }) => ({ id, text: title }))
 
@@ -57,7 +59,11 @@ export function UpsertExpenseDialog({ onUpserted, initialData }: Props) {
     if (fetcher.data?.errors) {
       updateFormErrors(fetcher.data.errors)
     } else if (fetcher.data?.success) {
-      onUpserted()
+      showToast(
+        ToastType.SUCCESS,
+        initialData ? t('expenses.saved') : t('expenses.created'),
+      )
+      onUpserted && onUpserted()
       closeDialog()
     }
   }, [closeDialog, fetcher.data, onUpserted])

@@ -1,7 +1,7 @@
 import type { ChangeEvent } from 'react'
 import type { FetcherResponse } from '~/utils/types'
 import { useFetcher } from '@remix-run/react'
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { useTranslations } from 'use-intl'
 import { useErrorMessages } from '~/presentation/hooks'
 import {
@@ -9,8 +9,8 @@ import {
   cxWithDelayedFade,
   cxWithGrowMd,
   onEnter,
-  timeout,
 } from '~/utils/helpers'
+import { ToastContext, ToastType } from '../providers/toast'
 
 type Props = {
   isOpen: boolean
@@ -21,7 +21,9 @@ export function AddCategoryPopup({ isOpen, setOpen }: Props) {
   const t = useTranslations()
   const fetcher = useFetcher<FetcherResponse>()
   const { errorToString } = useErrorMessages()
-  const [showAddToast, setShowAddToast] = useState(false)
+
+  const { showToast } = useContext(ToastContext)
+
   const [hasSubmitted, setSubmitted] = useState(false)
   const [title, setTitle] = useState('')
   const [addError, setAddError] = useState<string>()
@@ -36,11 +38,9 @@ export function AddCategoryPopup({ isOpen, setOpen }: Props) {
         setTitle('')
       } else if (fetcher.data?.success) {
         setOpen(false)
-        setShowAddToast(true)
         setTitle('')
         setSubmitted(false)
-        await timeout(3000)
-        setShowAddToast(false)
+        showToast(ToastType.SUCCESS, t('category.category-added'))
       }
     }
     handleAction()
@@ -61,11 +61,6 @@ export function AddCategoryPopup({ isOpen, setOpen }: Props) {
     fetcher.submit({ category: title }, { method: 'post' })
   }
 
-  const AddToast = (
-    <div className="toast">
-      <div className="alert alert-success">{t('category.category-added')}</div>
-    </div>
-  )
   const addCategoryOuter = cxWithGrowMd(
     'absolute right-0 left-0 sm:left-auto top-full my-4 sm:w-80 rounded-xl bg-primary',
     isOpen,
@@ -77,7 +72,6 @@ export function AddCategoryPopup({ isOpen, setOpen }: Props) {
 
   return (
     <div className={addCategoryOuter}>
-      {showAddToast && AddToast}
       <div className={addCategoryInner}>
         <input
           className={cxFormInput({ hasError: addError })}

@@ -8,17 +8,14 @@ import { useTranslations } from 'use-intl'
 import { formatCurrency, formatDate } from '~/utils/helpers'
 import { BsTrash } from 'react-icons/bs'
 import { MdOutlineEdit } from 'react-icons/md'
-import { useFetcher } from '@remix-run/react'
-import { useEffect, useState } from 'react'
+import { useFetcher, useNavigate } from '@remix-run/react'
+import { useContext, useEffect, useState } from 'react'
 import { BeatLoader } from 'react-spinners'
 import { TransactionItemExpense } from './transaction-item-expense'
+import { ToastContext, ToastType } from '../providers/toast'
 
 type Props = {
   transaction: SerializeFrom<TransactionWithExpenses>
-  renderDeleteToast: () => void
-  renderEditDialog: (
-    transaction: SerializeFrom<TransactionWithExpenses>,
-  ) => void
 }
 
 type ExpensesFetcher = FetcherResponse & {
@@ -26,12 +23,10 @@ type ExpensesFetcher = FetcherResponse & {
   total: number
 }
 
-export function TransactionItem({
-  transaction,
-  renderDeleteToast,
-  renderEditDialog,
-}: Props) {
+export function TransactionItem({ transaction }: Props) {
   const t = useTranslations()
+  const navigate = useNavigate()
+  const { showToast } = useContext(ToastContext)
   const fetcher = useFetcher<FetcherResponse>()
   const expensesFetcher = useFetcher<ExpensesFetcher>()
   const [expenses, setExpenses] = useState<ExpenseWithCategory[]>([])
@@ -39,9 +34,10 @@ export function TransactionItem({
 
   useEffect(() => {
     if (fetcher.data?.method === 'delete' && fetcher.data.success) {
-      renderDeleteToast()
+      showToast(ToastType.SUCCESS, t('transactions.deleted'))
     }
-  }, [fetcher.data, renderDeleteToast])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fetcher.data])
 
   useEffect(() => {
     if (expensesFetcher.data) {
@@ -66,7 +62,7 @@ export function TransactionItem({
   }
 
   const onEdit = () => {
-    renderEditDialog(transaction)
+    navigate(`/transaction/${transaction.id}`)
   }
 
   const date = formatDate(new Date(transaction.datetime))

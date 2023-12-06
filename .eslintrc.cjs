@@ -49,5 +49,6 @@ module.exports = {
     'react/react-in-jsx-scope': ['off'],
     'react/display-name': ['off'],
     '@typescript-eslint/no-empty-function': ['off'],
+    'react-hooks/exhaustive-deps': ['off'],
   },
 }

@@ -1,11 +1,10 @@
 import type {
-  SerializeFrom,
   ActionFunctionArgs,
   LoaderFunctionArgs,
   TypedResponse,
 } from '@remix-run/server-runtime'
 import { json } from '@remix-run/server-runtime'
-import type { AddExpenseFormErrors, ExpenseWithCategory } from '~/utils/types'
+import type { AddExpenseFormErrors } from '~/utils/types'
 import { useTranslations } from 'use-intl'
 import { AiOutlinePlus } from 'react-icons/ai'
 import {
@@ -30,7 +29,6 @@ import {
   areAllValuesEmpty,
   cxWithGrowFadeLg,
   parseCategoryInput,
-  timeout,
 } from '~/utils/helpers'
 import {
   useLoaderData,
@@ -42,7 +40,6 @@ import { usePagination } from '~/presentation/hooks/use-pagination'
 import { useFilter } from '~/presentation/hooks/use-filter'
 import { PaginationButtons } from '~/presentation/components/pagination-buttons'
 import { MobileCancelDialog } from '~/presentation/components/mobile-cancel-dialog'
-import { Toast } from '~/presentation/components/toast'
 import { PaginationLimitSelect } from '~/presentation/components/pagination-limit-select'
 import { FilterButton } from '~/presentation/components/filter-button'
 
@@ -253,39 +250,24 @@ export default function Expenses() {
 
   const { openDialog } = useContext(DialogContext)
   const [showFilters, setShowFilters] = useState(false)
-  const [showUpsertToast, setShowUpsertToast] = useState(false)
-  const [showDeletedToast, setShowDeletedToast] = useState(false)
-  const [upsertText, setUpsertText] = useState('')
 
   const pagination = usePagination({ url: '/expenses', total })
   const filter = useFilter({ url: '/expenses' })
 
-  const onExpenseUpserted = async (updated?: boolean) => {
-    setUpsertText(updated ? t('expenses.saved') : t('expenses.created'))
-    revalidator.revalidate()
-    setShowUpsertToast(true)
-    await timeout(3000)
-    setShowUpsertToast(false)
-  }
-
   const onAddExpense = () => {
-    openDialog(<UpsertExpenseDialog onUpserted={onExpenseUpserted} />)
-  }
-
-  const onExpenseDeleted = async () => {
-    setShowDeletedToast(true)
-    await timeout(3000)
-    setShowDeletedToast(false)
-  }
-
-  const onEditExpense = (expense: SerializeFrom<ExpenseWithCategory>) => {
     openDialog(
-      <UpsertExpenseDialog
-        onUpserted={() => onExpenseUpserted(true)}
-        initialData={expense}
-      />,
+      <UpsertExpenseDialog onUpserted={() => revalidator.revalidate()} />,
     )
   }
+
+  // const onEditExpense = (expense: SerializeFrom<ExpenseWithCategory>) => {
+  //   openDialog(
+  //     <UpsertExpenseDialog
+  //       onUpserted={() => revalidator.revalidate()}
+  //       initialData={expense}
+  //     />,
+  //   )
+  // }
 
   const FiltersBlock = (
     <ExpenseFilterComponent
@@ -297,12 +279,6 @@ export default function Expenses() {
 
   return (
     <div className="m-4 mt-0 md:mt-4 md:m-8">
-      {showUpsertToast && (
-        <Toast message={upsertText} severity="alert-success" />
-      )}
-      {showDeletedToast && (
-        <Toast message={t('expenses.deleted')} severity="alert-info" />
-      )}
       {showFilters && (
         <MobileCancelDialog
           content={FiltersBlock}
@@ -332,11 +308,7 @@ export default function Expenses() {
       )}
       {!!expenses.length && (
         <>
-          <ExpenseList
-            expenses={expenses}
-            renderDeleteToast={onExpenseDeleted}
-            renderEditDialog={onEditExpense}
-          />
+          <ExpenseList expenses={expenses} />
           <PaginationButtons total={total} {...pagination} />
         </>
       )}

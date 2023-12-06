@@ -20,7 +20,6 @@ import { AiOutlinePlus } from 'react-icons/ai'
 import { ErrorCodes } from '~/utils/schemas'
 import { CategoryList } from '~/presentation/components/category-list'
 import { AddCategoryPopup } from '~/presentation/components/category-add-popup'
-import { timeout } from '~/utils/helpers'
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const userId = await getLoggedUserId(request)
@@ -118,23 +117,9 @@ export default function Categories() {
   const t = useTranslations()
   const [query, setQuery] = useState('')
   const [showAddCategory, setAddCategory] = useState(false)
-  const [showDeleteToast, setShowDeleteToast] = useState(false)
-
-  const renderDeleteToast = async () => {
-    setShowDeleteToast(true)
-    await timeout(3000)
-    setShowDeleteToast(false)
-  }
-
-  const DeleteToast = (
-    <div className="toast">
-      <div className="alert alert-info">{t('category.category-deleted')}</div>
-    </div>
-  )
 
   return (
     <div className="m-8 mt-0 flex flex-grow flex-col gap-2 md:mt-4 md:gap-4">
-      {showDeleteToast && DeleteToast}
       <div className="relative flex flex-col gap-4 sm:flex-row">
         <input
           className="input flex-grow"
@@ -160,11 +145,7 @@ export default function Categories() {
           <p>{t('category.try-adding')}</p>
         </NoData>
       )}
-      <CategoryList
-        categories={categories}
-        query={query}
-        renderDeleteToast={renderDeleteToast}
-      />
+      <CategoryList categories={categories} query={query} />
     </div>
   )
 }

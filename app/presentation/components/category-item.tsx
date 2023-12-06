@@ -2,20 +2,23 @@ import type { Category } from '@prisma/client'
 import type { FetcherResponse } from '~/utils/types'
 import type { KeyboardEventHandler } from 'react'
 import { useFetcher } from '@remix-run/react'
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { BsTrash } from 'react-icons/bs'
 import { MdOutlineEdit } from 'react-icons/md'
 import { useTranslations } from 'use-intl'
 import { cxFormInput } from '~/utils/helpers'
+import { ToastContext, ToastType } from '../providers/toast'
 
 type Props = {
   category: Category
-  renderDeleteToast: () => void
 }
 
-export function CategoryItem({ category, renderDeleteToast }: Props) {
+export function CategoryItem({ category }: Props) {
   const t = useTranslations()
   const fetcher = useFetcher<FetcherResponse>()
+
+  const { showToast } = useContext(ToastContext)
+
   const [isEditing, setEditing] = useState(false)
   const [value, setValue] = useState(category.title)
   const [hasUpdateError, setUpdateError] = useState('')
@@ -23,7 +26,7 @@ export function CategoryItem({ category, renderDeleteToast }: Props) {
   useEffect(() => {
     const handleAction = async () => {
       if (fetcher.data?.method === 'DELETE') {
-        renderDeleteToast()
+        showToast(ToastType.SUCCESS, t('category.category-deleted'))
       } else if (fetcher.data?.method === 'PATCH') {
         if (fetcher.data.error) {
           setUpdateError(fetcher.data.error)
@@ -34,7 +37,7 @@ export function CategoryItem({ category, renderDeleteToast }: Props) {
       }
     }
     handleAction()
-  }, [fetcher.data, renderDeleteToast])
+  }, [fetcher.data])
 
   const onEdit = () => {
     setEditing(true)

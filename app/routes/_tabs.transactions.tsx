@@ -1,9 +1,5 @@
+import type { AddTransactionFormErrors } from '~/utils/types'
 import type {
-  AddTransactionFormErrors,
-  TransactionWithExpenses,
-} from '~/utils/types'
-import type {
-  SerializeFrom,
   LoaderFunctionArgs,
   ActionFunctionArgs,
   TypedResponse,
@@ -14,7 +10,6 @@ import { useState } from 'react'
 import { useTranslations } from 'use-intl'
 import { NoData } from '~/presentation/components/no-data'
 import { PaginationButtons } from '~/presentation/components/pagination-buttons'
-import { Toast } from '~/presentation/components/toast'
 import { TransactionList } from '~/presentation/components/transaction-list'
 import { useFilter } from '~/presentation/hooks/use-filter'
 import { usePagination } from '~/presentation/hooks/use-pagination'
@@ -32,7 +27,6 @@ import {
   areAllValuesEmpty,
   cxWithGrowFadeLg,
   parseExpenses,
-  timeout,
 } from '~/utils/helpers'
 import { AiOutlinePlus } from 'react-icons/ai'
 import { PaginationLimitSelect } from '~/presentation/components/pagination-limit-select'
@@ -177,25 +171,12 @@ export default function Transactions() {
   }
 
   const [showFilters, setShowFilters] = useState(false)
-  const [showDeletedToast, setShowDeletedToast] = useState(false)
 
   const pagination = usePagination({ url: '/transactions', total })
   const filter = useFilter({ url: '/transactions' })
 
   const onAddTransaction = () => {
     navigate('/transaction/new')
-  }
-
-  const onTransactionDeleted = async () => {
-    setShowDeletedToast(true)
-    await timeout(3000)
-    setShowDeletedToast(false)
-  }
-
-  const onEditTransaction = (
-    transaction: SerializeFrom<TransactionWithExpenses>,
-  ) => {
-    navigate(`/transaction/${transaction.id}`)
   }
 
   const FiltersBlock = (
@@ -208,9 +189,6 @@ export default function Transactions() {
 
   return (
     <div className="m-4 mt-0 md:mt-4 md:m-8">
-      {showDeletedToast && (
-        <Toast message={t('transactions.deleted')} severity="alert-info" />
-      )}
       {showFilters && (
         <MobileCancelDialog
           content={FiltersBlock}
@@ -240,11 +218,7 @@ export default function Transactions() {
       )}
       {!!transactions.length && (
         <>
-          <TransactionList
-            transactions={transactions}
-            renderDeleteToast={onTransactionDeleted}
-            renderEditDialog={onEditTransaction}
-          />
+          <TransactionList transactions={transactions} />
           <PaginationButtons total={total} {...pagination} />
         </>
       )}

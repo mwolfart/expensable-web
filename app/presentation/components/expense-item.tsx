@@ -4,30 +4,31 @@ import { useTranslations } from 'use-intl'
 import { formatCurrency, formatDate } from '~/utils/helpers'
 import { BsTrash } from 'react-icons/bs'
 import { MdOutlineEdit } from 'react-icons/md'
-import { useFetcher } from '@remix-run/react'
+import { useFetcher, useRevalidator } from '@remix-run/react'
 import { useContext, useEffect } from 'react'
 import { CategoryContext } from '~/presentation/providers/category'
+import { ToastContext, ToastType } from '../providers/toast'
+import { DialogContext } from '../providers/dialog'
+import { UpsertExpenseDialog } from './expense-upsert-dialog'
 
 type Props = {
   expense: SerializeFrom<ExpenseWithCategory>
-  renderDeleteToast: () => void
-  renderEditDialog: (expense: SerializeFrom<ExpenseWithCategory>) => void
 }
 
-export function ExpenseItem({
-  expense,
-  renderDeleteToast,
-  renderEditDialog,
-}: Props) {
+export function ExpenseItem({ expense }: Props) {
   const t = useTranslations()
   const fetcher = useFetcher<FetcherResponse>()
+  const revalidator = useRevalidator()
+
+  const { showToast } = useContext(ToastContext)
+  const { openDialog } = useContext(DialogContext)
   const { map: categoryMap } = useContext(CategoryContext)
 
   useEffect(() => {
     if (fetcher.data?.method === 'delete' && fetcher.data.success) {
-      renderDeleteToast()
+      showToast(ToastType.SUCCESS, t('expenses.deleted'))
     }
-  }, [fetcher.data, renderDeleteToast])
+  }, [fetcher.data])
 
   const onDelete = () => {
     fetcher.submit(
@@ -37,7 +38,12 @@ export function ExpenseItem({
   }
 
   const onEdit = () => {
-    renderEditDialog(expense)
+    openDialog(
+      <UpsertExpenseDialog
+        initialData={expense}
+        onUpserted={() => revalidator.revalidate()}
+      />,
+    )
   }
 
   const date = formatDate(new Date(expense.datetime))
