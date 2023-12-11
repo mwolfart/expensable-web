@@ -33,8 +33,8 @@ export default function Index() {
 
   return (
     <CategoryProvider>
-      <DialogProvider>
-        <ToastProvider>
+      <ToastProvider>
+        <DialogProvider>
           <main className="relative flex h-full flex-grow flex-col xs:p-8 sm:p-16 sm:pt-0">
             <div className="hidden flex-row justify-end gap-8 p-4 sm:flex">
               <p className="flex items-center text-sm text-primary">
@@ -82,8 +82,8 @@ export default function Index() {
               <Outlet />
             </div>
           </main>
-        </ToastProvider>
-      </DialogProvider>
+        </DialogProvider>
+      </ToastProvider>
     </CategoryProvider>
   )
 }

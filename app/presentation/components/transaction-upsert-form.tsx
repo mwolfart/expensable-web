@@ -127,7 +127,7 @@ export function UpsertTransactionForm({
 
   return (
     <Form
-      className="grid h-full grid-rows-[min-content] gap-8 lg:grid-cols-2"
+      className="grid h-full grid-rows-[min-content] gap-8 lg:grid-cols-2 pb-8"
       onSubmit={onSubmit}
     >
       <label>
