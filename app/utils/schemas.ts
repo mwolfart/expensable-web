@@ -57,7 +57,12 @@ export const userSchema = yup.object({
     ),
   passwordConfirmation: yup
     .string()
-    .equals(['password'], ErrorCodes.PASSWORD_MISMATCH),
+    .when(['password'], (password, schema) =>
+      schema.notOneOf(
+        [password as unknown as yup.Reference],
+        ErrorCodes.PASSWORD_MISMATCH,
+      ),
+    ),
   name: yup.string().required(ErrorCodes.NAME_REQUIRED),
 })
 

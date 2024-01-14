@@ -38,7 +38,7 @@ export async function action({
       return json({ error: ErrorCodes.LOGIN_INVALID }, { status: 400 })
     }
     await serverAuth.verifyIdToken(idToken)
-    const createdUser = await createUser(email, name)
+    const createdUser = await createUser(email.toLowerCase(), name)
 
     if (!createdUser) {
       return json({ error: ErrorCodes.REGISTER_UNKNOWN }, { status: 500 })
@@ -90,6 +90,7 @@ export default function CreateUser() {
             values.password,
           )
           const idToken = await getIdToken(credentials.user)
+
           if (idToken) {
             fetcher.submit(
               { idToken, email: values.email, name: values.name },
@@ -99,7 +100,17 @@ export default function CreateUser() {
         } catch (error) {
           // show error with existing user
           setShowErrorMessage(true)
-          setErrorMessage(t('auth.errors.unknown-error'))
+          if (
+            error &&
+            typeof error === 'object' &&
+            'code' in error &&
+            typeof error.code === 'string' &&
+            error.code.includes('email-already-in-use')
+          ) {
+            setErrorMessage(t('auth.errors.account-exists'))
+          } else {
+            setErrorMessage(t('auth.errors.unknown-error'))
+          }
         }
       },
     })
@@ -124,6 +135,8 @@ export default function CreateUser() {
     await transition()
     navigate('/login')
   }
+
+  const passwordError = errors.password || errors.passwordConfirmation
 
   return (
     <Form className="flex flex-col gap-8" onSubmit={handleSubmit}>
@@ -152,24 +165,30 @@ export default function CreateUser() {
         type="password"
         name="password"
         value={values.password}
-        placeholder={errors.password || t('common.password')}
-        className={cxFormInput({ hasError: errors.password })}
+        placeholder={passwordError || t('common.password')}
+        className={cxFormInput({ hasError: passwordError })}
         onChange={(e) => setFieldValue('password', e.target.value)}
-        onBlur={() => setFieldError('password', undefined)}
+        onBlur={() => {
+          setFieldError('password', undefined)
+          setFieldError('passwordConfirmation', undefined)
+        }}
       />
       <input
         type="password"
         name="passwordConfirmation"
         value={values.passwordConfirmation}
-        placeholder={errors.password || t('common.password-check')}
-        className={cxFormInput({ hasError: errors.password })}
+        placeholder={passwordError || t('common.password-check')}
+        className={cxFormInput({ hasError: passwordError })}
         onChange={(e) => setFieldValue('passwordConfirmation', e.target.value)}
-        onBlur={() => setFieldError('password', undefined)}
+        onBlur={() => {
+          setFieldError('password', undefined)
+          setFieldError('passwordConfirmation', undefined)
+        }}
       />
       <p className={cxWithGrowFadeMd('', showConfirmation)}>
         {t('auth.account-created')}
       </p>
-      <p className={cxWithGrowFadeMd('', showErrorMessage)}>
+      <p className={cxWithGrowFadeMd('text-error', showErrorMessage)}>
         {errorToString(errorMessage)}
       </p>
       <div className="flex flex-col gap-4">
