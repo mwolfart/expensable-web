@@ -44,14 +44,16 @@ const getLanguage = (lang: string) => {
   switch (lang) {
     default:
     case 'en':
+    case 'en-US':
       return i18n.en
-    case 'ptbr':
+    case 'pt-BR':
       return i18n.ptbr
   }
 }
 
 export default function App() {
-  const [language, setLanguage] = useState('en')
+  const userLang = navigator.language
+  const [language, setLanguage] = useState(userLang)
 
   return (
     <html

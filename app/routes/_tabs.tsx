@@ -98,7 +98,7 @@ export default function Index() {
                 <button
                   className="btn-link btn"
                   type="button"
-                  onClick={() => setLanguage('ptbr')}
+                  onClick={() => setLanguage('pt-BR')}
                 >
                   {t('common.portuguese')}
                 </button>

@@ -8,7 +8,7 @@ export const getMonthName = (month: number) => {
     case 1:
       return 'February'
     case 2:
-      return 'March'
+      return 'Marcho'
     case 3:
       return 'April'
     case 4:
