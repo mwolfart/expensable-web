@@ -52,7 +52,7 @@ const getLanguage = (lang: string) => {
 }
 
 export default function App() {
-  const userLang = navigator.language
+  const userLang = typeof navigator !== 'undefined' ? navigator.language : 'en'
   const [language, setLanguage] = useState(userLang)
 
   return (
