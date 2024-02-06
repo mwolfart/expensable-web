@@ -30,7 +30,7 @@
         "previous": "Previous",
         "next": "Next",
         "previous-month": "Previous month",
-        "next-month": "Previous month",
+        "next-month": "Next month",
         "page-n": "Page {number}",
         "expenses": "Expenses",
         "category": "Category",
@@ -39,6 +39,9 @@
         "optional-field": "{field} (optional)",
         "each": "{value}/ea",
         "select-option": "Select an option",
+        "viewing-website-in": "Viewing website in:",
+        "portuguese": "Portuguese",
+        "english": "English",
         "errors": {
             "invalid-field": "{field} is invalid.",
             "required-field": "{field} is required",

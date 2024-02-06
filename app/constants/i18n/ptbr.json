@@ -1,0 +1,118 @@
+{
+    "common": {
+        "email": "E-mail",
+        "name": "Nome",
+        "password": "Senha",
+        "password-check": "Confirmar senha",
+        "submit": "Submeter",
+        "back": "Voltar",
+        "logout": "Sair",
+        "search": "Buscar",
+        "clear": "Limpar",
+        "cancel": "Cancelar",
+        "ok": "OK",
+        "apply": "Aplicar",
+        "edit": "Editar",
+        "rename": "Renomear",
+        "delete": "Excluir",
+        "remove": "Remover",
+        "filters": "Gerenciar filtros",
+        "nothing-to-see": "Não há nada para ver aqui",
+        "title": "Título",
+        "amount": "Quantia total",
+        "unit": "Quantia unitária",
+        "installments": "Parcelas",
+        "categories": "Categorias",
+        "date": "Data",
+        "start-date": "Data inicial",
+        "end-date": "Data final",
+        "entries": "Registros por página: ",
+        "previous": "Anterior",
+        "next": "Seguinte",
+        "previous-month": "Mês anterior",
+        "next-month": "Mês seguinte",
+        "page-n": "Página {number}",
+        "expenses": "Despesar",
+        "category": "Categoria",
+        "n-more": "Mais {value}",
+        "n-items": "{value} itens",
+        "optional-field": "{field} (opcional)",
+        "each": "{value}/cada",
+        "select-option": "Selecionar uma opção",
+        "viewing-website-in": "Visualizando website em:",
+        "portuguese": "Português",
+        "english": "Inglês",
+        "errors": {
+            "invalid-field": "{field} está inválido.",
+            "required-field": "{field} é obrigatório",
+            "password-short": "Senha precisa ter ao menos 8 carácteres",
+            "password-rules": "Senha precisa ter ao menos um de cada: uma letra maiúscula, uma letra minúscula, um número e um símbolo",
+            "password-mismatch": "Senhas não coincidem"
+        }
+    },
+    "auth": {
+        "welcome": "Bem vindo(a) a",
+        "expensable": "Expensable",
+        "forgot-password": "Esqueci minha senha",
+        "forgot-password-copy": "Digite seu e-mail abaixo e enviaremos um link de recuperação.",
+        "email-sent": "Se existe uma conta associada à esse e-mail, você irá receber um link para recuperar sua senha em breve.",
+        "account-created": "Sua conta foi criada com sucesso! Agora você pode entrar.",
+        "reset-password": "Redefinir senha",
+        "enter-new-password": "Digite sua senha abaixo para redefiní-la",
+        "password-updated": "Senha atualizada com sucesso!",
+        "send-recovery-email": "Enviar e-mail de recuperação",
+        "login": "Entrar",
+        "create-account": "Criar uma conta",
+        "enter-data": "Digite os dados abaixo para criar uma conta.",
+        "already-have-account": "Já tenho uma conta",
+        "errors": {
+            "invalid-credentials": "As credenciais digitadas estão incorretas.",
+            "account-exists": "Este e-mail já está associado com outra conta. Tente escolher outro e-mail.",
+            "no-password-reset-code": "O código de redefinição de senha está incorreto ou não foi fornecido.",
+            "unknown-error": "Um erro desconhecido aconteceu. Por favor atualize a página ou contate o dono do website."
+        }
+    },
+    "home": {
+        "logged-in-as": "Logado como {user}",
+        "expenses": "Despesas",
+        "categories": "Categorias",
+        "transactions": "Transações",
+        "dashboard": "Painel de Resumos"
+    },
+    "category": {
+        "search": "Buscar categorias...",
+        "add": "Nova categoria",
+        "try-adding": "Tente adicionar uma categoria primeiro",
+        "category-name": "Nome da categoria",
+        "category-added": "Categoria adicionada com sucesso!",
+        "category-deleted": "Categoria excluída com sucesso!",
+        "errors": {
+            "duplicate": "Categoria já existe",
+            "empty": "Digite um nome"
+        }
+    },
+    "expenses": {
+        "try-adding": "Tente adicionar uma despesa primeiro",
+        "add": "Nova despesa",
+        "created": "Despesa criada com sucesso!",
+        "deleted": "Despesa excluída com sucesso!",
+        "saved": "Despesa salva com sucesso!"
+    },
+    "transactions": {
+        "try-adding": "Tente adicionar uma transação primeiro",
+        "add": "Nova transação",
+        "created": "Transação criada com sucesso!",
+        "deleted": "Transação excluída com sucesso!",
+        "saved": "Transação salva com sucesso!",
+        "new-expense": "Nova transação",
+        "cancel-all": "Cancelar todos"
+    },
+    "dashboard": {
+        "viewing-data-for": "Visualizando dados para:",
+        "expenses-during-months": "Despesas por mês",
+        "categories-this-month": "Categorias com mais despesas neste mês",
+        "categories-installments-this-month": "Categories com mais parcelas este mês",
+        "total-amount-per-categories": "Total gasto em cada categoria",
+        "no-data": "Não há dados para o mês selecionado"
+    }
+}

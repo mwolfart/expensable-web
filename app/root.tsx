@@ -17,6 +17,8 @@ import { i18n } from '~/constants'
 import { IntlProvider } from 'use-intl'
 import tailwindStylesheetUrl from './styles/tailwind.css'
 import { getLoggedUserProfile } from './infra/session.server'
+import { useState } from 'react'
+import { LanguageProvider } from './provider/language'
 
 export const links: LinksFunction = () => {
   return [{ rel: 'stylesheet', href: tailwindStylesheetUrl }]
@@ -38,7 +40,19 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 const timeZone = 'Brazil/East'
 
+const getLanguage = (lang: string) => {
+  switch (lang) {
+    default:
+    case 'en':
+      return i18n.en
+    case 'ptbr':
+      return i18n.ptbr
+  }
+}
+
 export default function App() {
+  const [language, setLanguage] = useState('en')
+
   return (
     <html
       lang="en"
@@ -50,8 +64,14 @@ export default function App() {
         <Links />
       </head>
       <body className="flex h-full flex-grow flex-col bg-gradient-to-tr from-green-200 via-orange-200 to-red-200">
-        <IntlProvider messages={i18n.en} locale="en" timeZone={timeZone}>
-          <Outlet />
+        <IntlProvider
+          messages={getLanguage(language)}
+          locale="en"
+          timeZone={timeZone}
+        >
+          <LanguageProvider context={{ language, setLanguage }}>
+            <Outlet />
+          </LanguageProvider>
         </IntlProvider>
         <ScrollRestoration />
         <Scripts />

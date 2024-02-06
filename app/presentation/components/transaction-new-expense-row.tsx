@@ -38,8 +38,7 @@ export function TransactionNewExpenseRow({ onCancel, onAdd }: Props) {
     setData(newData)
   }
 
-  const isDataValid =
-    data.title && data.amount && data.categoryId && data.installments
+  const isDataValid = data.title && data.amount && data.installments
 
   return (
     <>
