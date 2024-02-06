@@ -17,8 +17,9 @@ import {
 } from '~/infra/models/expenses.server'
 import { getLoggedUserId } from '~/infra/session.server'
 import { IoArrowBack, IoArrowForward } from 'react-icons/io5'
-import { Suspense } from 'react'
+import { Suspense, useContext } from 'react'
 import { BeatLoader } from 'react-spinners'
+import { CategoryContext } from '~/presentation/providers/category'
 
 const MIN_YEAR = 2003
 const MAX_YEAR = 2053
@@ -86,6 +87,8 @@ export default function Dashboard() {
   const year = params.year ? parseInt(params.year) : new Date().getFullYear()
   const month = params.month ? parseInt(params.month) : new Date().getMonth()
 
+  const { list: categories } = useContext(CategoryContext)
+
   const onChangeInterval = (newMonth: number, newYear: number) => {
     if (newMonth < 0) {
       navigate(`/dashboard/${newYear - 1}/11`)
@@ -151,53 +154,64 @@ export default function Dashboard() {
             </Await>
           </Suspense>
         </div>
-        <div className={chartClasses}>
-          <h6 className="pb-4 font-bold">
-            {t('dashboard.categories-this-month')}
-          </h6>
-          <Suspense fallback={loaderElement}>
-            <Await resolve={totalsPerCategory} errorElement={errorElement}>
-              {(data) => <TotalPerCategoriesChart data={data ?? []} currency />}
-            </Await>
-          </Suspense>
-        </div>
-        <div className={chartClasses}>
-          <h6 className="pb-4 font-bold">
-            {t('dashboard.categories-installments-this-month')}
-          </h6>
-          <Suspense fallback={loaderElement}>
-            <Await
-              resolve={installmentsPerCategory}
-              errorElement={errorElement}
-            >
-              {(data) => <TotalPerCategoriesChart data={data ?? []} />}
-            </Await>
-          </Suspense>
-        </div>
+        {categories.length > 0 && (
+          <div className={chartClasses}>
+            <h6 className="pb-4 font-bold">
+              {t('dashboard.categories-this-month')}
+            </h6>
+            <Suspense fallback={loaderElement}>
+              <Await resolve={totalsPerCategory} errorElement={errorElement}>
+                {(data) => (
+                  <TotalPerCategoriesChart data={data ?? []} currency />
+                )}
+              </Await>
+            </Suspense>
+          </div>
+        )}
+        {categories.length > 0 && (
+          <div className={chartClasses}>
+            <h6 className="pb-4 font-bold">
+              {t('dashboard.categories-installments-this-month')}
+            </h6>
+            <Suspense fallback={loaderElement}>
+              <Await
+                resolve={installmentsPerCategory}
+                errorElement={errorElement}
+              >
+                {(data) => <TotalPerCategoriesChart data={data ?? []} />}
+              </Await>
+            </Suspense>
+          </div>
+        )}
       </div>
-      <div className="flex flex-col gap-4 w-full px-8 pb-8">
-        <h4>{t('dashboard.total-amount-per-categories')}</h4>
-        <div className="w-full aspect-square md:aspect-4/1">
-          <Suspense fallback={loaderElement}>
-            <Await resolve={totalsPerAllCategories} errorElement={errorElement}>
-              {(data) => (
-                <>
-                  <div className="h-full hidden md:block">
-                    <TotalPerCategoriesChart data={data ?? []} currency />
-                  </div>
-                  <div className="h-full block md:hidden">
-                    <TotalPerCategoriesChart
-                      data={data ?? []}
-                      currency
-                      vertical
-                    />
-                  </div>
-                </>
-              )}
-            </Await>
-          </Suspense>
+      {categories.length > 0 && (
+        <div className="flex flex-col gap-4 w-full px-8 pb-8">
+          <h4>{t('dashboard.total-amount-per-categories')}</h4>
+          <div className="w-full aspect-square md:aspect-4/1">
+            <Suspense fallback={loaderElement}>
+              <Await
+                resolve={totalsPerAllCategories}
+                errorElement={errorElement}
+              >
+                {(data) => (
+                  <>
+                    <div className="h-full hidden md:block">
+                      <TotalPerCategoriesChart data={data ?? []} currency />
+                    </div>
+                    <div className="h-full block md:hidden">
+                      <TotalPerCategoriesChart
+                        data={data ?? []}
+                        currency
+                        vertical
+                      />
+                    </div>
+                  </>
+                )}
+              </Await>
+            </Suspense>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   )
 }
