@@ -44,7 +44,8 @@
         "viewing-website-in": "Visualizando website em:",
         "portuguese": "Português",
         "english": "Inglês",
-        "fixed-expense": "Esta despesa é fixa",
+        "fixed-expense": "Despesa fixa",
+        "this-is-fixed": "Esta despesa é fixa",
         "errors": {
             "invalid-field": "{field} está inválido.",
             "required-field": "{field} é obrigatório",

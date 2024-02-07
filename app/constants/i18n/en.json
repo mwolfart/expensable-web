@@ -44,7 +44,8 @@
         "viewing-website-in": "Viewing website in:",
         "portuguese": "Portuguese",
         "english": "English",
-        "fixed-expense": "This is a fixed expense",
+        "fixed-expense": "Fixed expense",
+        "this-is-fixed": "This is a fixed expense",
         "errors": {
             "invalid-field": "{field} is invalid.",
             "required-field": "{field} is required",

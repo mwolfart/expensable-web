@@ -59,8 +59,13 @@ export function ExpenseItem({ expense }: Props) {
             {t('common.each', { value: formatCurrency(expense.unit) })}
           </small>
         )}
-        {expense.installments > 1 && (
+        {expense.installments > 1 && !expense.isFixed && (
           <small>{`${expense.installments}x`}</small>
+        )}
+        {expense.isFixed && (
+          <small>{`${t('common.fixed-expense')} - ${
+            expense.installments
+          }x`}</small>
         )}
       </div>
       <div className="flex flex-row flex-wrap gap-2 sm:justify-end">

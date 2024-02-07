@@ -128,7 +128,7 @@ export function UpsertExpenseDialog({ onUpserted, initialData }: Props) {
         />
       </label>
       <label className="col-span-4 flex flex-row-reverse justify-self-start gap-2">
-        {t('common.fixed-expense')}
+        {t('common.this-is-fixed')}
         <input
           type="checkbox"
           name="isFixed"
