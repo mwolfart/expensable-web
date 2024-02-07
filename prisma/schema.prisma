@@ -49,6 +49,7 @@ model Expense {
   installments    Int
   amountEffective Float
   isVisible       Boolean
+  isFixed         Boolean
   parentExpenseId String? @db.ObjectId
   parentExpense   Expense? @relation("installmentExpenses", fields: [parentExpenseId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   installmentExps Expense[] @relation("installmentExpenses") 

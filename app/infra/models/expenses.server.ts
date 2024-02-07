@@ -412,7 +412,8 @@ const createInstallmentExpenses = async (
   parentExpense: ExpenseUpdate,
   categories?: CategoryInputArray,
 ) => {
-  const { id, installments, datetime, amount, ...payload } = parentExpense
+  const { id, installments, isFixed, datetime, amount, ...payload } =
+    parentExpense
   const installmentExpensesRes = [...Array(installments - 1).keys()].map(
     async (i) => {
       const installmentDate = new Date(datetime)
@@ -426,7 +427,8 @@ const createInstallmentExpenses = async (
           parentExpenseId: parentExpense.id,
           datetime: installmentDate,
           isVisible: false,
-          amountEffective: amount / installments,
+          isFixed,
+          amountEffective: isFixed ? amount : amount / installments,
         },
       })
 
@@ -490,7 +492,7 @@ export const updateExpense = async (
   expense: ExpenseUpdate,
   categories?: CategoryInputArray,
 ) => {
-  const { id, amount, installments, ...payload } = expense
+  const { id, amount, installments, isFixed, ...payload } = expense
 
   // Old category relationships
   const originalCategories = await prisma.categoriesOnExpense.findMany({
@@ -511,7 +513,8 @@ export const updateExpense = async (
       ...payload,
       amount,
       installments,
-      amountEffective: amount / (installments || 1),
+      isFixed,
+      amountEffective: isFixed ? amount : amount / (installments || 1),
     },
   })
 

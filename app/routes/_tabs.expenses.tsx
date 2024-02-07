@@ -112,6 +112,7 @@ export async function action({ request }: ActionFunctionArgs): Promise<
     const date = formData.get('date')
     const installments = formData.get('installments')
     const categories = formData.get('categories')
+    const isFixed = formData.get('isFixed')
 
     if (typeof name !== 'string' || !name.length) {
       return json(
@@ -130,6 +131,13 @@ export async function action({ request }: ActionFunctionArgs): Promise<
     if (typeof unit !== 'string') {
       return json(
         { errors: { unit: ErrorCodes.BAD_FORMAT }, ...res },
+        { status: 400 },
+      )
+    }
+
+    if (typeof isFixed !== 'string') {
+      return json(
+        { errors: { isFixed: ErrorCodes.BAD_FORMAT }, ...res },
         { status: 400 },
       )
     }
@@ -186,6 +194,7 @@ export async function action({ request }: ActionFunctionArgs): Promise<
             unit: unit ? parseFloat(unit.replace(/[^0-9.]/g, '')) : null,
             datetime: new Date(Date.parse(date)),
             installments: parseInt(installments),
+            isFixed: isFixed.toLowerCase() === 'true',
             userId,
           },
           parsedCategories,
@@ -198,6 +207,7 @@ export async function action({ request }: ActionFunctionArgs): Promise<
             unit: unit ? parseFloat(unit.replace(/[^0-9.]/g, '')) : null,
             datetime: new Date(Date.parse(date)),
             installments: parseInt(installments),
+            isFixed: isFixed.toLowerCase() === 'true',
             userId,
           },
           parsedCategories,

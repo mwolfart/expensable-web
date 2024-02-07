@@ -19,6 +19,8 @@
         "filters": "Manage filters",
         "nothing-to-see": "There is nothing to see here",
         "title": "Title",
+        "total-amount": "Total amount",
+        "amount-per-month": "Amount per month",
         "amount": "Cost amount",
         "unit": "Unit cost",
         "installments": "Installments",
@@ -42,6 +44,7 @@
         "viewing-website-in": "Viewing website in:",
         "portuguese": "Portuguese",
         "english": "English",
+        "fixed-expense": "This is a fixed expense",
         "errors": {
             "invalid-field": "{field} is invalid.",
             "required-field": "{field} is required",

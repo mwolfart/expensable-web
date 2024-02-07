@@ -40,6 +40,7 @@ export function UpsertExpenseDialog({ onUpserted, initialData }: Props) {
   const { closeDialog } = useContext(DialogContext)
   const { showToast } = useContext(ToastContext)
   const [tags, setTags] = useState<Tag[]>([])
+  const [isFixed, setFixed] = useState(false)
   const suggestions = categories.map(({ id, title }) => ({ id, text: title }))
 
   const initialErrors = {
@@ -92,6 +93,7 @@ export function UpsertExpenseDialog({ onUpserted, initialData }: Props) {
     if (initialData) {
       data.set('id', initialData.id)
     }
+    data.set('isFixed', Boolean(isFixed).toString())
     data.set('categories', JSON.stringify(tags))
     fetcher.submit(data, { method: 'put', action: '/expenses' })
   }
@@ -125,8 +127,17 @@ export function UpsertExpenseDialog({ onUpserted, initialData }: Props) {
           defaultValue={initialData?.title}
         />
       </label>
+      <label className="col-span-4 flex flex-row-reverse justify-self-start gap-2">
+        {t('common.fixed-expense')}
+        <input
+          type="checkbox"
+          name="isFixed"
+          checked={isFixed}
+          onChange={(evt) => setFixed(evt.target.checked)}
+        />
+      </label>
       <label className="col-span-2">
-        {t('common.amount')}
+        {isFixed ? t('common.amount-per-month') : t('common.amount')}
         <CurrencyInput
           required
           name="amount"
