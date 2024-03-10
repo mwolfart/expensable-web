@@ -40,7 +40,6 @@ export type AddExpenseFormErrors = {
   categories?: string
   installments?: string
   message?: string
-  isFixed?: string
 }
 
 export type ExpenseFilters = {
