@@ -1,6 +1,10 @@
 export const formatDate = (date: Date) =>
   date.toISOString().substring(0, 10).split('-').reverse().join('/')
 
+export const isDateValid = (value?: string) => {
+  return typeof value === 'string' && !isNaN(Date.parse(value))
+}
+
 export const getMonthName = (month: number) => {
   switch (month) {
     case 0:
@@ -8,7 +12,7 @@ export const getMonthName = (month: number) => {
     case 1:
       return 'February'
     case 2:
-      return 'Marcho'
+      return 'March'
     case 3:
       return 'April'
     case 4:

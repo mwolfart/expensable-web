@@ -1,7 +1,9 @@
 import type {
   CategoriesOnExpense,
+  Category,
   Expense,
   ExpensesInTransaction,
+  FixedExpense,
   Transaction,
 } from '@prisma/client'
 
@@ -67,4 +69,21 @@ export type FetcherResponse = {
   method?: string
   error?: string
   errors?: object
+}
+
+export type FixedExpenseUpdate = Omit<
+  FixedExpense,
+  'isParent' | 'parentExpenseId' | 'amount'
+> & {
+  varyingCosts: boolean
+  amountPerMonth: number[]
+  amount: number
+  parentExpenseId?: string
+}
+
+export type FixedExpenseCreate = Omit<FixedExpenseUpdate, 'id'>
+
+export type FixedExpenseWithDetails = Omit<FixedExpense, 'categoryId'> & {
+  category: Category | null
+  childExpenses: FixedExpense[]
 }

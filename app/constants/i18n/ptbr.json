@@ -78,9 +78,10 @@
     },
     "home": {
         "logged-in-as": "Logado como {user}",
-        "expenses": "Despesas",
+        "expenses": "Despesas Variáveis",
+        "fixed": "Despesas Fixas",
         "categories": "Categorias",
-        "transactions": "Transações",
+        "transactions": "Notas Fiscais",
         "dashboard": "Painel de Resumos"
     },
     "category": {
@@ -100,15 +101,16 @@
         "add": "Nova despesa",
         "created": "Despesa criada com sucesso!",
         "deleted": "Despesa excluída com sucesso!",
-        "saved": "Despesa salva com sucesso!"
+        "saved": "Despesa salva com sucesso!",
+        "remaining-items": "{value} meses remanescentes"
     },
     "transactions": {
-        "try-adding": "Tente adicionar uma transação primeiro",
-        "add": "Nova transação",
-        "created": "Transação criada com sucesso!",
-        "deleted": "Transação excluída com sucesso!",
-        "saved": "Transação salva com sucesso!",
-        "new-expense": "Nova transação",
+        "try-adding": "Tente adicionar uma nota fiscal primeiro",
+        "add": "Nova nota fiscal",
+        "created": "Nota fiscal criada com sucesso!",
+        "deleted": "Nota fiscal excluída com sucesso!",
+        "saved": "Nota fiscal salva com sucesso!",
+        "new-expense": "Novo item",
         "cancel-all": "Cancelar todos"
     },
     "dashboard": {

@@ -1,4 +1,5 @@
 import * as yup from 'yup'
+import { isDateValid, isFixedExpenseAmountPerMonthValid } from './helpers'
 
 export enum ErrorCodes {
   EMAIL_INVALID = 'invalid_email',
@@ -18,6 +19,12 @@ export enum ErrorCodes {
   CATEGORY_DUPLICATE = 'duplicate_category',
   CATEGORY_EMPTY = 'empty_category',
   INVALID_ID = 'invalid_id',
+  AMOUNT_INVALID = 'amount_invalid',
+  AMOUNT_PER_MONTH_INVALID = 'amount_per_month_invalid',
+  AMOUNT_PER_MONTH_REQUIRED = 'amount_per_month_invalid',
+  AMOUNT_OF_MONTHS_INVALID = 'amount_of_month_invalid',
+  AMOUNT_OF_MONTHS_REQUIRED = 'amount_of_month_invalid',
+  CHANGE_VALUES_INVALID = 'change_values_invalid',
   BAD_CATEGORY_DATA = 'bad_category_data',
   BAD_DATE_FORMAT = 'bad_date_format',
   BAD_FORMAT = 'bad_format',
@@ -69,4 +76,39 @@ export const userSchema = yup.object({
 export const loginSchema = yup.object({
   email: emailSchema,
   password: yup.string().required(ErrorCodes.PASSWORD_REQUIRED),
+})
+
+export const fixedExpenseSchema = yup.object().shape({
+  id: yup.string(),
+  name: yup.string().required(),
+  startDate: yup
+    .string()
+    .test('is-date-valid', ErrorCodes.BAD_DATE_FORMAT, isDateValid)
+    .required(),
+  changesValues: yup
+    .string()
+    .oneOf(['1', '0'], ErrorCodes.CHANGE_VALUES_INVALID),
+  amount: yup.string().when('changesValues', {
+    is: '0',
+    then: (schema) =>
+      schema
+        .matches(/^\d+(\.\d+)?$/, ErrorCodes.AMOUNT_INVALID)
+        .required(ErrorCodes.AMOUNT_REQUIRED),
+  }),
+  amountPerMonth: yup.string().when('changesValues', {
+    is: '1',
+    then: (schema) =>
+      schema
+        .test(
+          'is-apm-valid',
+          ErrorCodes.AMOUNT_PER_MONTH_INVALID,
+          isFixedExpenseAmountPerMonthValid,
+        )
+        .required(ErrorCodes.AMOUNT_PER_MONTH_REQUIRED),
+  }),
+  amountOfMonths: yup
+    .string()
+    .matches(/^\d$/, ErrorCodes.AMOUNT_OF_MONTHS_INVALID)
+    .required(ErrorCodes.AMOUNT_OF_MONTHS_REQUIRED),
+  categoryId: yup.string(),
 })

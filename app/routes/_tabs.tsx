@@ -7,6 +7,7 @@ import { getLoggedUserProfile } from '~/infra/session.server'
 import { MdOutlineCategory } from 'react-icons/md'
 import { GoCreditCard, GoGraph } from 'react-icons/go'
 import { AiOutlineShoppingCart } from 'react-icons/ai'
+import { FaMoneyBillTransfer } from 'react-icons/fa6'
 import { CategoryProvider } from '~/presentation/providers/category'
 import { ToastProvider } from '~/presentation/providers/toast'
 import { useContext } from 'react'
@@ -65,6 +66,10 @@ export default function Index() {
                 <a className={getTabClass('/expenses')} href="/expenses">
                   <div className="hidden md:block">{t('home.expenses')}</div>
                   <GoCreditCard className="block md:hidden" size={24} />
+                </a>
+                <a className={getTabClass('/fixed')} href="/fixed">
+                  <div className="hidden md:block">{t('home.fixed')}</div>
+                  <FaMoneyBillTransfer className="block md:hidden" size={24} />
                 </a>
                 <a className={getTabClass('/categories')} href="/categories">
                   <div className="hidden md:block">{t('home.categories')}</div>

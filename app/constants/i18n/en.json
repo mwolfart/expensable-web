@@ -78,9 +78,10 @@
     },
     "home": {
         "logged-in-as": "Logged in as {user}",
-        "expenses": "Expenses",
+        "expenses": "Varying Expenses",
+        "fixed": "Fixed expenses",
         "categories": "Categories",
-        "transactions": "Transactions",
+        "transactions": "Receipts",
         "dashboard": "Dashboard"
     },
     "category": {
@@ -100,15 +101,16 @@
         "add": "New expense",
         "created": "Expense created successfully!",
         "deleted": "Expense deleted successfully!",
-        "saved": "Expense saved successfully!"
+        "saved": "Expense saved successfully!",
+        "remaining-items": "{value} remaining entries"
     },
     "transactions": {
-        "try-adding": "Try adding a transaction first",
-        "add": "New transaction",
-        "created": "Transaction created successfully!",
-        "deleted": "Transaction deleted successfully!",
-        "saved": "Transaction saved successfully!",
-        "new-expense": "New expense",
+        "try-adding": "Try adding a receipt first",
+        "add": "New receipt",
+        "created": "Receipt created successfully!",
+        "deleted": "Receipt deleted successfully!",
+        "saved": "Receipt saved successfully!",
+        "new-expense": "New item",
         "cancel-all": "Cancel all"
     },
     "dashboard": {
