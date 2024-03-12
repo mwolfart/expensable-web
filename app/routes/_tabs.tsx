@@ -67,7 +67,10 @@ export default function Index() {
                   <div className="hidden md:block">{t('home.expenses')}</div>
                   <GoCreditCard className="block md:hidden" size={24} />
                 </a>
-                <a className={getTabClass('/fixed')} href="/fixed">
+                <a
+                  className={getTabClass('/fixed-expenses')}
+                  href="/fixed-expenses"
+                >
                   <div className="hidden md:block">{t('home.fixed')}</div>
                   <FaMoneyBillTransfer className="block md:hidden" size={24} />
                 </a>

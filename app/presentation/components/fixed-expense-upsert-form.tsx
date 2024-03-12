@@ -180,7 +180,7 @@ export function UpsertFixedExpenseForm({
           ))}
         </select>
       </label>
-      <label className="flex flex-row-reverse items-center lg:col-span-2 2xl:col-span-4">
+      <label className="flex flex-row-reverse items-center justify-start 2xl:col-span-2">
         {t('expenses.varying-amounts')}
         <input
           type="checkbox"
@@ -190,13 +190,14 @@ export function UpsertFixedExpenseForm({
         />
       </label>
       {values.varyingCosts && (
-        <div className="flex flex-col gap-4">
+        <div className="grid gap-4 md:grid-col-2 lg:grid-col-3 2xl:grid-col-4 lg:col-span-2 2xl:col-span-4">
           {values.amountPerMonths.map((v, idx) => (
-            <div className="flex gap-2" key={idx}>
+            <div className="flex gap-4 items-center" key={idx}>
               <label>{getDateLabel(idx)}</label>
               <input
                 type="number"
                 value={v}
+                className="input"
                 onChange={(e) => {
                   const newValues = [...values.amountPerMonths]
                   newValues[idx] = parseFloat(e.target.value)
