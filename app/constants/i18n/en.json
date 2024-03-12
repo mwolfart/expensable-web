@@ -38,6 +38,7 @@
         "category": "Category",
         "n-more": "{value} more",
         "n-items": "{value} items",
+        "number-of-months": "Number of months",
         "optional-field": "{field} (optional)",
         "each": "{value}/ea",
         "select-option": "Select an option",
@@ -102,7 +103,12 @@
         "created": "Expense created successfully!",
         "deleted": "Expense deleted successfully!",
         "saved": "Expense saved successfully!",
-        "remaining-items": "{value} remaining entries"
+        "remaining-items": "{value} remaining entries",
+        "varying-amounts": "This expense has varying amounts per month",
+        "add-months": "Add month values",
+        "errors": {
+            "unknown": "An unknown error occured. Please refresh the page and try again."
+        }
     },
     "transactions": {
         "try-adding": "Try adding a receipt first",

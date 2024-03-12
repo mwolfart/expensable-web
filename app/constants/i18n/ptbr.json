@@ -34,10 +34,11 @@
         "previous-month": "Mês anterior",
         "next-month": "Mês seguinte",
         "page-n": "Página {number}",
-        "expenses": "Despesar",
+        "expenses": "Despesas",
         "category": "Categoria",
         "n-more": "Mais {value}",
         "n-items": "{value} itens",
+        "number-of-months": "Número de meses",
         "optional-field": "{field} (opcional)",
         "each": "{value}/cada",
         "select-option": "Selecionar uma opção",
@@ -102,7 +103,12 @@
         "created": "Despesa criada com sucesso!",
         "deleted": "Despesa excluída com sucesso!",
         "saved": "Despesa salva com sucesso!",
-        "remaining-items": "{value} meses remanescentes"
+        "remaining-items": "{value} meses remanescentes",
+        "varying-amounts": "Esta despesa possui valores variáveis durante os meses",
+        "add-months": "Adicionar meses e valores",
+        "errors": {
+            "unknown": "Um erro desconhecido ocorreu. Por favor atualize a página e tente novamente."
+        }
     },
     "transactions": {
         "try-adding": "Tente adicionar uma nota fiscal primeiro",
