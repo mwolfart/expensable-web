@@ -4,7 +4,7 @@ import { UpsertFixedExpenseForm } from '~/presentation/components/fixed-expense-
 export default function FixedExpenseNew() {
   const navigate = useNavigate()
   const onGoBack = () => {
-    navigate('/fixed')
+    navigate('/fixed-expenses')
   }
   return (
     <div className="px-8">

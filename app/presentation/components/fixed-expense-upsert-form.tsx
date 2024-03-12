@@ -9,7 +9,7 @@ import { useFormik } from 'formik'
 import { cxFormInput, getMonthName } from '~/utils/helpers'
 import { CategoryContext } from '../providers/category'
 import { CurrencyInput } from './currency-input'
-import yup from 'yup'
+import * as yup from 'yup'
 
 type Props = {
   onGoBack: () => unknown
@@ -88,7 +88,7 @@ export function UpsertFixedExpenseForm({
         if (initialData) {
           data.set('id', initialData.id)
         }
-        fetcher.submit(data, { method: 'put', action: '/fixed' })
+        fetcher.submit(data, { method: 'put', action: '/fixed-expenses' })
       },
     })
 
@@ -125,7 +125,7 @@ export function UpsertFixedExpenseForm({
 
   return (
     <Form
-      className="grid h-full grid-rows-[min-content] gap-8 lg:grid-cols-2 pb-8"
+      className="grid h-full grid-rows-[min-content] gap-8 lg:grid-cols-2 2xl:grid-cols-4 pb-8"
       onSubmit={handleSubmit}
     >
       <label>
@@ -155,6 +155,7 @@ export function UpsertFixedExpenseForm({
           value={values.amountOfMonths}
           name="amountOfMonths"
           onChange={(e) => onChangeAmountOfMonths(parseInt(e.target.value))}
+          className="input bg-white w-full"
         >
           {[...Array(20).keys()].map((i) => (
             <option key={i} value={i + 1}>
@@ -179,7 +180,7 @@ export function UpsertFixedExpenseForm({
           ))}
         </select>
       </label>
-      <label className="flex flex-row-reverse">
+      <label className="flex flex-row-reverse items-center lg:col-span-2 2xl:col-span-4">
         {t('expenses.varying-amounts')}
         <input
           type="checkbox"
@@ -224,7 +225,7 @@ export function UpsertFixedExpenseForm({
           </label>
         </>
       )}
-      <div className="flex w-full flex-col gap-4 lg:col-span-2">
+      <div className="flex w-full flex-col gap-4 lg:col-span-2 2xl:col-span-4">
         <button className="btn-primary btn w-full">{t('common.submit')}</button>
         <button
           type="button"

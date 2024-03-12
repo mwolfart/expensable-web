@@ -42,6 +42,22 @@ export const countUserFixedExpenses = (id: string) =>
     },
   })
 
+export const getUserFixedExpenseById = (userId: string, expenseId: string) =>
+  prisma.fixedExpense.findUnique({
+    include: {
+      category: true,
+      childExpenses: {
+        orderBy: {
+          date: 'asc',
+        },
+      },
+    },
+    where: {
+      userId,
+      id: expenseId,
+    },
+  })
+
 export const createFixedExpense = async (
   expense: FixedExpenseCreate,
   isChild?: boolean,
