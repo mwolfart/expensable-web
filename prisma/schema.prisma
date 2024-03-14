@@ -67,6 +67,7 @@ model FixedExpense {
   date            DateTime
   amountOfMonths  Int
   isParent        Boolean
+  varyingCosts    Boolean
   parentExpenseId String? @db.ObjectId
   parentExpense   FixedExpense? @relation("installmentExpenses", fields: [parentExpenseId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   childExpenses   FixedExpense[] @relation("installmentExpenses") 

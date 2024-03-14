@@ -1,4 +1,4 @@
-import type { FetcherResponse, FixedExpenseWithDetails } from '~/utils/types'
+import type { FetcherResponse } from '~/utils/types'
 import type { SerializeFrom } from '@remix-run/server-runtime'
 import type { FixedExpense } from '@prisma/client'
 import { useContext, useEffect } from 'react'
@@ -13,8 +13,8 @@ import * as yup from 'yup'
 
 type Props = {
   onGoBack: () => unknown
-  initialData?: SerializeFrom<FixedExpenseWithDetails>
-  monthExpenses?: SerializeFrom<FixedExpense[]>
+  initialData?: SerializeFrom<FixedExpense> | null
+  monthExpenses?: SerializeFrom<FixedExpense[]> | null
 }
 
 const schema = yup.object().shape({
@@ -33,7 +33,7 @@ const schema = yup.object().shape({
       then: (schema) => schema.required(),
     })
     .required(),
-  amountPerMonths: yup.array(yup.number()).when('varyingCosts', {
+  amountPerMonth: yup.array(yup.number()).when('varyingCosts', {
     is: true,
     then: (schema) => schema.required(),
   }),
@@ -61,8 +61,12 @@ export function UpsertFixedExpenseForm({
       initialValues: initialData
         ? {
             ...initialData,
-            categoryId: initialData.category?.id,
-            amountPerMonths: monthExpenses?.map((e) => e.amount),
+            date: new Date(initialData.date).toISOString().substring(0, 10),
+            categoryId: initialData.categoryId,
+            amountPerMonth: [
+              initialData.amount,
+              ...(monthExpenses?.map((e) => e.amount) ?? []),
+            ],
           }
         : {
             title: '',
@@ -70,7 +74,7 @@ export function UpsertFixedExpenseForm({
             varyingCosts: false,
             amount: 0,
             amountOfMonths: 1,
-            amountPerMonths: [0],
+            amountPerMonth: [0],
             categoryId: undefined,
           },
       validationSchema: schema,
@@ -84,7 +88,7 @@ export function UpsertFixedExpenseForm({
         data.set('amountOfMonths', values.amountOfMonths.toString())
         data.set('categoryId', values.categoryId || '')
         data.set('varyingCosts', values.varyingCosts ? '1' : '0')
-        data.set('amountsPerMonths', `[${values.amountPerMonths?.join(',')}]`)
+        data.set('amountPerMonth', `[${values.amountPerMonth?.join(',')}]`)
         if (initialData) {
           data.set('id', initialData.id)
         }
@@ -108,18 +112,18 @@ export function UpsertFixedExpenseForm({
     const higherAmount = value > values.amountOfMonths
     setFieldValue('amountOfMonths', value)
 
-    if (!values.varyingCosts || !values.amountPerMonths) {
+    if (!values.varyingCosts || !values.amountPerMonth) {
       return
     }
 
     if (higherAmount) {
-      const difference = value - values.amountPerMonths.length
-      setFieldValue('amountPerMonths', [
-        ...values.amountPerMonths,
+      const difference = value - values.amountPerMonth.length
+      setFieldValue('amountPerMonth', [
+        ...values.amountPerMonth,
         ...Array.from(Array(difference)).fill(0),
       ])
     } else {
-      setFieldValue('amountPerMonths', values.amountPerMonths.slice(0, value))
+      setFieldValue('amountPerMonth', values.amountPerMonth.slice(0, value))
     }
   }
 
@@ -167,7 +171,7 @@ export function UpsertFixedExpenseForm({
       <label>
         {t('common.category')}
         <select
-          value={values.categoryId}
+          value={values.categoryId ?? undefined}
           onChange={(e) => setFieldValue('categoryId', e.target.value)}
           name="categoryId"
           className="input bg-white w-full"
@@ -191,19 +195,23 @@ export function UpsertFixedExpenseForm({
       </label>
       {values.varyingCosts && (
         <div className="grid grid-cols-2-grow-right gap-4 lg:col-span-2 2xl:col-span-4 items-center">
-          {values.amountPerMonths.map((v, idx) => (
+          {values.amountPerMonth?.map((v, idx) => (
             <>
-              <label className="whitespace-nowrap">
+              <label className="whitespace-nowrap" key={`label-${idx}`}>
                 {getDateLabel(idx, values.date)}
               </label>
-              <input
-                type="number"
-                value={v}
+              <CurrencyInput
+                value={v?.toString()}
+                key={`input-${idx}`}
                 className="input"
                 onChange={(e) => {
-                  const newValues = [...values.amountPerMonths]
-                  newValues[idx] = parseFloat(e.target.value)
-                  setFieldValue('amountPerMonths', newValues)
+                  if (values.amountPerMonth) {
+                    const newValues = [...values.amountPerMonth]
+                    newValues[idx] = parseFloat(
+                      e.target.value.replace(/[^0-9.]/g, ''),
+                    )
+                    setFieldValue('amountPerMonth', newValues)
+                  }
                 }}
               />
             </>

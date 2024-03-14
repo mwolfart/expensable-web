@@ -76,7 +76,6 @@ export const createFixedExpense = async (
   } = expense
   const dateObject = new Date(date)
 
-  // Root expense
   const expenseRes = await prisma.fixedExpense.create({
     data: {
       ...rest,
@@ -84,21 +83,19 @@ export const createFixedExpense = async (
       date: dateObject,
       isParent: typeof isParent === 'undefined' ? true : isParent,
       amount: varyingCosts ? amountPerMonth[0] : amount,
+      varyingCosts,
     },
   })
 
-  console.log(dateObject)
-  // Children
   if (typeof isParent === 'undefined' || isParent) {
-    for (let i = 0; i < amountOfMonths; i++) {
+    for (let i = 0; i < amountOfMonths - 1; i++) {
       dateObject.setMonth(dateObject.getMonth() + 1, 1)
       dateObject.setHours(0, 0, 0)
-      console.log(dateObject)
       await createFixedExpense(
         {
           ...expense,
           date: new Date(dateObject),
-          amountPerMonth: amountPerMonth?.slice(1),
+          amountPerMonth: amountPerMonth?.slice(i + 1),
           parentExpenseId: expenseRes.id,
         },
         false,
@@ -120,7 +117,6 @@ export const updateFixedExpense = async (expense: FixedExpenseUpdate) => {
   } = expense
   const dateObject = new Date(date)
 
-  // Root expense
   const expenseRes = await prisma.fixedExpense.update({
     where: {
       id,
@@ -134,7 +130,6 @@ export const updateFixedExpense = async (expense: FixedExpenseUpdate) => {
     },
   })
 
-  // Children
   await prisma.fixedExpense.deleteMany({
     where: {
       parentExpenseId: id,
@@ -146,9 +141,12 @@ export const updateFixedExpense = async (expense: FixedExpenseUpdate) => {
     dateObject.setHours(0, 0, 0)
     await createFixedExpense(
       {
-        ...expense,
+        ...rest,
+        amount,
+        amountOfMonths,
+        varyingCosts,
         date: new Date(dateObject),
-        amountPerMonth: amountPerMonth?.slice(1),
+        amountPerMonth: amountPerMonth?.slice(i + 1),
         parentExpenseId: expenseRes.id,
       },
       false,

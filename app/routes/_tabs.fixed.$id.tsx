@@ -1,5 +1,5 @@
 import type { LoaderFunctionArgs } from '@remix-run/server-runtime'
-import { useNavigate } from '@remix-run/react'
+import { useLoaderData, useNavigate } from '@remix-run/react'
 import { json } from '@remix-run/server-runtime'
 import { getUserFixedExpenseById } from '~/infra/models/fixed-expense.server'
 import { getLoggedUserId } from '~/infra/session.server'
@@ -11,20 +11,28 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   if (userId && expenseId) {
     const expense = await getUserFixedExpenseById(userId, expenseId)
     if (expense) {
-      return json({ expense })
+      const { childExpenses, category, ...mainExpense } = expense
+      return json({ expense: mainExpense, childExpenses })
     }
   }
-  return json({ expense: null })
+  return json({ expense: null, childExpenses: null })
 }
 
-export default function FixedExpenseNew() {
+export default function FixedExpenseId() {
   const navigate = useNavigate()
+  const { expense, childExpenses } = useLoaderData<typeof loader>()
+
   const onGoBack = () => {
     navigate('/fixed-expenses')
   }
+
   return (
     <div className="px-8">
-      <UpsertFixedExpenseForm onGoBack={onGoBack} />
+      <UpsertFixedExpenseForm
+        onGoBack={onGoBack}
+        initialData={expense}
+        monthExpenses={childExpenses}
+      />
     </div>
   )
 }
