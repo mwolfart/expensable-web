@@ -555,5 +555,21 @@ export const updateExpense = async (
   return expenseRes
 }
 
-export const deleteExpense = (id: string) =>
-  prisma.expense.delete({ where: { id } })
+export const deleteExpense = async (id: string) => {
+  const expense = await prisma.expense.findUnique({
+    where: {
+      id,
+    },
+  })
+  if (!expense) {
+    return
+  }
+  if (expense.installments > 0) {
+    await prisma.expense.deleteMany({
+      where: {
+        parentExpenseId: id,
+      },
+    })
+  }
+  return prisma.expense.delete({ where: { id } })
+}
