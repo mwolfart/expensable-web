@@ -80,7 +80,7 @@ export const loginSchema = yup.object({
 
 export const fixedExpenseSchema = yup.object().shape({
   id: yup.string(),
-  name: yup.string().required(),
+  title: yup.string().required(),
   startDate: yup
     .string()
     .test('is-date-valid', ErrorCodes.BAD_DATE_FORMAT, isDateValid)

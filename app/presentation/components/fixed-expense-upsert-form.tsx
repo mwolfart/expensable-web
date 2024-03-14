@@ -39,10 +39,10 @@ const schema = yup.object().shape({
   }),
 })
 
-const getDateLabel = (idx: number) => {
-  const today = new Date()
-  const month = getMonthName((today.getMonth() + idx) % 12)
-  const year = today.getFullYear() + Math.floor(today.getMonth() + idx / 12)
+const getDateLabel = (idx: number, dateStr?: string) => {
+  const today = dateStr ? new Date(dateStr) : new Date()
+  const month = getMonthName((today.getMonth() + idx + 1) % 12)
+  const year = today.getFullYear() + Math.floor((today.getMonth() + idx) / 12)
   return `${month} ${year}`
 }
 
@@ -180,7 +180,7 @@ export function UpsertFixedExpenseForm({
           ))}
         </select>
       </label>
-      <label className="flex flex-row-reverse items-center justify-start 2xl:col-span-2">
+      <label className="flex flex-row-reverse items-center justify-end 2xl:col-span-2">
         {t('expenses.varying-amounts')}
         <input
           type="checkbox"
@@ -190,10 +190,12 @@ export function UpsertFixedExpenseForm({
         />
       </label>
       {values.varyingCosts && (
-        <div className="grid gap-4 md:grid-col-2 lg:grid-col-3 2xl:grid-col-4 lg:col-span-2 2xl:col-span-4">
+        <div className="grid grid-cols-2-grow-right gap-4 lg:col-span-2 2xl:col-span-4 items-center">
           {values.amountPerMonths.map((v, idx) => (
-            <div className="flex gap-4 items-center" key={idx}>
-              <label>{getDateLabel(idx)}</label>
+            <>
+              <label className="whitespace-nowrap">
+                {getDateLabel(idx, values.date)}
+              </label>
               <input
                 type="number"
                 value={v}
@@ -204,27 +206,25 @@ export function UpsertFixedExpenseForm({
                   setFieldValue('amountPerMonths', newValues)
                 }}
               />
-            </div>
+            </>
           ))}
         </div>
       )}
       {!values.varyingCosts && (
-        <>
-          <label>
-            {t('common.amount')}
-            <CurrencyInput
-              className="input w-full bg-white"
-              name="amount"
-              value={values.amount.toString()}
-              onChange={(e) =>
-                setFieldValue(
-                  'amount',
-                  parseFloat(e.target.value.replace(/[^0-9.]/g, '')),
-                )
-              }
-            />
-          </label>
-        </>
+        <label className="2xl:col-span-4">
+          {t('common.amount')}
+          <CurrencyInput
+            className="input w-full bg-white"
+            name="amount"
+            value={values.amount.toString()}
+            onChange={(e) =>
+              setFieldValue(
+                'amount',
+                parseFloat(e.target.value.replace(/[^0-9.]/g, '')),
+              )
+            }
+          />
+        </label>
       )}
       <div className="flex w-full flex-col gap-4 lg:col-span-2 2xl:col-span-4">
         <button className="btn-primary btn w-full">{t('common.submit')}</button>

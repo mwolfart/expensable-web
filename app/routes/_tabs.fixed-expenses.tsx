@@ -51,8 +51,9 @@ export async function action({ request }: ActionFunctionArgs): Promise<
   const res = { method }
   if (method === 'PUT') {
     const formData = await request.formData()
+    const dataObj = Object.fromEntries(formData.entries())
     try {
-      fixedExpenseSchema.validateSync(formData, { abortEarly: false })
+      fixedExpenseSchema.validateSync(dataObj, { abortEarly: false })
     } catch (e) {
       const vErr = e as ValidationError
       const errorObject = vErr.inner.reduce(
@@ -69,7 +70,7 @@ export async function action({ request }: ActionFunctionArgs): Promise<
     }
 
     const id = formData.get('id')
-    const name = formData.get('name') as string
+    const title = formData.get('title') as string
     const startDate = new Date(Date.parse(formData.get('startDate') as string))
     const varyingCosts = formData.get('varyingCosts') === '1'
     const amount = parseFloat(formData.get('amount') as string)
@@ -86,7 +87,7 @@ export async function action({ request }: ActionFunctionArgs): Promise<
       if (typeof id === 'string' && id !== '') {
         await updateFixedExpense({
           id,
-          title: name,
+          title,
           date: startDate,
           varyingCosts,
           amount,
@@ -97,7 +98,7 @@ export async function action({ request }: ActionFunctionArgs): Promise<
         })
       } else {
         await createFixedExpense({
-          title: name,
+          title,
           date: startDate,
           varyingCosts,
           amount,
@@ -108,6 +109,7 @@ export async function action({ request }: ActionFunctionArgs): Promise<
         })
       }
     } catch (e) {
+      console.log(e)
       return json(
         { success: false, message: JSON.stringify(e), ...res },
         { status: 500 },

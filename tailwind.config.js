@@ -47,6 +47,7 @@ module.exports = {
       },
       gridTemplateColumns: {
         '2-grow-left': 'minmax(0, 1fr) min-content',
+        '2-grow-right': 'min-content minmax(0, 1fr)',
         'transaction-expense-table': 'repeat(4, minmax(0, 1fr)) min-content 128px',
         'subgrid': 'subgrid',
         '4-shrink': 'repeat(4, min-content)',

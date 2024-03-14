@@ -10,7 +10,8 @@ export function CurrencyInput({ value, onChange, ...props }: Props) {
 
   useEffect(() => {
     if (value) {
-      setInnerValue(value)
+      const parsed = parseFloat(value.replace(/[^0-9.]/g, ''))
+      setInnerValue(`$${parsed.toFixed(2)}`)
     }
   }, [value])
 
