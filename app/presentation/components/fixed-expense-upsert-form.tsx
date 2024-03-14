@@ -235,7 +235,9 @@ export function UpsertFixedExpenseForm({
         </label>
       )}
       <div className="flex w-full flex-col gap-4 lg:col-span-2 2xl:col-span-4">
-        <button className="btn-primary btn w-full">{t('common.submit')}</button>
+        <button type="submit" className="btn-primary btn w-full">
+          {t('common.submit')}
+        </button>
         <button
           type="button"
           className="btn-outline btn-primary btn w-full"
