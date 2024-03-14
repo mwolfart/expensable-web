@@ -176,7 +176,7 @@ export function UpsertFixedExpenseForm({
           name="categoryId"
           className="input bg-white w-full"
         >
-          <option value={undefined}>{t('common.select-option')}</option>
+          <option value="">{t('common.select-option')}</option>
           {categories.map(({ id, title }) => (
             <option value={id} key={id}>
               {title}
