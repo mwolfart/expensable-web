@@ -38,20 +38,26 @@ export function FixedExpenseItem({ expense }: Props) {
     navigate(`/fixed/${expense.id}`)
   }
 
-  const remainingItems = 5
+  const remainingItems = upcomingExpenses.length
 
   return (
-    <div className="flex items-center gap-2 bg-foreground py-4">
-      <div className="flex flex-col gap-2">
+    <div className="flex items-center gap-4 bg-foreground py-4">
+      <div className="flex flex-col gap-1">
         <p className="text-md font-semibold">{expense.title}</p>
-        <p>{t('expenses.remaining-items', { value: remainingItems })}</p>
-        {expense.category && <span>{expense.category.title}</span>}
+        <small className="pb-2">
+          {t('expenses.remaining-items', { value: remainingItems })}
+        </small>
+        {expense.category && (
+          <span className="inline rounded bg-light-grey p-1 text-xs font-semibold uppercase w-fit">
+            {expense.category.title}
+          </span>
+        )}
       </div>
-      <div className="flex flex-row gap-2 sm:justify-end">
+      <div className="flex flex-row flex-grow gap-2 sm:justify-end">
         {upcomingExpenses.map(({ id, amount, date }) => (
           <div
             key={id}
-            className="inline rounded bg-light-grey p-1 text-xs font-semibold uppercase flex flex-col gap-1"
+            className="inline rounded border-black border p-1 text-xs text-grey font-semibold uppercase flex flex-col gap-1"
           >
             <span>{formatCurrency(amount)}</span>
             <span>{formatDate(new Date(date)).substring(3)}</span>

@@ -6,14 +6,17 @@ export const getUserFixedExpenses = (
   id: string,
   offset?: number,
   limit?: number,
-) =>
-  prisma.fixedExpense.findMany({
+) => {
+  const currentMonth = new Date()
+  currentMonth.setDate(1)
+  currentMonth.setHours(0, 0, 0, 0)
+  return prisma.fixedExpense.findMany({
     include: {
       category: true,
       childExpenses: {
         where: {
           date: {
-            gte: new Date(),
+            gte: currentMonth,
           },
         },
         orderBy: {
@@ -32,6 +35,7 @@ export const getUserFixedExpenses = (
       date: 'asc',
     },
   })
+}
 
 // TODO: Prisma does not currently support counting along with fetching. Change this in the future to use only one query
 export const countUserFixedExpenses = (id: string) =>
@@ -60,34 +64,44 @@ export const getUserFixedExpenseById = (userId: string, expenseId: string) =>
 
 export const createFixedExpense = async (
   expense: FixedExpenseCreate,
-  isChild?: boolean,
+  isParent?: boolean,
 ) => {
-  const { varyingCosts, amount, amountPerMonth, amountOfMonths, date } = expense
+  const {
+    varyingCosts,
+    amount,
+    amountPerMonth,
+    amountOfMonths,
+    date,
+    ...rest
+  } = expense
   const dateObject = new Date(date)
 
   // Root expense
   const expenseRes = await prisma.fixedExpense.create({
     data: {
-      ...expense,
+      ...rest,
+      amountOfMonths,
       date: dateObject,
-      isParent: isChild || true,
+      isParent: typeof isParent === 'undefined' ? true : isParent,
       amount: varyingCosts ? amountPerMonth[0] : amount,
     },
   })
 
+  console.log(dateObject)
   // Children
-  if (!isChild) {
+  if (typeof isParent === 'undefined' || isParent) {
     for (let i = 0; i < amountOfMonths; i++) {
       dateObject.setMonth(dateObject.getMonth() + 1, 1)
       dateObject.setHours(0, 0, 0)
+      console.log(dateObject)
       await createFixedExpense(
         {
           ...expense,
           date: new Date(dateObject),
-          amountPerMonth: amountPerMonth.slice(1),
+          amountPerMonth: amountPerMonth?.slice(1),
           parentExpenseId: expenseRes.id,
         },
-        true,
+        false,
       )
     }
   }
@@ -95,8 +109,15 @@ export const createFixedExpense = async (
 }
 
 export const updateFixedExpense = async (expense: FixedExpenseUpdate) => {
-  const { id, varyingCosts, amount, amountPerMonth, amountOfMonths, date } =
-    expense
+  const {
+    id,
+    varyingCosts,
+    amount,
+    amountPerMonth,
+    amountOfMonths,
+    date,
+    ...rest
+  } = expense
   const dateObject = new Date(date)
 
   // Root expense
@@ -105,7 +126,8 @@ export const updateFixedExpense = async (expense: FixedExpenseUpdate) => {
       id,
     },
     data: {
-      ...expense,
+      ...rest,
+      amountOfMonths,
       date: dateObject,
       isParent: true,
       amount: varyingCosts ? amountPerMonth[0] : amount,
@@ -119,17 +141,17 @@ export const updateFixedExpense = async (expense: FixedExpenseUpdate) => {
     },
   })
 
-  for (let i = 0; i < amountOfMonths; i++) {
+  for (let i = 0; i < amountOfMonths - 1; i++) {
     dateObject.setMonth(dateObject.getMonth() + 1, 1)
     dateObject.setHours(0, 0, 0)
     await createFixedExpense(
       {
         ...expense,
         date: new Date(dateObject),
-        amountPerMonth: amountPerMonth.slice(1),
+        amountPerMonth: amountPerMonth?.slice(1),
         parentExpenseId: expenseRes.id,
       },
-      true,
+      false,
     )
   }
   return expenseRes
