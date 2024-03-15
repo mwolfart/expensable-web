@@ -6,10 +6,10 @@ import { useTranslations } from 'use-intl'
 import { ToastContext, ToastType } from '../../../providers/toast'
 import { Form, useFetcher } from '@remix-run/react'
 import { useFormik } from 'formik'
-import { cxFormInput, fixedExpenseSchema, getMonthName } from '~/utils/helpers'
+import { cxFormInput, getMonthName } from '~/utils/helpers'
 import { CategoryContext } from '../../../providers/category'
 import { CurrencyInput } from '../../ui/currency-input'
-import * as yup from 'yup'
+import { fixedExpenseSchema } from '~/utils/schemas/form'
 
 type Props = {
   onGoBack: () => unknown

@@ -1,5 +1,6 @@
 import * as yup from 'yup'
 import { ErrorCodes } from '../enum'
+import { isDateValid } from '../helpers'
 
 export const emailSchema = yup
   .string()
@@ -47,6 +48,17 @@ export const userSchema = yup.object({
 export const loginSchema = yup.object({
   email: emailSchema,
   password: yup.string().required(ErrorCodes.PASSWORD_REQUIRED),
+})
+
+export const expenseSchema = yup.object().shape({
+  name: yup.string().required(ErrorCodes.NAME_REQUIRED),
+  amount: yup.number().required(ErrorCodes.AMOUNT_REQUIRED),
+  unit: yup.number(),
+  date: yup
+    .string()
+    .test('is-date-valid', ErrorCodes.BAD_DATE_FORMAT, isDateValid)
+    .required(ErrorCodes.DATE_REQUIRED),
+  installments: yup.number().required(ErrorCodes.INSTALLMENTS_REQUIRED),
 })
 
 export const fixedExpenseSchema = yup.object().shape({

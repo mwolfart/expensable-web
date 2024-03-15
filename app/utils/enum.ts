@@ -24,5 +24,8 @@ export enum ErrorCodes {
   CHANGE_VALUES_INVALID = 'change_values_invalid',
   BAD_CATEGORY_DATA = 'bad_category_data',
   BAD_DATE_FORMAT = 'bad_date_format',
+  DATE_REQUIRED = 'date_required',
   BAD_FORMAT = 'bad_format',
+  INSTALLMENTS_REQUIRED = 'installments_required',
+  TOO_MANY_INSTALLMENTS = 'too_many_installments',
 }

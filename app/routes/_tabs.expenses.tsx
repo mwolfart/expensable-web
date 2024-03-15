@@ -3,8 +3,9 @@ import type {
   LoaderFunctionArgs,
   TypedResponse,
 } from '@remix-run/server-runtime'
-import { json } from '@remix-run/server-runtime'
+import type { ValidationError } from 'yup'
 import type { AddExpenseFormErrors } from '~/utils/types'
+import { json } from '@remix-run/server-runtime'
 import { useTranslations } from 'use-intl'
 import { AiOutlinePlus } from 'react-icons/ai'
 import {
@@ -44,8 +45,7 @@ import { PaginationLimitSelect } from '~/presentation/components/ui/pagination-l
 import { FilterButton } from '~/presentation/components/ui/filter-button'
 import { DataListContainer } from '~/presentation/components/layout/data-list-container'
 import { handleError } from '~/entry.server'
-
-const MAX_INSTALLMENTS = 36
+import { expenseSchema } from '~/utils/schemas/server'
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const userId = await getLoggedUserId(request)
@@ -107,59 +107,31 @@ export async function action({ request }: ActionFunctionArgs): Promise<
   const res = { method }
   if (method === 'PUT') {
     const formData = await request.formData()
+    const dataObj = Object.fromEntries(formData.entries())
+    try {
+      expenseSchema.validateSync(dataObj, { abortEarly: false })
+    } catch (e) {
+      const vErr = e as ValidationError
+      const errorObject = vErr.inner.reduce(
+        (acc, err) => ({ ...acc, [err.path || 'unknown']: err.errors[0] }),
+        {},
+      )
+      return json(
+        {
+          errors: errorObject,
+          ...res,
+        },
+        { status: 400 },
+      )
+    }
+
     const id = formData.get('id')
-    const name = formData.get('name')
-    const amount = formData.get('amount')
-    const unit = formData.get('unit')
-    const date = formData.get('date')
-    const installments = formData.get('installments')
-    const categories = formData.get('categories')
-
-    if (typeof name !== 'string' || !name.length) {
-      return json(
-        { errors: { name: ErrorCodes.NAME_REQUIRED }, ...res },
-        { status: 400 },
-      )
-    }
-
-    if (typeof amount !== 'string' || !amount.length) {
-      return json(
-        { errors: { amount: ErrorCodes.AMOUNT_REQUIRED }, ...res },
-        { status: 400 },
-      )
-    }
-
-    if (typeof unit !== 'string') {
-      return json(
-        { errors: { unit: ErrorCodes.BAD_FORMAT }, ...res },
-        { status: 400 },
-      )
-    }
-
-    if (
-      typeof installments !== 'string' ||
-      isNaN(parseInt(installments)) ||
-      parseInt(installments) > MAX_INSTALLMENTS
-    ) {
-      return json(
-        { errors: { installments: ErrorCodes.BAD_FORMAT }, ...res },
-        { status: 400 },
-      )
-    }
-
-    if (typeof date !== 'string' || isNaN(Date.parse(date))) {
-      return json(
-        { errors: { date: ErrorCodes.BAD_DATE_FORMAT }, ...res },
-        { status: 400 },
-      )
-    }
-
-    if (typeof categories !== 'undefined' && typeof categories !== 'string') {
-      return json(
-        { errors: { categories: ErrorCodes.BAD_CATEGORY_DATA }, ...res },
-        { status: 400 },
-      )
-    }
+    const name = formData.get('name') as string
+    const amount = formData.get('amount') as string
+    const unit = formData.get('unit') as string
+    const date = formData.get('date') as string
+    const installments = formData.get('installments') as string
+    const categories = formData.get('categories') as string
 
     let parsedCategories
     if (typeof categories === 'string') {
