@@ -1,4 +1,4 @@
-import type { Prisma } from '@prisma/client'
+import type { ExpensesInTransaction, Prisma } from '@prisma/client'
 import { prisma } from '~/infra/db.server'
 import {
   getIntervalForMonthYear,
@@ -557,6 +557,45 @@ export const updateExpense = async (
   return expenseRes
 }
 
+const subtractOrDeleteTransactionWithExp = async (
+  expInTransaciton: ExpensesInTransaction,
+  amount: number,
+) => {
+  const expensesInTransaction = await prisma.expensesInTransaction.count({
+    where: {
+      transactionId: expInTransaciton.transactionId,
+    },
+  })
+  if (expensesInTransaction === 1) {
+    await prisma.transaction.delete({
+      where: {
+        id: expInTransaciton.transactionId,
+      },
+    })
+  } else {
+    await prisma.expensesInTransaction.delete({
+      where: {
+        id: expInTransaciton.id,
+      },
+    })
+    const transaction = await prisma.transaction.findUnique({
+      where: {
+        id: expInTransaciton.transactionId,
+      },
+    })
+    if (transaction) {
+      await prisma.transaction.update({
+        where: {
+          id: expInTransaciton.transactionId,
+        },
+        data: {
+          total: transaction.total - amount,
+        },
+      })
+    }
+  }
+}
+
 export const deleteExpense = async (id: string) => {
   const expense = await prisma.expense.findUnique({
     where: {
@@ -566,12 +605,25 @@ export const deleteExpense = async (id: string) => {
   if (!expense) {
     return
   }
+  // Remove installments if present
   if (expense.installments > 0) {
     await prisma.expense.deleteMany({
       where: {
         parentExpenseId: id,
       },
     })
+  }
+  // Check for transactions containing expense
+  const expenseInTransaction = await prisma.expensesInTransaction.findFirst({
+    where: {
+      expenseId: id,
+    },
+  })
+  if (expenseInTransaction) {
+    await subtractOrDeleteTransactionWithExp(
+      expenseInTransaction,
+      expense.amount,
+    )
   }
   return prisma.expense.delete({ where: { id } })
 }
