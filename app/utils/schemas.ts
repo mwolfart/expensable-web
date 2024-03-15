@@ -49,7 +49,7 @@ export const passwordSchema = yup.object({
     ),
   passwordConfirmation: yup
     .string()
-    .equals(['password'], ErrorCodes.PASSWORD_MISMATCH),
+    .equals([yup.ref('password')], ErrorCodes.PASSWORD_MISMATCH),
 })
 
 export const userSchema = yup.object({

@@ -4,7 +4,7 @@ import type { KeyboardEventHandler } from 'react'
 import { useFetcher } from '@remix-run/react'
 import { useContext, useEffect, useState } from 'react'
 import { BsTrash } from 'react-icons/bs'
-import { MdOutlineEdit } from 'react-icons/md'
+import { MdOutlineEdit, MdOutlineCheck, MdOutlineClear } from 'react-icons/md'
 import { useTranslations } from 'use-intl'
 import { cxFormInput } from '~/utils/helpers'
 import { ToastContext, ToastType } from '../providers/toast'
@@ -46,17 +46,25 @@ export function CategoryItem({ category }: Props) {
   const onDelete = () =>
     fetcher.submit({ id: category.id }, { method: 'delete' })
 
+  const onSubmitChange = () => {
+    fetcher.submit(
+      { id: category.id, title: value },
+      { action: '/categories', method: 'patch' },
+    )
+  }
+
+  const onCancelChange = () => {
+    setValue(category.title)
+    setUpdateError('')
+    setEditing(false)
+  }
+
   const onKeyDown: KeyboardEventHandler<HTMLInputElement> = (event) => {
     const { key } = event
     if (key === 'Enter') {
-      fetcher.submit(
-        { id: category.id, title: value },
-        { action: 'categories', method: 'patch' },
-      )
+      onSubmitChange()
     } else if (key === 'Escape') {
-      setValue(category.title)
-      setUpdateError('')
-      setEditing(false)
+      onCancelChange()
     }
   }
 
@@ -72,20 +80,41 @@ export function CategoryItem({ category }: Props) {
       ) : (
         <p className="flex-grow">{category.title}</p>
       )}
-      <button
-        className="btn-ghost btn p-2 text-primary"
-        aria-label={t('common.rename')}
-        onClick={onEdit}
-      >
-        <MdOutlineEdit size={20} />
-      </button>
-      <button
-        className="btn-ghost btn p-2 text-primary"
-        aria-label={t('common.delete')}
-        onClick={onDelete}
-      >
-        <BsTrash size={20} />
-      </button>
+      {isEditing ? (
+        <>
+          <button
+            className="btn-ghost btn p-2 text-primary"
+            aria-label={t('common.submit')}
+            onClick={onSubmitChange}
+          >
+            <MdOutlineCheck size={20} />
+          </button>
+          <button
+            className="btn-ghost btn p-2 text-primary"
+            aria-label={t('common.cancel')}
+            onClick={onCancelChange}
+          >
+            <MdOutlineClear size={20} />
+          </button>
+        </>
+      ) : (
+        <>
+          <button
+            className="btn-ghost btn p-2 text-primary"
+            aria-label={t('common.rename')}
+            onClick={onEdit}
+          >
+            <MdOutlineEdit size={20} />
+          </button>
+          <button
+            className="btn-ghost btn p-2 text-primary"
+            aria-label={t('common.delete')}
+            onClick={onDelete}
+          >
+            <BsTrash size={20} />
+          </button>
+        </>
+      )}
     </div>
   )
 }

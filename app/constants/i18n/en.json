@@ -50,7 +50,7 @@
         "errors": {
             "invalid-field": "{field} is invalid.",
             "required-field": "{field} is required",
-            "password-short": "Password must have at least 8 characters long",
+            "password-short": "Password must have at least 8 characters",
             "password-rules": "Password must have at least each of the following: one uppercase letter, one lowercase letter, one number and one symbol",
             "password-mismatch": "Passwords do not match"
         }

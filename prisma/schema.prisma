@@ -35,11 +35,12 @@ model RefreshToken {
 
 model Category {
   id        String @id @default(auto()) @map("_id") @db.ObjectId
-  title     String @unique
+  title     String
   expenses  CategoriesOnExpense[]
   fixedExpenses FixedExpense[]
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    String   @db.ObjectId
+  @@unique([userId, title], name: "titleIdentifier")
 }
 
 model Expense {

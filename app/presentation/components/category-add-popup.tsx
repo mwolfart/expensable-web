@@ -39,12 +39,12 @@ export function AddCategoryPopup({ isOpen, setOpen }: Props) {
       } else if (fetcher.data?.success) {
         setOpen(false)
         setTitle('')
-        setSubmitted(false)
         showToast(ToastType.SUCCESS, t('category.category-added'))
       }
+      setSubmitted(false)
     }
     handleAction()
-  }, [errorToString, fetcher.data, hasSubmitted, setOpen])
+  }, [fetcher.data])
 
   const onCancelAdd = () => {
     setTitle('')

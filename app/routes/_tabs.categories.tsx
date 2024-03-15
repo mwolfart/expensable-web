@@ -10,7 +10,7 @@ import { getLoggedUserId } from '~/infra/session.server'
 import {
   createCategory,
   deleteCategory,
-  getCategoryByTitle,
+  getCategoryByTitleAndUser,
   getUserCategories,
   updateCategory,
 } from '~/infra/models/category.server'
@@ -39,6 +39,12 @@ export async function action({
 > {
   const { method } = request
   const res = { method }
+
+  const userId = await getLoggedUserId(request)
+  if (!userId) {
+    return json({ success: false, ...res }, { status: 403 })
+  }
+
   if (method === 'POST') {
     const formData = await request.formData()
     const category = formData.get('category')
@@ -47,19 +53,15 @@ export async function action({
       return json({ error: ErrorCodes.CATEGORY_EMPTY, ...res }, { status: 400 })
     }
 
-    const existingCategory = await getCategoryByTitle(category)
-    if (existingCategory) {
-      return json(
-        { error: ErrorCodes.CATEGORY_DUPLICATE, ...res },
-        { status: 400 },
-      )
-    }
-
     try {
-      const userId = await getLoggedUserId(request)
-      if (!userId) {
-        return json({ success: false, ...res }, { status: 403 })
+      const existingCategory = await getCategoryByTitleAndUser(category, userId)
+      if (existingCategory) {
+        return json(
+          { error: ErrorCodes.CATEGORY_DUPLICATE, ...res },
+          { status: 400 },
+        )
       }
+
       await createCategory(userId, category)
     } catch (_) {
       return json({ success: false, ...res }, { status: 500 })
@@ -94,7 +96,7 @@ export async function action({
       return json({ error: ErrorCodes.CATEGORY_EMPTY, ...res }, { status: 400 })
     }
 
-    const existingCategory = await getCategoryByTitle(title)
+    const existingCategory = await getCategoryByTitleAndUser(title, userId)
     if (existingCategory) {
       return json(
         { error: ErrorCodes.CATEGORY_DUPLICATE, ...res },

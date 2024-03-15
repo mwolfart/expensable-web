@@ -1,8 +1,4 @@
-import type {
-  ActionFunctionArgs,
-  MetaFunction,
-  TypedResponse,
-} from '@remix-run/node'
+import type { ActionFunctionArgs, MetaFunction } from '@remix-run/node'
 import { json } from '@remix-run/node'
 import { createUser } from '~/infra/models/user.server'
 import { useTranslations } from 'use-intl'
@@ -23,11 +19,7 @@ import { createUserWithEmailAndPassword, getIdToken } from 'firebase/auth'
 import { clientAuth } from '~/infra/firebase.client'
 import { serverAuth } from '~/infra/firebase.server'
 
-export async function action({
-  request,
-}: ActionFunctionArgs): Promise<
-  TypedResponse<{ error?: string; success?: boolean }>
-> {
+export async function action({ request }: ActionFunctionArgs) {
   try {
     const formData = await request.formData()
     const idToken = formData.get('idToken') as string
@@ -43,7 +35,7 @@ export async function action({
     if (!createdUser) {
       return json({ error: ErrorCodes.REGISTER_UNKNOWN }, { status: 500 })
     }
-    return json({ success: true }, { status: 200 })
+    return json({ success: true, error: null }, { status: 200 })
   } catch (e) {
     return json({ error: ErrorCodes.BAD_FORMAT }, { status: 400 })
   }
@@ -62,7 +54,6 @@ export default function CreateUser() {
   const navigate = useNavigate()
   const fetcher = useFetcher()
   const [transition] = useOutletContext<AuthContext>()
-  const actionData = useActionData<typeof action>()
   const { errorToString } = useErrorMessages()
   const [showConfirmation, setConfirmation] = useState(false)
   const [showErrorMessage, setShowErrorMessage] = useState(false)
@@ -96,17 +87,18 @@ export default function CreateUser() {
               { idToken, email: values.email, name: values.name },
               { method: 'post' },
             )
+            setConfirmation(true)
           }
         } catch (error) {
-          // show error with existing user
           setShowErrorMessage(true)
-          if (
+          setConfirmation(false)
+          const hasDuplicateUser =
             error &&
             typeof error === 'object' &&
             'code' in error &&
             typeof error.code === 'string' &&
             error.code.includes('email-already-in-use')
-          ) {
+          if (hasDuplicateUser) {
             setErrorMessage(t('auth.errors.account-exists'))
           } else {
             setErrorMessage(t('auth.errors.unknown-error'))
@@ -114,22 +106,6 @@ export default function CreateUser() {
         }
       },
     })
-
-  useEffect(() => {
-    const parseAction = async () => {
-      if (actionData?.error) {
-        setShowErrorMessage(true)
-        setErrorMessage(actionData.error)
-        await timeout(5000)
-        setShowErrorMessage(false)
-      } else if (actionData?.success) {
-        setConfirmation(true)
-        await timeout(5000)
-        setConfirmation(false)
-      }
-    }
-    parseAction()
-  }, [actionData])
 
   const onGoToLogin = async () => {
     await transition()
@@ -185,7 +161,7 @@ export default function CreateUser() {
           setFieldError('passwordConfirmation', undefined)
         }}
       />
-      <p className={cxWithGrowFadeMd('', showConfirmation)}>
+      <p className={cxWithGrowFadeMd('text-confirmation', showConfirmation)}>
         {t('auth.account-created')}
       </p>
       <p className={cxWithGrowFadeMd('text-error', showErrorMessage)}>

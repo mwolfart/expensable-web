@@ -74,11 +74,26 @@ export default function ResetPassword() {
     navigate('/login')
   }
 
+  const clearErrors = () => {
+    setFieldError('password', undefined)
+    setFieldError('passwordConfirmation', undefined)
+  }
+
   return (
     <Form className="flex flex-col gap-8" onSubmit={handleSubmit}>
       <div className="flex flex-col gap-4">
         <h2 className="font-bold">{t('auth.reset-password')}</h2>
-        <p>{t('auth.enter-new-password')}</p>
+        <p className={cxWithGrowFadeMd('', !showConfirmation)}>
+          {t('auth.enter-new-password')}
+        </p>
+        <p
+          className={cxWithGrowFadeMd(
+            'font-bold text-confirmation',
+            showConfirmation,
+          )}
+        >
+          {t('auth.password-updated')}
+        </p>
       </div>
       <div
         className={cxWithGrowFadeMd('flex flex-col gap-4', !showConfirmation)}
@@ -87,28 +102,33 @@ export default function ResetPassword() {
           type="password"
           name="password"
           value={values.password}
-          placeholder={errors.password || t('common.password')}
+          placeholder={t('common.password')}
           className={cxFormInput({ hasError: errors.password })}
           onChange={(e) => setFieldValue('password', e.target.value)}
-          onBlur={() => setFieldError('password', undefined)}
+          onBlur={clearErrors}
         />
         <input
           type="password"
           name="passwordConfirmation"
           value={values.passwordConfirmation}
-          placeholder={errors.password || t('common.password-check')}
+          placeholder={t('common.password-check')}
           className={cxFormInput({ hasError: errors.password })}
           onChange={(e) =>
             setFieldValue('passwordConfirmation', e.target.value)
           }
-          onBlur={() => setFieldError('password', undefined)}
+          onBlur={clearErrors}
         />
       </div>
-      <p className={cxWithGrowFadeMd('', showConfirmation)}>
-        {t('auth.password-updated')}
-      </p>
-      <p className={cxWithGrowFadeMd('', showErrorMessage)}>
+      <p
+        className={cxWithGrowFadeMd(
+          'text-error font-bold',
+          showErrorMessage || Object.keys(errors).length > 0,
+        )}
+      >
         {errorToString(errorMessage)}
+        {errors.password
+          ? errorToString(errors.password)
+          : errorToString(errors.passwordConfirmation)}
       </p>
       <div className="flex flex-col gap-4">
         {!showConfirmation && (

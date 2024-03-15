@@ -25,10 +25,11 @@ export const getCategoryById = (id: string) =>
     },
   })
 
-export const getCategoryByTitle = (title: string) =>
-  prisma.category.findUnique({
+export const getCategoryByTitleAndUser = (title: string, userId: string) =>
+  prisma.category.findFirst({
     where: {
       title,
+      userId,
     },
   })
 
