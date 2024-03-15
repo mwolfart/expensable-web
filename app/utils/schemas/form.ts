@@ -53,7 +53,7 @@ export const loginSchema = yup.object({
 export const expenseSchema = yup.object().shape({
   name: yup.string().required(ErrorCodes.NAME_REQUIRED),
   amount: yup.number().required(ErrorCodes.AMOUNT_REQUIRED),
-  unit: yup.number(),
+  unit: yup.number().nullable(),
   date: yup
     .string()
     .test('is-date-valid', ErrorCodes.BAD_DATE_FORMAT, isDateValid)

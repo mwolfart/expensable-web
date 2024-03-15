@@ -153,14 +153,14 @@ export const getUserExpensesByMonthYear = (
   if (month > 11) {
     throw new Error('Month must be less than 11')
   }
-  const startDate = new Date(year, month)
-  const endDate = new Date(year, month + 1, 0)
+  const startDate = new Date(Date.UTC(year, month))
+  const endDate = new Date(Date.UTC(year, month + 1, 0))
   return getUserExpensesByFilter(userId, { startDate, endDate })
 }
 
 export const getUserExpensesByYear = (userId: string, year: number) => {
-  const startDate = new Date(year)
-  const endDate = new Date(year + 1, 0, 0)
+  const startDate = new Date(Date.UTC(year))
+  const endDate = new Date(Date.UTC(year + 1, 0, 0))
   return getUserExpensesByFilter(userId, { startDate, endDate })
 }
 
@@ -172,8 +172,8 @@ export const getUserExpenseTotalByMonthYear = async (
   if (month > 11) {
     throw new Error('Month must be less than 11')
   }
-  const startDate = new Date(year, month)
-  const endDate = new Date(year, month + 1, 0)
+  const startDate = new Date(Date.UTC(year, month))
+  const endDate = new Date(Date.UTC(year, month + 1, 0))
   const where = getWhereClauseFromFilter(userId, { startDate, endDate })
   return prisma.expense.aggregate({
     where,
@@ -377,6 +377,8 @@ export const getUserTotalsPerCategoryInMonthYear = async (
   limit?: number,
 ) => {
   const { startDate, endDate } = getIntervalForMonthYear(month, year)
+  startDate.setUTCHours(0, 0, 0, 0)
+  endDate.setUTCHours(0, 0, 0, 0)
   const query = await getUserExpensesPerCategoriesInInterval(
     userId,
     startDate,
@@ -416,8 +418,8 @@ const createInstallmentExpenses = async (
   const installmentExpensesRes = [...Array(installments - 1).keys()].map(
     async (i) => {
       const installmentDate = new Date(datetime)
-      installmentDate.setMonth(datetime.getMonth() + i + 1, 1)
-      installmentDate.setHours(0, 0, 0)
+      installmentDate.setUTCMonth(datetime.getUTCMonth() + i + 1, 1)
+      installmentDate.setUTCHours(0, 0, 0)
       const expenseRes = await prisma.expense.create({
         data: {
           ...payload,
