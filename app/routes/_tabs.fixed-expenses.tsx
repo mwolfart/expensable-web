@@ -153,7 +153,7 @@ export default function FixedExpenses() {
 
   return (
     <DataListContainer>
-      <div className="mb-8 flex flex-col justify-between gap-4 sm:flex-row sm:gap-0 sm:items-end">
+      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:gap-0 sm:items-end">
         <div className="flex items-end gap-4">
           <PaginationLimitSelect onChangeLimit={pagination.onChangeLimit} />
         </div>

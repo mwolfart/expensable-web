@@ -277,7 +277,7 @@ export default function Expenses() {
           onClose={() => setShowFilters(false)}
         />
       )}
-      <div className="mb-8 flex flex-col justify-between gap-4 sm:flex-row sm:gap-0 sm:items-end">
+      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:gap-0 sm:items-end">
         <div className="flex items-end gap-4">
           <FilterButton
             onClick={() => setShowFilters(!showFilters)}
@@ -290,7 +290,7 @@ export default function Expenses() {
           {t('expenses.add')}
         </button>
       </div>
-      <div className={cxWithGrowFadeLg('hidden md:block pb-8', showFilters)}>
+      <div className={cxWithGrowFadeLg('hidden md:block', showFilters)}>
         {FiltersBlock}
       </div>
       {!expenses.length && (
