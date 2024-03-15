@@ -4,16 +4,16 @@ import { createUser } from '~/infra/models/user.server'
 import { useTranslations } from 'use-intl'
 import {
   Form,
-  useActionData,
   useFetcher,
   useNavigate,
   useOutletContext,
 } from '@remix-run/react'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import type { AuthContext } from './_auth'
-import { cxFormInput, cxWithGrowFadeMd, timeout } from '~/utils/helpers'
+import { cxFormInput, cxWithGrowFadeMd } from '~/utils/helpers'
 import { useErrorMessages } from '~/presentation/hooks'
-import { ErrorCodes, userSchema } from '~/utils/schemas'
+import { userSchema } from '~/utils/schemas/form'
+import { ErrorCodes } from '~/utils/enum'
 import { useFormik } from 'formik'
 import { createUserWithEmailAndPassword, getIdToken } from 'firebase/auth'
 import { clientAuth } from '~/infra/firebase.client'

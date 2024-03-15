@@ -1,5 +1,5 @@
 import { useTranslations } from 'use-intl'
-import { ErrorCodes } from '~/utils/schemas'
+import { ErrorCodes } from '~/utils/enum'
 
 export const useErrorMessages = () => {
   const t = useTranslations()

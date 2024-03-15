@@ -24,7 +24,7 @@ import { ExpenseList } from '~/presentation/components/feature/expense/expense-l
 import { useContext, useState } from 'react'
 import { DialogContext } from '~/presentation/providers/dialog'
 import { UpsertExpenseDialog } from '~/presentation/components/feature/expense/expense-upsert-dialog'
-import { ErrorCodes } from '~/utils/schemas'
+import { ErrorCodes } from '~/utils/enum'
 import {
   areAllValuesEmpty,
   cxWithGrowFadeLg,

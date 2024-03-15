@@ -33,7 +33,7 @@ import { PaginationLimitSelect } from '~/presentation/components/ui/pagination-l
 import { FilterButton } from '~/presentation/components/ui/filter-button'
 import { MobileCancelDialog } from '~/presentation/components/layout/mobile-cancel-dialog'
 import { TransactionFilterComponent } from '~/presentation/components/feature/transaction/transaction-filters'
-import { ErrorCodes } from '~/utils/schemas'
+import { ErrorCodes } from '~/utils/enum'
 import { DataListContainer } from '~/presentation/components/layout/data-list-container'
 import { handleError } from '~/entry.server'
 

@@ -6,7 +6,7 @@ import { useTranslations } from 'use-intl'
 import { ToastContext, ToastType } from '../../../providers/toast'
 import { Form, useFetcher } from '@remix-run/react'
 import { useFormik } from 'formik'
-import { cxFormInput, getMonthName } from '~/utils/helpers'
+import { cxFormInput, fiedExpenseSchema, getMonthName } from '~/utils/helpers'
 import { CategoryContext } from '../../../providers/category'
 import { CurrencyInput } from '../../ui/currency-input'
 import * as yup from 'yup'
@@ -16,28 +16,6 @@ type Props = {
   initialData?: SerializeFrom<FixedExpense> | null
   monthExpenses?: SerializeFrom<FixedExpense[]> | null
 }
-
-const schema = yup.object().shape({
-  title: yup.string().required(),
-  date: yup.string().required(),
-  categoryId: yup.string(),
-  varyingCosts: yup.boolean(),
-  amount: yup.number().when('varyingCosts', {
-    is: false,
-    then: (schema) => schema.required(),
-  }),
-  amountOfMonths: yup
-    .number()
-    .when('varyingCosts', {
-      is: false,
-      then: (schema) => schema.required(),
-    })
-    .required(),
-  amountPerMonth: yup.array(yup.number()).when('varyingCosts', {
-    is: true,
-    then: (schema) => schema.required(),
-  }),
-})
 
 const getDateLabel = (idx: number, dateStr?: string) => {
   const today = dateStr ? new Date(dateStr) : new Date()
@@ -77,7 +55,7 @@ export function UpsertFixedExpenseForm({
             amountPerMonth: [0],
             categoryId: undefined,
           },
-      validationSchema: schema,
+      validationSchema: fiedExpenseSchema,
       validateOnChange: false,
       validateOnBlur: false,
       onSubmit: async (values) => {
