@@ -8,7 +8,7 @@ import type { AddExpenseFormErrors } from '~/utils/types'
 import { useTranslations } from 'use-intl'
 import { AiOutlinePlus } from 'react-icons/ai'
 import { getLoggedUserId } from '~/infra/session.server'
-import { NoData } from '~/presentation/components/no-data'
+import { NoData } from '~/presentation/components/layout/no-data'
 import { ErrorCodes, fixedExpenseSchema } from '~/utils/schemas'
 import { useLoaderData, useNavigate } from '@remix-run/react'
 import { usePagination } from '~/presentation/hooks/use-pagination'
@@ -23,6 +23,7 @@ import {
   updateFixedExpense,
 } from '~/infra/models/fixed-expense.server'
 import { FixedExpenseList } from '~/presentation/components/fixed-expense-list'
+import { DataListContainer } from '~/presentation/components/layout/data-list-container'
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const userId = await getLoggedUserId(request)
@@ -151,7 +152,7 @@ export default function FixedExpenses() {
   }
 
   return (
-    <div className="m-4 mt-0 md:mt-4 md:m-8">
+    <DataListContainer>
       <div className="mb-8 flex flex-col justify-between gap-4 sm:flex-row sm:gap-0 sm:items-end">
         <div className="flex items-end gap-4">
           <PaginationLimitSelect onChangeLimit={pagination.onChangeLimit} />
@@ -172,6 +173,6 @@ export default function FixedExpenses() {
           <PaginationButtons total={total} {...pagination} />
         </>
       )}
-    </div>
+    </DataListContainer>
   )
 }

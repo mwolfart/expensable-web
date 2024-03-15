@@ -19,7 +19,7 @@ import {
   updateExpense,
 } from '~/infra/models/expenses.server'
 import { getLoggedUserId } from '~/infra/session.server'
-import { NoData } from '~/presentation/components/no-data'
+import { NoData } from '~/presentation/components/layout/no-data'
 import { ExpenseList } from '~/presentation/components/expense-list'
 import { useContext, useState } from 'react'
 import { DialogContext } from '~/presentation/providers/dialog'
@@ -42,6 +42,7 @@ import { PaginationButtons } from '~/presentation/components/pagination-buttons'
 import { MobileCancelDialog } from '~/presentation/components/mobile-cancel-dialog'
 import { PaginationLimitSelect } from '~/presentation/components/pagination-limit-select'
 import { FilterButton } from '~/presentation/components/filter-button'
+import { DataListContainer } from '~/presentation/components/layout/data-list-container'
 
 const MAX_INSTALLMENTS = 36
 
@@ -269,7 +270,7 @@ export default function Expenses() {
   )
 
   return (
-    <div className="m-4 mt-0 md:mt-4 md:m-8">
+    <DataListContainer>
       {showFilters && (
         <MobileCancelDialog
           content={FiltersBlock}
@@ -303,6 +304,6 @@ export default function Expenses() {
           <PaginationButtons total={total} {...pagination} />
         </>
       )}
-    </div>
+    </DataListContainer>
   )
 }

@@ -8,7 +8,7 @@ import { json } from '@remix-run/server-runtime'
 import { useLoaderData, useNavigate, useSearchParams } from '@remix-run/react'
 import { useState } from 'react'
 import { useTranslations } from 'use-intl'
-import { NoData } from '~/presentation/components/no-data'
+import { NoData } from '~/presentation/components/layout/no-data'
 import { PaginationButtons } from '~/presentation/components/pagination-buttons'
 import { TransactionList } from '~/presentation/components/transaction-list'
 import { useFilter } from '~/presentation/hooks/use-filter'
@@ -34,6 +34,7 @@ import { FilterButton } from '~/presentation/components/filter-button'
 import { MobileCancelDialog } from '~/presentation/components/mobile-cancel-dialog'
 import { TransactionFilterComponent } from '~/presentation/components/transaction-filters'
 import { ErrorCodes } from '~/utils/schemas'
+import { DataListContainer } from '~/presentation/components/layout/data-list-container'
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const userId = await getLoggedUserId(request)
@@ -188,7 +189,7 @@ export default function Transactions() {
   )
 
   return (
-    <div className="m-4 mt-0 md:mt-4 md:m-8">
+    <DataListContainer>
       {showFilters && (
         <MobileCancelDialog
           content={FiltersBlock}
@@ -222,6 +223,6 @@ export default function Transactions() {
           <PaginationButtons total={total} {...pagination} />
         </>
       )}
-    </div>
+    </DataListContainer>
   )
 }
