@@ -12,8 +12,8 @@ import { NoData } from '~/presentation/components/layout/no-data'
 import { ErrorCodes, fixedExpenseSchema } from '~/utils/schemas'
 import { useLoaderData, useNavigate } from '@remix-run/react'
 import { usePagination } from '~/presentation/hooks/use-pagination'
-import { PaginationButtons } from '~/presentation/components/pagination-buttons'
-import { PaginationLimitSelect } from '~/presentation/components/pagination-limit-select'
+import { PaginationButtons } from '~/presentation/components/ui/pagination-buttons'
+import { PaginationLimitSelect } from '~/presentation/components/ui/pagination-limit-select'
 import type { ValidationError } from 'yup'
 import {
   countUserFixedExpenses,
@@ -22,7 +22,7 @@ import {
   getUserFixedExpenses,
   updateFixedExpense,
 } from '~/infra/models/fixed-expense.server'
-import { FixedExpenseList } from '~/presentation/components/fixed-expense-list'
+import { FixedExpenseList } from '~/presentation/components/feature/fixed-expense/fixed-expense-list'
 import { DataListContainer } from '~/presentation/components/layout/data-list-container'
 
 export async function loader({ request }: LoaderFunctionArgs) {

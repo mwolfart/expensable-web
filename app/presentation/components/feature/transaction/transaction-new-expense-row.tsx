@@ -2,7 +2,7 @@ import type { ChangeEvent } from 'react'
 import type { TransactionExpenseInput } from '~/utils/types'
 import { useContext, useState } from 'react'
 import { useTranslations } from 'use-intl'
-import { CurrencyInput } from './currency-input'
+import { CurrencyInput } from '../../ui/currency-input'
 import { CategoryContext } from '~/presentation/providers/category'
 import { FaCheck, FaTimes } from 'react-icons/fa'
 

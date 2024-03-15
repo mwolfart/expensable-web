@@ -7,8 +7,8 @@ import { MdOutlineEdit } from 'react-icons/md'
 import { useFetcher, useRevalidator } from '@remix-run/react'
 import { useContext, useEffect } from 'react'
 import { CategoryContext } from '~/presentation/providers/category'
-import { ToastContext, ToastType } from '../providers/toast'
-import { DialogContext } from '../providers/dialog'
+import { ToastContext, ToastType } from '../../../providers/toast'
+import { DialogContext } from '../../../providers/dialog'
 import { UpsertExpenseDialog } from './expense-upsert-dialog'
 
 type Props = {

@@ -1,6 +1,6 @@
 import type { FC, PropsWithChildren } from 'react'
 import { createContext, useState, useCallback } from 'react'
-import { Toast } from '../components/toast'
+import { Toast } from '../components/layout/toast'
 import { timeout } from '~/utils/helpers'
 
 export enum ToastType {

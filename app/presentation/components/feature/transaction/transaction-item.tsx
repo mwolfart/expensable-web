@@ -12,7 +12,7 @@ import { useFetcher, useNavigate } from '@remix-run/react'
 import { useContext, useEffect, useState } from 'react'
 import { BeatLoader } from 'react-spinners'
 import { TransactionItemExpense } from './transaction-item-expense'
-import { ToastContext, ToastType } from '../providers/toast'
+import { ToastContext, ToastType } from '../../../providers/toast'
 
 type Props = {
   transaction: SerializeFrom<TransactionWithExpenses>

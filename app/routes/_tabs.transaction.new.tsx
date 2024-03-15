@@ -1,5 +1,5 @@
 import { useNavigate } from '@remix-run/react'
-import { UpsertTransactionForm } from '~/presentation/components/transaction-upsert-form'
+import { UpsertTransactionForm } from '~/presentation/components/feature/transaction/transaction-upsert-form'
 
 export default function TransactionNew() {
   const navigate = useNavigate()

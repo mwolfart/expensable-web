@@ -16,7 +16,7 @@ import { AiOutlinePlus } from 'react-icons/ai'
 import { BeatLoader } from 'react-spinners'
 import { TransactionNewExpenseRow } from './transaction-new-expense-row'
 import { FaTimes } from 'react-icons/fa'
-import { ToastContext, ToastType } from '../providers/toast'
+import { ToastContext, ToastType } from '../../../providers/toast'
 import { v4 as uuidv4 } from 'uuid'
 
 type Props = {

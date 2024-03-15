@@ -5,16 +5,16 @@ import type {
   ExpenseWithCategory,
   FetcherResponse,
 } from '~/utils/types'
-import type { Tag } from './tag-input'
+import type { Tag } from '../../ui/tag-input'
 import { useContext, useEffect, useId, useReducer, useState } from 'react'
 import { useTranslations } from 'use-intl'
-import { CurrencyInput } from './currency-input'
+import { CurrencyInput } from '../../ui/currency-input'
 import { Form, useFetcher } from '@remix-run/react'
 import { DialogContext } from '~/presentation/providers/dialog'
 import { cxFormInput, formatCurrency } from '~/utils/helpers'
 import { CategoryContext } from '~/presentation/providers/category'
-import { TagInput } from './tag-input'
-import { ToastContext, ToastType } from '../providers/toast'
+import { TagInput } from '../../ui/tag-input'
+import { ToastContext, ToastType } from '../../../providers/toast'
 
 const MAX_CATEGORIES = 3
 

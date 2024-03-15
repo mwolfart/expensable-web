@@ -10,7 +10,7 @@ import {
   cxWithGrowMd,
   onEnter,
 } from '~/utils/helpers'
-import { ToastContext, ToastType } from '../providers/toast'
+import { ToastContext, ToastType } from '../../../providers/toast'
 
 type Props = {
   isOpen: boolean

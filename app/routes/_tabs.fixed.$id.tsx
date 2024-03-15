@@ -3,7 +3,7 @@ import { useLoaderData, useNavigate } from '@remix-run/react'
 import { json } from '@remix-run/server-runtime'
 import { getUserFixedExpenseById } from '~/infra/models/fixed-expense.server'
 import { getLoggedUserId } from '~/infra/session.server'
-import { UpsertFixedExpenseForm } from '~/presentation/components/fixed-expense-upsert-form'
+import { UpsertFixedExpenseForm } from '~/presentation/components/feature/fixed-expense/fixed-expense-upsert-form'
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const userId = await getLoggedUserId(request)

@@ -6,7 +6,7 @@ import { BsTrash } from 'react-icons/bs'
 import { MdOutlineEdit } from 'react-icons/md'
 import { useFetcher, useNavigate } from '@remix-run/react'
 import { useContext, useEffect } from 'react'
-import { ToastContext, ToastType } from '../providers/toast'
+import { ToastContext, ToastType } from '../../../providers/toast'
 
 type Props = {
   expense: SerializeFrom<FixedExpenseWithDetails>

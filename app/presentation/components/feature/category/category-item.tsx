@@ -7,7 +7,7 @@ import { BsTrash } from 'react-icons/bs'
 import { MdOutlineEdit, MdOutlineCheck, MdOutlineClear } from 'react-icons/md'
 import { useTranslations } from 'use-intl'
 import { cxFormInput } from '~/utils/helpers'
-import { ToastContext, ToastType } from '../providers/toast'
+import { ToastContext, ToastType } from '../../../providers/toast'
 
 type Props = {
   category: Category

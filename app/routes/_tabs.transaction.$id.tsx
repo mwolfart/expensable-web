@@ -7,7 +7,7 @@ import {
   useNavigation,
 } from '@remix-run/react'
 import { BeatLoader } from 'react-spinners'
-import { UpsertTransactionForm } from '~/presentation/components/transaction-upsert-form'
+import { UpsertTransactionForm } from '~/presentation/components/feature/transaction/transaction-upsert-form'
 import { getUserTransactionById } from '~/infra/models/transaction.server'
 import { getLoggedUserId } from '~/infra/session.server'
 import { useEffect, useState } from 'react'

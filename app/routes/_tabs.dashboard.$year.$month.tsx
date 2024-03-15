@@ -9,7 +9,7 @@ import {
 import { useTranslations } from 'use-intl'
 import { TotalPerCategoriesChart } from '~/presentation/components/charts/chart-totals-per-categories'
 import { TotalPerMonthsChart } from '~/presentation/components/charts/chart-totals-per-months'
-import { DashboardIntervalSelect } from '~/presentation/components/dashboard-interval-select'
+import { DashboardIntervalSelect } from '~/presentation/components/feature/dashboard/dashboard-interval-select'
 import {
   getUserExpensesInNumOfMonths,
   getUserInstallmentsPerCategoryInMonthYear,

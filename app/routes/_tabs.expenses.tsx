@@ -20,10 +20,10 @@ import {
 } from '~/infra/models/expenses.server'
 import { getLoggedUserId } from '~/infra/session.server'
 import { NoData } from '~/presentation/components/layout/no-data'
-import { ExpenseList } from '~/presentation/components/expense-list'
+import { ExpenseList } from '~/presentation/components/feature/expense/expense-list'
 import { useContext, useState } from 'react'
 import { DialogContext } from '~/presentation/providers/dialog'
-import { UpsertExpenseDialog } from '~/presentation/components/expense-upsert-dialog'
+import { UpsertExpenseDialog } from '~/presentation/components/feature/expense/expense-upsert-dialog'
 import { ErrorCodes } from '~/utils/schemas'
 import {
   areAllValuesEmpty,
@@ -35,13 +35,13 @@ import {
   useRevalidator,
   useSearchParams,
 } from '@remix-run/react'
-import { ExpenseFilterComponent } from '~/presentation/components/expense-filters'
+import { ExpenseFilterComponent } from '~/presentation/components/feature/expense/expense-filters'
 import { usePagination } from '~/presentation/hooks/use-pagination'
 import { useFilter } from '~/presentation/hooks/use-filter'
-import { PaginationButtons } from '~/presentation/components/pagination-buttons'
-import { MobileCancelDialog } from '~/presentation/components/mobile-cancel-dialog'
-import { PaginationLimitSelect } from '~/presentation/components/pagination-limit-select'
-import { FilterButton } from '~/presentation/components/filter-button'
+import { PaginationButtons } from '~/presentation/components/ui/pagination-buttons'
+import { MobileCancelDialog } from '~/presentation/components/layout/mobile-cancel-dialog'
+import { PaginationLimitSelect } from '~/presentation/components/ui/pagination-limit-select'
+import { FilterButton } from '~/presentation/components/ui/filter-button'
 import { DataListContainer } from '~/presentation/components/layout/data-list-container'
 
 const MAX_INSTALLMENTS = 36

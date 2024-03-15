@@ -18,8 +18,8 @@ import { NoData } from '~/presentation/components/layout/no-data'
 import { useState } from 'react'
 import { AiOutlinePlus } from 'react-icons/ai'
 import { ErrorCodes } from '~/utils/schemas'
-import { CategoryList } from '~/presentation/components/category-list'
-import { AddCategoryPopup } from '~/presentation/components/category-add-popup'
+import { CategoryList } from '~/presentation/components/feature/category/category-list'
+import { AddCategoryPopup } from '~/presentation/components/feature/category/category-add-popup'
 import { DataListContainer } from '~/presentation/components/layout/data-list-container'
 
 export async function loader({ request }: LoaderFunctionArgs) {

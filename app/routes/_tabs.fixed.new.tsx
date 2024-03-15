@@ -1,5 +1,5 @@
 import { useNavigate } from '@remix-run/react'
-import { UpsertFixedExpenseForm } from '~/presentation/components/fixed-expense-upsert-form'
+import { UpsertFixedExpenseForm } from '~/presentation/components/feature/fixed-expense/fixed-expense-upsert-form'
 
 export default function FixedExpenseNew() {
   const navigate = useNavigate()
