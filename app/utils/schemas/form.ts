@@ -49,7 +49,7 @@ export const loginSchema = yup.object({
   password: yup.string().required(ErrorCodes.PASSWORD_REQUIRED),
 })
 
-export const fiedExpenseSchema = yup.object().shape({
+export const fixedExpenseSchema = yup.object().shape({
   title: yup.string().required(),
   date: yup.string().required(),
   categoryId: yup.string(),
