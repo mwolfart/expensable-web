@@ -24,6 +24,7 @@ import {
 } from '~/infra/models/fixed-expense.server'
 import { FixedExpenseList } from '~/presentation/components/feature/fixed-expense/fixed-expense-list'
 import { DataListContainer } from '~/presentation/components/layout/data-list-container'
+import { handleError } from '~/entry.server'
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const userId = await getLoggedUserId(request)
@@ -110,11 +111,8 @@ export async function action({ request }: ActionFunctionArgs): Promise<
         })
       }
     } catch (e) {
-      console.log(e)
-      return json(
-        { success: false, message: JSON.stringify(e), ...res },
-        { status: 500 },
-      )
+      handleError(e)
+      return json({ success: false, ...res }, { status: 500 })
     }
     return json({ success: true, ...res }, { status: 200 })
   }
@@ -131,10 +129,8 @@ export async function action({ request }: ActionFunctionArgs): Promise<
     try {
       await deleteFixedExpense(id)
     } catch (e) {
-      return json(
-        { success: false, message: JSON.stringify(e), ...res },
-        { status: 500 },
-      )
+      handleError(e)
+      return json({ success: false, ...res }, { status: 500 })
     }
     return json({ success: true, ...res }, { status: 200 })
   }

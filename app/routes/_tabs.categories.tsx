@@ -21,6 +21,7 @@ import { ErrorCodes } from '~/utils/schemas'
 import { CategoryList } from '~/presentation/components/feature/category/category-list'
 import { AddCategoryPopup } from '~/presentation/components/feature/category/category-add-popup'
 import { DataListContainer } from '~/presentation/components/layout/data-list-container'
+import { handleError } from '~/entry.server'
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const userId = await getLoggedUserId(request)
@@ -64,7 +65,8 @@ export async function action({
       }
 
       await createCategory(userId, category)
-    } catch (_) {
+    } catch (e) {
+      handleError(e)
       return json({ success: false, ...res }, { status: 500 })
     }
     return json({ success: true, ...res }, { status: 200 })
@@ -79,7 +81,8 @@ export async function action({
 
     try {
       await deleteCategory(id)
-    } catch (_) {
+    } catch (e) {
+      handleError(e)
       return json({ success: false, ...res }, { status: 500 })
     }
     return json({ success: true, ...res }, { status: 200 })
@@ -107,7 +110,8 @@ export async function action({
 
     try {
       await updateCategory(id, title)
-    } catch (_) {
+    } catch (e) {
+      handleError(e)
       return json({ success: false, ...res }, { status: 500 })
     }
     return json({ success: true, ...res }, { status: 200 })

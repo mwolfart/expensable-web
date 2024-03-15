@@ -43,6 +43,7 @@ import { MobileCancelDialog } from '~/presentation/components/layout/mobile-canc
 import { PaginationLimitSelect } from '~/presentation/components/ui/pagination-limit-select'
 import { FilterButton } from '~/presentation/components/ui/filter-button'
 import { DataListContainer } from '~/presentation/components/layout/data-list-container'
+import { handleError } from '~/entry.server'
 
 const MAX_INSTALLMENTS = 36
 
@@ -205,10 +206,8 @@ export async function action({ request }: ActionFunctionArgs): Promise<
         )
       }
     } catch (e) {
-      return json(
-        { success: false, message: JSON.stringify(e), ...res },
-        { status: 500 },
-      )
+      handleError(e)
+      return json({ success: false, ...res }, { status: 500 })
     }
     return json({ success: true, ...res }, { status: 200 })
   }
@@ -225,10 +224,8 @@ export async function action({ request }: ActionFunctionArgs): Promise<
     try {
       await deleteExpense(id)
     } catch (e) {
-      return json(
-        { success: false, message: JSON.stringify(e), ...res },
-        { status: 500 },
-      )
+      handleError(e)
+      return json({ success: false, ...res }, { status: 500 })
     }
     return json({ success: true, ...res }, { status: 200 })
   }

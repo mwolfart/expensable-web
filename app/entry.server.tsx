@@ -1,6 +1,6 @@
 import { PassThrough } from 'node:stream'
 
-import type { EntryContext } from '@remix-run/node'
+import type { DataFunctionArgs, EntryContext } from '@remix-run/node'
 import { createReadableStreamFromReadable } from '@remix-run/node'
 import { RemixServer } from '@remix-run/react'
 import isbot from 'isbot'
@@ -113,4 +113,18 @@ function handleBrowserRequest(
 
     setTimeout(abort, ABORT_DELAY)
   })
+}
+
+export function handleError(
+  error: unknown,
+  // { request, params, context }: DataFunctionArgs,
+): void {
+  if (error instanceof Error) {
+    // eslint-disable-next-line no-console
+    console.error(error)
+  } else {
+    const unknownError = new Error('Unknown Server Error')
+    // eslint-disable-next-line no-console
+    console.error(unknownError)
+  }
 }
