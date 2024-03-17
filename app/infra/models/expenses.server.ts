@@ -494,6 +494,14 @@ export const updateExpense = async (
 ) => {
   const { id, amount, installments, ...payload } = expense
 
+  // Old expense info (amount)
+  const oldExpense = await prisma.expense.findUnique({
+    where: {
+      id,
+    },
+  })
+  const oldAmount = oldExpense?.amount
+
   // Old category relationships
   const originalCategories = await prisma.categoriesOnExpense.findMany({
     where: {
@@ -516,6 +524,32 @@ export const updateExpense = async (
       amountEffective: amount / (installments || 1),
     },
   })
+
+  // Transactions with expense
+  if (oldAmount && oldAmount !== amount) {
+    const expenseInTranscation = await prisma.expensesInTransaction.findFirst({
+      where: {
+        expenseId: id,
+      },
+    })
+    if (expenseInTranscation) {
+      const transaction = await prisma.transaction.findUnique({
+        where: {
+          id: expenseInTranscation.transactionId,
+        },
+      })
+      if (transaction) {
+        await prisma.transaction.update({
+          where: {
+            id: transaction.id,
+          },
+          data: {
+            total: transaction.total + (amount - oldAmount),
+          },
+        })
+      }
+    }
+  }
 
   // Category relationships updates
   const removedCatRes = removedCategories.map(({ id }) =>

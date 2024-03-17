@@ -107,12 +107,14 @@ export const createTransaction = async (
       userId: transaction.userId,
       ...expense,
     })
-    await prisma.categoriesOnExpense.create({
-      data: {
-        expenseId: exp.id,
-        categoryId,
-      },
-    })
+    if (categoryId) {
+      await prisma.categoriesOnExpense.create({
+        data: {
+          expenseId: exp.id,
+          categoryId,
+        },
+      })
+    }
     return exp
   })
   const expensesRes = await Promise.all(expensesPromise)

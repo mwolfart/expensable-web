@@ -3,7 +3,6 @@ import type {
   LoaderFunctionArgs,
   TypedResponse,
 } from '@remix-run/server-runtime'
-import type { ValidationError } from 'yup'
 import type { AddExpenseFormErrors } from '~/utils/types'
 import { json } from '@remix-run/server-runtime'
 import { useTranslations } from 'use-intl'
@@ -115,7 +114,7 @@ export async function action({ request }: ActionFunctionArgs): Promise<
     }
 
     const id = formData.get('id')
-    const name = formData.get('name') as string
+    const title = formData.get('title') as string
     const amount = formData.get('amount') as string
     const unit = formData.get('unit') as string
     const date = formData.get('date') as string
@@ -144,7 +143,7 @@ export async function action({ request }: ActionFunctionArgs): Promise<
         await updateExpense(
           {
             id,
-            title: name,
+            title,
             amount: parseFloat(amount.replace(/[^0-9.]/g, '')),
             unit: unit ? parseFloat(unit.replace(/[^0-9.]/g, '')) : null,
             datetime: new Date(Date.parse(date)),
@@ -156,7 +155,7 @@ export async function action({ request }: ActionFunctionArgs): Promise<
       } else {
         await createExpense(
           {
-            title: name,
+            title,
             amount: parseFloat(amount.replace(/[^0-9.]/g, '')),
             unit: unit ? parseFloat(unit.replace(/[^0-9.]/g, '')) : null,
             datetime: new Date(Date.parse(date)),

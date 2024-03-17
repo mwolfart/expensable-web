@@ -51,7 +51,7 @@ export const loginSchema = yup.object({
 })
 
 export const expenseSchema = yup.object().shape({
-  name: yup.string().required(ErrorCodes.NAME_REQUIRED),
+  title: yup.string().required(ErrorCodes.NAME_REQUIRED),
   amount: yup.number().required(ErrorCodes.AMOUNT_REQUIRED),
   unit: yup.number().nullable(),
   date: yup
@@ -59,6 +59,19 @@ export const expenseSchema = yup.object().shape({
     .test('is-date-valid', ErrorCodes.BAD_DATE_FORMAT, isDateValid)
     .required(ErrorCodes.DATE_REQUIRED),
   installments: yup.number().required(ErrorCodes.INSTALLMENTS_REQUIRED),
+})
+
+export const transactionSchema = yup.object().shape({
+  title: yup.string().required(ErrorCodes.TITLE_REQUIRED),
+  date: yup
+    .string()
+    .test('is-date-valid', ErrorCodes.BAD_DATE_FORMAT, isDateValid)
+    .required(ErrorCodes.DATE_REQUIRED),
+  expenses: yup.array(
+    expenseSchema.shape({
+      date: yup.string().optional(),
+    }),
+  ),
 })
 
 export const fixedExpenseSchema = yup.object().shape({

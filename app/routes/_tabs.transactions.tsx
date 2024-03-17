@@ -115,7 +115,7 @@ export async function action({ request }: ActionFunctionArgs): Promise<
         userId,
       }
 
-      if (id !== '') {
+      if (id) {
         await updateTransaction({ id, ...transaction }, expenses)
       } else {
         await createTransaction(transaction, expenses)

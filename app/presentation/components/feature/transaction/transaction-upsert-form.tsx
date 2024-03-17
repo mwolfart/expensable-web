@@ -1,13 +1,11 @@
 import type { SerializeFrom } from '@remix-run/server-runtime'
-import type { FormEventHandler } from 'react'
 import type {
   FetcherResponse,
-  AddTransactionFormErrors,
   ExpenseWithCategory,
   TransactionExpenseInput,
   TransactionWithExpenses,
 } from '~/utils/types'
-import { useState, useReducer, useEffect, useContext } from 'react'
+import { useState, useEffect, useContext } from 'react'
 import { Form, useFetcher } from '@remix-run/react'
 import { useTranslations } from 'use-intl'
 import { TransactionExpenseRow } from './transaction-expense-row'
@@ -18,6 +16,8 @@ import { TransactionNewExpenseRow } from './transaction-new-expense-row'
 import { FaTimes } from 'react-icons/fa'
 import { ToastContext, ToastType } from '../../../providers/toast'
 import { v4 as uuidv4 } from 'uuid'
+import { useFormik } from 'formik'
+import { transactionSchema } from '~/utils/schemas/form'
 
 type Props = {
   onGoBack: () => unknown
@@ -25,14 +25,6 @@ type Props = {
   initialExpenses?: ExpenseWithCategory[]
   isLoadingExpenses?: boolean
 }
-
-const errorsReducer = (
-  state: AddTransactionFormErrors,
-  action: AddTransactionFormErrors,
-) => ({
-  ...state,
-  ...action,
-})
 
 export function UpsertTransactionForm({
   onGoBack,
@@ -44,18 +36,38 @@ export function UpsertTransactionForm({
   const fetcher = useFetcher<FetcherResponse>()
   const { showToast } = useContext(ToastContext)
 
-  const initialErrors = {
-    title: '',
-    date: '',
-    expenses: '',
-  }
-  const [formErrors, updateFormErrors] = useReducer(
-    errorsReducer,
-    initialErrors,
-  )
   const [expenses, setExpenses] = useState<TransactionExpenseInput[]>([])
   const [dirtyExpenses, setDirtyExpenses] = useState<string[]>([])
   const [expensesToAdd, setExpensesToAdd] = useState(0)
+  const [expenseError, setExpenseError] = useState<string>()
+
+  const initialFormData = initialData
+    ? {
+        title: initialData.location,
+        date: new Date(initialData.datetime).toISOString().substring(0, 10),
+      }
+    : {
+        title: '',
+        date: '',
+      }
+
+  const { values, errors, handleSubmit, setFieldValue, setFieldError } =
+    useFormik({
+      initialValues: initialFormData,
+      validationSchema: transactionSchema,
+      validateOnBlur: false,
+      validateOnChange: false,
+      onSubmit: (form) => {
+        const data = new FormData()
+        data.set('title', form.title)
+        data.set('date', form.date.toString())
+        if (initialData) {
+          data.set('id', initialData.id)
+        }
+        data.set('expenses', JSON.stringify(expenses))
+        fetcher.submit(data, { method: 'put', action: '/transactions' })
+      },
+    })
 
   useEffect(() => {
     if (initialExpenses) {
@@ -75,8 +87,10 @@ export function UpsertTransactionForm({
   }, [initialExpenses])
 
   useEffect(() => {
-    if (fetcher.data?.errors) {
-      updateFormErrors(fetcher.data.errors)
+    if (fetcher.data?.errors?.expenses) {
+      setExpenseError(fetcher.data?.errors?.expenses)
+    } else if (fetcher.data?.errors) {
+      showToast(ToastType.ERROR, fetcher.data?.errors)
     } else if (fetcher.data?.success) {
       showToast(
         ToastType.SUCCESS,
@@ -85,21 +99,6 @@ export function UpsertTransactionForm({
       onGoBack()
     }
   }, [fetcher.data])
-
-  useEffect(() => {
-    updateFormErrors({ ...formErrors, expenses: '' })
-  }, [dirtyExpenses])
-
-  const onSubmit: FormEventHandler<HTMLFormElement> = (evt) => {
-    evt.preventDefault()
-    const data = new FormData(evt.currentTarget)
-    data.set('name', evt.currentTarget.title)
-    if (initialData) {
-      data.set('id', initialData.id)
-    }
-    data.set('expenses', JSON.stringify(expenses))
-    fetcher.submit(data, { method: 'put', action: '/transactions' })
-  }
 
   const onCancelDirtyExpense = (key: string) => {
     setDirtyExpenses(dirtyExpenses.filter((k) => k !== key))
@@ -129,32 +128,27 @@ export function UpsertTransactionForm({
   return (
     <Form
       className="grid h-full grid-rows-[min-content] gap-8 lg:grid-cols-2 pb-8"
-      onSubmit={onSubmit}
+      onSubmit={handleSubmit}
     >
       <label>
         {t('common.title')}
         <input
           name="title"
-          className={cxFormInput({ hasError: formErrors.title })}
-          defaultValue={initialData?.location}
-          onChange={() =>
-            updateFormErrors({ ...formErrors, title: '', expenses: '' })
-          }
+          className={cxFormInput({ hasError: errors.title })}
+          value={values.title}
+          onChange={(e) => setFieldValue('title', e.target.value)}
+          onBlur={() => setFieldError('title', undefined)}
         />
       </label>
       <label>
         {t('common.date')}
         <input
-          className={cxFormInput({ hasError: formErrors.date })}
+          className={cxFormInput({ hasError: errors.date })}
           name="date"
           type="date"
-          defaultValue={
-            initialData?.datetime &&
-            new Date(initialData.datetime).toISOString().substring(0, 10)
-          }
-          onChange={() =>
-            updateFormErrors({ ...formErrors, date: '', expenses: '' })
-          }
+          value={values.date}
+          onChange={(e) => setFieldValue('date', e.target.value)}
+          onBlur={() => setFieldError('title', undefined)}
         />
       </label>
       <div className="flex flex-col lg:col-span-2">
@@ -164,10 +158,10 @@ export function UpsertTransactionForm({
             <p
               className={cxWithFade(
                 'flex-grow font-bold text-error',
-                Boolean(formErrors.expenses),
+                Boolean(expenseError),
               )}
             >
-              {formErrors.expenses}
+              {expenseError}
             </p>
           </div>
           {isLoadingExpenses ? (

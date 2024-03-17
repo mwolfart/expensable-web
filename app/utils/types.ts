@@ -68,7 +68,8 @@ export type FetcherResponse = {
   success?: boolean
   method?: string
   error?: string
-  errors?: object
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  errors?: any
 }
 
 export type FixedExpenseUpdate = Omit<

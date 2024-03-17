@@ -33,14 +33,14 @@ export function UpsertExpenseDialog({ onUpserted, initialData }: Props) {
 
   const initialFormData = initialData
     ? {
-        name: initialData.title,
+        title: initialData.title,
         date: new Date(initialData.datetime).toISOString().substring(0, 10),
         amount: initialData.amount,
         unit: initialData.unit,
         installments: initialData.installments,
       }
     : {
-        name: '',
+        title: '',
         date: '',
         unit: undefined,
         amount: 0,
@@ -55,7 +55,7 @@ export function UpsertExpenseDialog({ onUpserted, initialData }: Props) {
       validateOnChange: false,
       onSubmit: (form) => {
         const data = new FormData()
-        data.set('name', form.name)
+        data.set('title', form.title)
         data.set('date', form.date.toString())
         data.set('amount', form.amount.toString())
         if (form.unit) {
@@ -117,11 +117,11 @@ export function UpsertExpenseDialog({ onUpserted, initialData }: Props) {
         {t('common.name')}
         <input
           required
-          className={cxFormInput({ hasError: errors.name })}
-          value={values.name}
-          name="name"
-          onChange={(e) => setFieldValue('name', e.target.value)}
-          onBlur={() => setFieldError('name', undefined)}
+          className={cxFormInput({ hasError: errors.title })}
+          value={values.title}
+          name="title"
+          onChange={(e) => setFieldValue('title', e.target.value)}
+          onBlur={() => setFieldError('title', undefined)}
         />
       </label>
       <label className="col-span-2">

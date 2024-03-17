@@ -6,7 +6,7 @@ const MAX_INSTALLMENTS = 36
 
 export const expenseSchema = yup.object().shape({
   id: yup.string(),
-  name: yup.string().required(ErrorCodes.NAME_REQUIRED),
+  title: yup.string().required(ErrorCodes.NAME_REQUIRED),
   amount: yup
     .string()
     .matches(/^\d+(\.\d+)?$/, ErrorCodes.AMOUNT_INVALID)
