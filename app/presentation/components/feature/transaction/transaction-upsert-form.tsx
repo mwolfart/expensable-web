@@ -93,6 +93,7 @@ export function UpsertTransactionForm({
   const onSubmit: FormEventHandler<HTMLFormElement> = (evt) => {
     evt.preventDefault()
     const data = new FormData(evt.currentTarget)
+    data.set('name', evt.currentTarget.title)
     if (initialData) {
       data.set('id', initialData.id)
     }

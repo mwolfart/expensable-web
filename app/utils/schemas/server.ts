@@ -35,7 +35,11 @@ export const transactionSchema = yup.object().shape({
     .string()
     .test('is-date-valid', ErrorCodes.BAD_DATE_FORMAT, isDateValid)
     .required(ErrorCodes.DATE_REQUIRED),
-  expenses: yup.string().required(ErrorCodes.EXPENSES_REQUIRED),
+  expenses: yup.array(
+    expenseSchema.shape({
+      date: yup.string().optional(),
+    }),
+  ),
 })
 
 export const fixedExpenseSchema = yup.object().shape({

@@ -1,4 +1,7 @@
-import type { AddTransactionFormErrors } from '~/utils/types'
+import type {
+  AddTransactionFormErrors,
+  TransactionExpenseInput,
+} from '~/utils/types'
 import type {
   LoaderFunctionArgs,
   ActionFunctionArgs,
@@ -26,7 +29,6 @@ import { getLoggedUserId } from '~/infra/session.server'
 import {
   areAllValuesEmpty,
   cxWithGrowFadeLg,
-  parseExpenses,
   validateServerSchema,
 } from '~/utils/helpers'
 import { AiOutlinePlus } from 'react-icons/ai'
@@ -86,7 +88,11 @@ export async function action({ request }: ActionFunctionArgs): Promise<
   const res = { method }
   if (method === 'PUT') {
     const formData = await request.formData()
-    const dataObj = Object.fromEntries(formData.entries())
+    const expensesJson = formData.get('expenses') as string
+    const dataObj = {
+      ...Object.fromEntries(formData.entries()),
+      expenses: JSON.parse(expensesJson),
+    }
     const validationErrors = validateServerSchema(transactionSchema, dataObj)
     if (validationErrors !== null) {
       return json({ ...validationErrors, ...res }, { status: 400 })
@@ -95,15 +101,7 @@ export async function action({ request }: ActionFunctionArgs): Promise<
     const id = formData.get('id') as string
     const title = formData.get('title') as string
     const date = formData.get('date') as string
-    const expensesJson = formData.get('expenses') as string
-
-    const expenses = parseExpenses(expensesJson)
-    if (!expenses) {
-      return json(
-        { errors: { expenses: ErrorCodes.BAD_FORMAT }, ...res },
-        { status: 400 },
-      )
-    }
+    const expenses = dataObj.expenses as TransactionExpenseInput[]
 
     try {
       const userId = await getLoggedUserId(request)
