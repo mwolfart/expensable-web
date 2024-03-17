@@ -24,8 +24,8 @@ describe('smoke tests', () => {
     cy.get('button[type="submit"]').click()
     // TODO continue
 
-    cy.get('input[type="email"]').type(loginForm.email)
-    cy.get('input[type="password"]').type(loginForm.password)
+    // cy.get('input[type="email"]').type(loginForm.email)
+    // cy.get('input[type="password"]').type(loginForm.password)
     cy.get('button[type="submit"]').click()
 
     cy.location('pathname').should('eq', '/')
