@@ -27,6 +27,7 @@ import {
   areAllValuesEmpty,
   cxWithGrowFadeLg,
   parseExpenses,
+  validateServerSchema,
 } from '~/utils/helpers'
 import { AiOutlinePlus } from 'react-icons/ai'
 import { PaginationLimitSelect } from '~/presentation/components/ui/pagination-limit-select'
@@ -36,6 +37,7 @@ import { TransactionFilterComponent } from '~/presentation/components/feature/tr
 import { ErrorCodes } from '~/utils/enum'
 import { DataListContainer } from '~/presentation/components/layout/data-list-container'
 import { handleError } from '~/entry.server'
+import { transactionSchema } from '~/utils/schemas/server'
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const userId = await getLoggedUserId(request)
@@ -84,27 +86,18 @@ export async function action({ request }: ActionFunctionArgs): Promise<
   const res = { method }
   if (method === 'PUT') {
     const formData = await request.formData()
-    const id = formData.get('id')
-    const title = formData.get('title')
-    const date = formData.get('date')
-    const expensesJson = formData.get('expenses')
-
-    if (typeof title !== 'string' || !title.length) {
-      return json(
-        { errors: { title: ErrorCodes.TITLE_REQUIRED }, ...res },
-        { status: 400 },
-      )
+    const dataObj = Object.fromEntries(formData.entries())
+    const validationErrors = validateServerSchema(transactionSchema, dataObj)
+    if (validationErrors !== null) {
+      return json({ ...validationErrors, ...res }, { status: 400 })
     }
 
-    if (typeof date !== 'string' || isNaN(Date.parse(date))) {
-      return json(
-        { errors: { date: ErrorCodes.BAD_DATE_FORMAT }, ...res },
-        { status: 400 },
-      )
-    }
+    const id = formData.get('id') as string
+    const title = formData.get('title') as string
+    const date = formData.get('date') as string
+    const expensesJson = formData.get('expenses') as string
 
-    const expenses =
-      typeof expensesJson === 'string' && parseExpenses(expensesJson)
+    const expenses = parseExpenses(expensesJson)
     if (!expenses) {
       return json(
         { errors: { expenses: ErrorCodes.BAD_FORMAT }, ...res },
@@ -124,7 +117,7 @@ export async function action({ request }: ActionFunctionArgs): Promise<
         userId,
       }
 
-      if (typeof id === 'string' && id !== '') {
+      if (id !== '') {
         await updateTransaction({ id, ...transaction }, expenses)
       } else {
         await createTransaction(transaction, expenses)

@@ -5,6 +5,7 @@ import * as yup from 'yup'
 const MAX_INSTALLMENTS = 36
 
 export const expenseSchema = yup.object().shape({
+  id: yup.string(),
   name: yup.string().required(ErrorCodes.NAME_REQUIRED),
   amount: yup
     .string()
@@ -25,6 +26,16 @@ export const expenseSchema = yup.object().shape({
     )
     .required(ErrorCodes.INSTALLMENTS_REQUIRED),
   categories: yup.string(),
+})
+
+export const transactionSchema = yup.object().shape({
+  id: yup.string(),
+  title: yup.string().required(ErrorCodes.TITLE_REQUIRED),
+  date: yup
+    .string()
+    .test('is-date-valid', ErrorCodes.BAD_DATE_FORMAT, isDateValid)
+    .required(ErrorCodes.DATE_REQUIRED),
+  expensesJson: yup.string().required(ErrorCodes.EXPENSES_REQUIRED),
 })
 
 export const fixedExpenseSchema = yup.object().shape({

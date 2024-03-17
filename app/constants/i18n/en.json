@@ -50,9 +50,11 @@
         "errors": {
             "invalid-field": "{field} is invalid.",
             "required-field": "{field} is required",
-            "password-short": "Password must have at least 8 characters",
-            "password-rules": "Password must have at least each of the following: one uppercase letter, one lowercase letter, one number and one symbol",
-            "password-mismatch": "Passwords do not match"
+            "invalid-id": "The ID specified wasn't found",
+            "invalid-amount": "The amount specified is not valid",
+            "invalid-date": "The date informed is invalid",
+            "date-required": "Date is a required field",
+            "bad-format": "Data sent is malformed or invalid"
         }
     },
     "auth": {
@@ -74,7 +76,10 @@
             "invalid-credentials": "The credentials entered are invalid.",
             "account-exists": "This e-mail is already associated with another account. Try choosing a different e-mail.",
             "no-password-reset-code": "The password reset code was not provided or is invalid.",
-            "unknown-error": "An unknown error occured. Please refresh the page and try again or contact the website owner."
+            "unknown-error": "An unknown error occured. Please refresh the page and try again or contact the website owner.",
+            "password-short": "Password must have at least 8 characters",
+            "password-rules": "Password must have at least each of the following: one uppercase letter, one lowercase letter, one number and one symbol",
+            "password-mismatch": "Passwords do not match"
         }
     },
     "home": {
@@ -107,6 +112,14 @@
         "varying-amounts": "This expense has varying amounts per month",
         "add-months": "Add month values",
         "errors": {
+            "amount-per-month-invalid": "Specified amounts per month are invalid",
+            "amount-per-month-required": "Amounts per month can't be empty",
+            "amount-of-months-invalid": "Specified amount of months is invalid",
+            "amount-of-months-required": "Amount of month is required",
+            "change-values-invalid": "The value for varying costs field is invalid",
+            "bad-category-data": "Category data is malformed or invalid",
+            "installments-required": "Number of installments is required",
+            "installments-too-many": "The number of installments is too high",
             "unknown": "An unknown error occured. Please refresh the page and try again."
         }
     },
@@ -117,7 +130,10 @@
         "deleted": "Receipt deleted successfully!",
         "saved": "Receipt saved successfully!",
         "new-expense": "New item",
-        "cancel-all": "Cancel all"
+        "cancel-all": "Cancel all",
+        "errors": {
+            "expenses-required": "No expenses were informed"
+        }
     },
     "dashboard": {
         "viewing-data-for": "Viewing data for:",

@@ -1,3 +1,4 @@
+import type { AnyObject, ObjectSchema, ValidationError } from 'yup'
 import { parseCategoryInput } from './parser'
 
 export const isFixedExpenseAmountPerMonthValid = (value?: string) => {
@@ -25,5 +26,24 @@ export const isCategoryListValid = (value?: string) => {
     return true
   } catch {
     return false
+  }
+}
+
+export const validateServerSchema = (
+  schema: ObjectSchema<AnyObject>,
+  data: object,
+) => {
+  try {
+    schema.validateSync(data, { abortEarly: false })
+    return null
+  } catch (e) {
+    const vErr = e as ValidationError
+    const errorObject = vErr.inner.reduce(
+      (acc, err) => ({ ...acc, [err.path || 'unknown']: err.errors[0] }),
+      {},
+    )
+    return {
+      errors: errorObject,
+    }
   }
 }

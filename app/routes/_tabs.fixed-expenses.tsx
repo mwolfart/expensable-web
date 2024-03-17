@@ -26,6 +26,7 @@ import {
 import { FixedExpenseList } from '~/presentation/components/feature/fixed-expense/fixed-expense-list'
 import { DataListContainer } from '~/presentation/components/layout/data-list-container'
 import { handleError } from '~/entry.server'
+import { validateServerSchema } from '~/utils/helpers'
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const userId = await getLoggedUserId(request)
@@ -55,21 +56,9 @@ export async function action({ request }: ActionFunctionArgs): Promise<
   if (method === 'PUT') {
     const formData = await request.formData()
     const dataObj = Object.fromEntries(formData.entries())
-    try {
-      fixedExpenseSchema.validateSync(dataObj, { abortEarly: false })
-    } catch (e) {
-      const vErr = e as ValidationError
-      const errorObject = vErr.inner.reduce(
-        (acc, err) => ({ ...acc, [err.path || 'unknown']: err.errors[0] }),
-        {},
-      )
-      return json(
-        {
-          errors: errorObject,
-          ...res,
-        },
-        { status: 400 },
-      )
+    const validationErrors = validateServerSchema(fixedExpenseSchema, dataObj)
+    if (validationErrors !== null) {
+      return json({ ...validationErrors, ...res }, { status: 400 })
     }
 
     const id = formData.get('id')

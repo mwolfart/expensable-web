@@ -50,9 +50,11 @@
         "errors": {
             "invalid-field": "{field} está inválido.",
             "required-field": "{field} é obrigatório",
-            "password-short": "Senha precisa ter ao menos 8 carácteres",
-            "password-rules": "Senha precisa ter ao menos um de cada: uma letra maiúscula, uma letra minúscula, um número e um símbolo",
-            "password-mismatch": "Senhas não coincidem"
+            "invalid-id": "O ID especificado não foi encontrado",
+            "invalid-amount": "Quantia especificada é inválida",
+            "invalid-date": "A data informada não é válida",
+            "date-required": "O campo data é obrigatório",
+            "bad-format": "Dados enviados estão mal estruturados ou inválidos"
         }
     },
     "auth": {
@@ -74,7 +76,10 @@
             "invalid-credentials": "As credenciais digitadas estão incorretas.",
             "account-exists": "Este e-mail já está associado com outra conta. Tente escolher outro e-mail.",
             "no-password-reset-code": "O código de redefinição de senha está incorreto ou não foi fornecido.",
-            "unknown-error": "Um erro desconhecido aconteceu. Por favor atualize a página ou contate o dono do website."
+            "unknown-error": "Um erro desconhecido aconteceu. Por favor atualize a página ou contate o dono do website.",
+            "password-short": "Senha precisa ter ao menos 8 carácteres",
+            "password-rules": "Senha precisa ter ao menos um de cada: uma letra maiúscula, uma letra minúscula, um número e um símbolo",
+            "password-mismatch": "Senhas não coincidem"
         }
     },
     "home": {
@@ -107,6 +112,14 @@
         "varying-amounts": "Esta despesa possui valores variáveis durante os meses",
         "add-months": "Adicionar meses e valores",
         "errors": {
+            "amount-per-month-invalid": "Quantia por mês informadas são inválidas",
+            "amount-per-month-required": "O campo de quantia por mês é obrigatório",
+            "amount-of-months-invalid": "Número de meses informado é inválido",
+            "amount-of-months-required": "O campo número de meses é obrigatório",
+            "change-values-invalid": "O valor para custos variados está inválido",
+            "bad-category-data": "Dados de categorias mal estruturados ou inválidos",
+            "installments-required": "Número de parcelas é obrigatório",
+            "installments-too-many": "O número de parcelas informado é muito alto",
             "unknown": "Um erro desconhecido ocorreu. Por favor atualize a página e tente novamente."
         }
     },
@@ -117,7 +130,10 @@
         "deleted": "Nota fiscal excluída com sucesso!",
         "saved": "Nota fiscal salva com sucesso!",
         "new-expense": "Novo item",
-        "cancel-all": "Cancelar todos"
+        "cancel-all": "Cancelar todos",
+        "errors": {
+            "expenses-required": "Nenhuma despesa foi informada"
+        }
     },
     "dashboard": {
         "viewing-data-for": "Visualizando dados para:",

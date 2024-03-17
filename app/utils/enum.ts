@@ -28,4 +28,5 @@ export enum ErrorCodes {
   BAD_FORMAT = 'bad_format',
   INSTALLMENTS_REQUIRED = 'installments_required',
   TOO_MANY_INSTALLMENTS = 'too_many_installments',
+  EXPENSES_REQUIRED = 'expenses_required',
 }
