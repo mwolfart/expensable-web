@@ -7,6 +7,8 @@ import { MdOutlineEdit } from 'react-icons/md'
 import { useFetcher, useNavigate } from '@remix-run/react'
 import { useContext, useEffect } from 'react'
 import { ToastContext, ToastType } from '../../../providers/toast'
+import { DialogContext } from '~/presentation/providers/dialog'
+import { DeletionPrompt } from '../common/deletion-prompt'
 
 type Props = {
   expense: SerializeFrom<FixedExpenseWithDetails>
@@ -18,6 +20,7 @@ export function FixedExpenseItem({ expense }: Props) {
   const navigate = useNavigate()
 
   const { showToast } = useContext(ToastContext)
+  const { openDialog, closeDialog } = useContext(DialogContext)
 
   useEffect(() => {
     if (fetcher.data?.method === 'delete' && fetcher.data.success) {
@@ -32,6 +35,11 @@ export function FixedExpenseItem({ expense }: Props) {
       { id: expense.id },
       { method: 'delete', action: '/fixed-expenses' },
     )
+    closeDialog()
+  }
+
+  const onDeletePrompt = () => {
+    openDialog(<DeletionPrompt onConfirm={onDelete} onCancel={closeDialog} />)
   }
 
   const onEdit = () => {
@@ -73,7 +81,7 @@ export function FixedExpenseItem({ expense }: Props) {
         </button>
         <button
           className="btn-outline btn-primary min-h-8 btn hidden h-10 w-24 sm:block"
-          onClick={onDelete}
+          onClick={onDeletePrompt}
         >
           {t('common.delete')}
         </button>
@@ -87,7 +95,7 @@ export function FixedExpenseItem({ expense }: Props) {
         <button
           className="btn-outline btn-primary min-h-8 btn block h-10 sm:hidden"
           aria-label={t('common.delete')}
-          onClick={onDelete}
+          onClick={onDeletePrompt}
         >
           <BsTrash size={20} />
         </button>

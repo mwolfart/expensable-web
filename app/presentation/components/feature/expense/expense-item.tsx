@@ -10,6 +10,7 @@ import { CategoryContext } from '~/presentation/providers/category'
 import { ToastContext, ToastType } from '../../../providers/toast'
 import { DialogContext } from '../../../providers/dialog'
 import { UpsertExpenseDialog } from './expense-upsert-dialog'
+import { DeletionPrompt } from '../common/deletion-prompt'
 
 type Props = {
   expense: SerializeFrom<ExpenseWithCategory>
@@ -21,7 +22,7 @@ export function ExpenseItem({ expense }: Props) {
   const revalidator = useRevalidator()
 
   const { showToast } = useContext(ToastContext)
-  const { openDialog } = useContext(DialogContext)
+  const { openDialog, closeDialog } = useContext(DialogContext)
   const { map: categoryMap } = useContext(CategoryContext)
 
   useEffect(() => {
@@ -35,6 +36,11 @@ export function ExpenseItem({ expense }: Props) {
       { id: expense.id },
       { method: 'delete', action: '/expenses' },
     )
+    closeDialog()
+  }
+
+  const onDeletePrompt = () => {
+    openDialog(<DeletionPrompt onConfirm={onDelete} onCancel={closeDialog} />)
   }
 
   const onEdit = () => {
@@ -87,7 +93,7 @@ export function ExpenseItem({ expense }: Props) {
         </button>
         <button
           className="btn-outline btn-primary min-h-8 btn hidden h-10 w-24 sm:block"
-          onClick={onDelete}
+          onClick={onDeletePrompt}
         >
           {t('common.delete')}
         </button>
@@ -101,7 +107,7 @@ export function ExpenseItem({ expense }: Props) {
         <button
           className="btn-outline btn-primary min-h-8 btn block h-10 sm:hidden"
           aria-label={t('common.delete')}
-          onClick={onDelete}
+          onClick={onDeletePrompt}
         >
           <BsTrash size={20} />
         </button>

@@ -47,6 +47,8 @@
         "english": "Inglês",
         "fixed-expense": "Despesa fixa",
         "this-is-fixed": "Esta despesa é fixa",
+        "confirm-deletion": "Confirmar exclusão",
+        "confirm-deletion-text": "Você tem certeza de que quer excluir este item? Esta ação é irreversível.",
         "errors": {
             "invalid-field": "{field} está inválido.",
             "required-field": "{field} é obrigatório",

@@ -8,6 +8,8 @@ import { MdOutlineEdit, MdOutlineCheck, MdOutlineClear } from 'react-icons/md'
 import { useTranslations } from 'use-intl'
 import { cxFormInput } from '~/utils/helpers'
 import { ToastContext, ToastType } from '../../../providers/toast'
+import { DialogContext } from '~/presentation/providers/dialog'
+import { DeletionPrompt } from '../common/deletion-prompt'
 
 type Props = {
   category: Category
@@ -18,6 +20,7 @@ export function CategoryItem({ category }: Props) {
   const fetcher = useFetcher<FetcherResponse>()
 
   const { showToast } = useContext(ToastContext)
+  const { openDialog, closeDialog } = useContext(DialogContext)
 
   const [isEditing, setEditing] = useState(false)
   const [value, setValue] = useState(category.title)
@@ -43,8 +46,14 @@ export function CategoryItem({ category }: Props) {
     setEditing(true)
   }
 
-  const onDelete = () =>
+  const onDelete = () => {
     fetcher.submit({ id: category.id }, { method: 'delete' })
+    closeDialog()
+  }
+
+  const onDeletePrompt = () => {
+    openDialog(<DeletionPrompt onConfirm={onDelete} onCancel={closeDialog} />)
+  }
 
   const onSubmitChange = () => {
     fetcher.submit(
@@ -109,7 +118,7 @@ export function CategoryItem({ category }: Props) {
           <button
             className="btn-ghost btn p-2 text-primary"
             aria-label={t('common.delete')}
-            onClick={onDelete}
+            onClick={onDeletePrompt}
           >
             <BsTrash size={20} />
           </button>

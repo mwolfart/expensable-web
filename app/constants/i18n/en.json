@@ -47,6 +47,8 @@
         "english": "English",
         "fixed-expense": "Fixed expense",
         "this-is-fixed": "This is a fixed expense",
+        "confirm-deletion": "Confirm deletion",
+        "confirm-deletion-text": "Are you sure you want to delete this? This action is irreversible.",
         "errors": {
             "invalid-field": "{field} is invalid.",
             "required-field": "{field} is required",

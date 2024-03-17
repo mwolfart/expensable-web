@@ -13,6 +13,8 @@ import { useContext, useEffect, useState } from 'react'
 import { BeatLoader } from 'react-spinners'
 import { TransactionItemExpense } from './transaction-item-expense'
 import { ToastContext, ToastType } from '../../../providers/toast'
+import { DialogContext } from '~/presentation/providers/dialog'
+import { DeletionPrompt } from '../common/deletion-prompt'
 
 type Props = {
   transaction: SerializeFrom<TransactionWithExpenses>
@@ -27,8 +29,11 @@ export function TransactionItem({ transaction }: Props) {
   const t = useTranslations()
   const navigate = useNavigate()
   const { showToast } = useContext(ToastContext)
+  const { openDialog, closeDialog } = useContext(DialogContext)
+
   const fetcher = useFetcher<FetcherResponse>()
   const expensesFetcher = useFetcher<ExpensesFetcher>()
+
   const [expenses, setExpenses] = useState<ExpenseWithCategory[]>([])
   const [expenseTotal, setExpenseTotal] = useState(0)
 
@@ -59,6 +64,11 @@ export function TransactionItem({ transaction }: Props) {
       { id: transaction.id },
       { method: 'delete', action: '/transactions' },
     )
+    closeDialog()
+  }
+
+  const onDeletePrompt = () => {
+    openDialog(<DeletionPrompt onConfirm={onDelete} onCancel={closeDialog} />)
   }
 
   const onEdit = () => {
@@ -109,7 +119,7 @@ export function TransactionItem({ transaction }: Props) {
         </button>
         <button
           className="btn-outline btn-primary min-h-8 btn hidden h-10 w-24 sm:block"
-          onClick={onDelete}
+          onClick={onDeletePrompt}
         >
           {t('common.delete')}
         </button>
@@ -123,7 +133,7 @@ export function TransactionItem({ transaction }: Props) {
         <button
           className="btn-outline btn-primary min-h-8 btn block h-10 sm:hidden"
           aria-label={t('common.delete')}
-          onClick={onDelete}
+          onClick={onDeletePrompt}
         >
           <BsTrash size={20} />
         </button>
