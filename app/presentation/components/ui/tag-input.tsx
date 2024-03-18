@@ -58,6 +58,7 @@ export function TagInput({
 
   const onKeyDown: KeyboardEventHandler<HTMLInputElement> = (evt) => {
     if (evt.key === 'Enter' && inputRef.current) {
+      evt.preventDefault()
       if (displayedSuggestions.length > 0) {
         const newTag = displayedSuggestions[0]
         onTagAdd(newTag)

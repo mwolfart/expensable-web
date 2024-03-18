@@ -18,7 +18,7 @@ export const expenseSchema = yup.object().shape({
     .required(ErrorCodes.DATE_REQUIRED),
   installments: yup
     .string()
-    .matches(/^\d$/)
+    .matches(/^\d+$/)
     .test(
       'is-less-than-max',
       ErrorCodes.TOO_MANY_INSTALLMENTS,
