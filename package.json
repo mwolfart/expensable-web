@@ -38,6 +38,7 @@
     "daisyui": "^4.4.19",
     "firebase": "^10.7.0",
     "firebase-admin": "^11.11.1",
+    "focus-trap-react": "^10.2.3",
     "formik": "^2.4.5",
     "isbot": "^3.7.1",
     "jsonwebtoken": "^9.0.2",

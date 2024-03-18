@@ -1,5 +1,6 @@
 import type { FC, PropsWithChildren, ReactNode } from 'react'
 import { createContext, useState, useCallback } from 'react'
+import FocusTrap from 'focus-trap-react'
 import cx from 'classnames'
 
 export const DialogContext = createContext({
@@ -32,16 +33,18 @@ export const DialogProvider: FC<PropsWithChildren> = ({ children }) => {
   return (
     <DialogContext.Provider value={{ openDialog, closeDialog }}>
       {isOpen && (
-        <div className="fixed inset-0 z-10">
-          <div className="absolute inset-0 bg-black opacity-20"></div>
-          <div className="relative flex h-screen">
-            <div className={cxContentWrapper}>
-              <div className="m-8 overflow-y-auto overflow-x-hidden">
-                {content}
+        <FocusTrap>
+          <div className="fixed inset-0 z-10">
+            <div className="absolute inset-0 bg-black opacity-20"></div>
+            <div className="relative flex h-screen">
+              <div className={cxContentWrapper}>
+                <div className="m-8 overflow-y-auto overflow-x-hidden">
+                  {content}
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        </FocusTrap>
       )}
       {children}
     </DialogContext.Provider>
