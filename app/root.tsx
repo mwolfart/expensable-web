@@ -17,7 +17,7 @@ import { i18n } from '~/constants'
 import { IntlProvider } from 'use-intl'
 import tailwindStylesheetUrl from './styles/tailwind.css'
 import { getLoggedUserProfile } from './infra/session.server'
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import { LanguageProvider } from './presentation/providers/language'
 
 const COOKIE_LANGUAGE = 'expensableCookieLanguage'
@@ -30,7 +30,10 @@ export const meta: MetaFunction = () => [
   {
     charset: 'utf-8',
     title: 'Expensable',
-    viewport: 'width=device-width,initial-scale=1',
+  },
+  {
+    name: 'viewport',
+    content: 'width=device-width,initial-scale=1.0',
   },
 ]
 

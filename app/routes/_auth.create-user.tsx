@@ -1,4 +1,4 @@
-import type { ActionFunctionArgs, MetaFunction } from '@remix-run/node'
+import type { ActionFunctionArgs } from '@remix-run/node'
 import { json } from '@remix-run/node'
 import { createUser } from '~/infra/models/user.server'
 import { useTranslations } from 'use-intl'
@@ -39,14 +39,6 @@ export async function action({ request }: ActionFunctionArgs) {
   } catch (e) {
     return json({ error: ErrorCodes.BAD_FORMAT }, { status: 400 })
   }
-}
-
-export const meta: MetaFunction = () => {
-  return [
-    {
-      title: 'Sign Up',
-    },
-  ]
 }
 
 export default function CreateUser() {

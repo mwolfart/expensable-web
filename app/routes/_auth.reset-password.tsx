@@ -1,4 +1,3 @@
-import type { MetaFunction } from '@remix-run/node'
 import { useTranslations } from 'use-intl'
 import {
   Form,
@@ -14,14 +13,6 @@ import { passwordSchema } from '~/utils/schemas/form'
 import { useFormik } from 'formik'
 import { confirmPasswordReset } from 'firebase/auth'
 import { clientAuth } from '~/infra/firebase.client'
-
-export const meta: MetaFunction = () => {
-  return [
-    {
-      title: 'Reset Password',
-    },
-  ]
-}
 
 export default function ResetPassword() {
   const t = useTranslations()

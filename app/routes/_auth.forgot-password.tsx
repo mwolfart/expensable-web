@@ -1,4 +1,3 @@
-import type { MetaFunction } from '@remix-run/node'
 import { useTranslations } from 'use-intl'
 import { useNavigate, useOutletContext } from '@remix-run/react'
 import { useState } from 'react'
@@ -11,14 +10,6 @@ import { sendPasswordResetEmail } from 'firebase/auth'
 import { clientAuth } from '~/infra/firebase.client'
 
 const CONFIRMATION_TIMEOUT = 5000
-
-export const meta: MetaFunction = () => {
-  return [
-    {
-      title: 'Forgot Password',
-    },
-  ]
-}
 
 export default function ForgotPassword() {
   const t = useTranslations()

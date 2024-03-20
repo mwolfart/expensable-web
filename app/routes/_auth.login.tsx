@@ -1,4 +1,4 @@
-import type { ActionFunctionArgs, MetaFunction } from '@remix-run/node'
+import type { ActionFunctionArgs } from '@remix-run/node'
 import { json } from '@remix-run/node'
 import { useEffect, useState } from 'react'
 import {
@@ -36,14 +36,6 @@ export async function action({ request }: ActionFunctionArgs) {
   } catch (error) {
     return json({ error: ErrorCodes.LOGIN_UNKNOWN }, { status: 500 })
   }
-}
-
-export const meta: MetaFunction = () => {
-  return [
-    {
-      title: 'Login',
-    },
-  ]
 }
 
 export default function Login() {
