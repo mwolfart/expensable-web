@@ -11,7 +11,7 @@ import { FaMoneyBillTransfer } from 'react-icons/fa6'
 import { CategoryProvider } from '~/presentation/providers/category'
 import { ToastProvider } from '~/presentation/providers/toast'
 import { useContext } from 'react'
-import { LanguageContext } from '~/provider/language'
+import { LanguageContext } from '~/presentation/providers/language'
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const user = await getLoggedUserProfile(request)

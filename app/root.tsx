@@ -18,7 +18,7 @@ import { IntlProvider } from 'use-intl'
 import tailwindStylesheetUrl from './styles/tailwind.css'
 import { getLoggedUserProfile } from './infra/session.server'
 import { useState } from 'react'
-import { LanguageProvider } from './provider/language'
+import { LanguageProvider } from './presentation/providers/language'
 
 export const links: LinksFunction = () => {
   return [{ rel: 'stylesheet', href: tailwindStylesheetUrl }]
