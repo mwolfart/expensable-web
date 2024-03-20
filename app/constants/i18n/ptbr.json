@@ -87,7 +87,9 @@
     "home": {
         "logged-in-as": "Logado como {user}",
         "expenses": "Despesas Variáveis",
+        "expense-short": "Variáveis",
         "fixed": "Despesas Fixas",
+        "fixed-short": "Fixas",
         "categories": "Categorias",
         "transactions": "Notas Fiscais",
         "dashboard": "Painel de Resumos"

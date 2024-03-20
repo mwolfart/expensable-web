@@ -58,20 +58,26 @@ export default function Index() {
               </button>
             </div>
             <div className="flex flex-grow flex-col xs:rounded-2xl bg-foreground">
-              <div className="flex gap-4 p-4">
+              <div className="flex gap-4 p-4 flex-wrap sm:flex-nowrap">
                 <a className={getTabClass('/dashboard')} href="/">
                   <div className="hidden md:block">{t('home.dashboard')}</div>
                   <GoGraph className="block md:hidden" size={24} />
                 </a>
                 <a className={getTabClass('/expenses')} href="/expenses">
-                  <div className="hidden md:block">{t('home.expenses')}</div>
+                  <div className="hidden md:block lg:hidden">
+                    {t('home.expenses-short')}
+                  </div>
+                  <div className="hidden lg:block">{t('home.expenses')}</div>
                   <GoCreditCard className="block md:hidden" size={24} />
                 </a>
                 <a
                   className={getTabClass('/fixed-expenses')}
                   href="/fixed-expenses"
                 >
-                  <div className="hidden md:block">{t('home.fixed')}</div>
+                  <div className="hidden md:block lg:hidden">
+                    {t('home.fixed-short')}
+                  </div>
+                  <div className="hidden lg:block">{t('home.fixed')}</div>
                   <FaMoneyBillTransfer className="block md:hidden" size={24} />
                 </a>
                 <a className={getTabClass('/categories')} href="/categories">

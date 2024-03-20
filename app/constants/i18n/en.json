@@ -87,7 +87,9 @@
     "home": {
         "logged-in-as": "Logged in as {user}",
         "expenses": "Varying Expenses",
+        "expenses-short": "Varying",
         "fixed": "Fixed expenses",
+        "fixed-short": "Fixed",
         "categories": "Categories",
         "transactions": "Receipts",
         "dashboard": "Dashboard"
