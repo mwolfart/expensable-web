@@ -17,8 +17,10 @@ import { i18n } from '~/constants'
 import { IntlProvider } from 'use-intl'
 import tailwindStylesheetUrl from './styles/tailwind.css'
 import { getLoggedUserProfile } from './infra/session.server'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { LanguageProvider } from './presentation/providers/language'
+
+const COOKIE_LANGUAGE = 'expensableCookieLanguage'
 
 export const links: LinksFunction = () => {
   return [{ rel: 'stylesheet', href: tailwindStylesheetUrl }]
@@ -52,8 +54,25 @@ const getLanguage = (lang: string) => {
 }
 
 export default function App() {
-  const userLang = typeof navigator !== 'undefined' ? navigator.language : 'en'
+  let userLang = 'en'
+  if (
+    typeof sessionStorage !== 'undefined' &&
+    typeof navigator !== 'undefined'
+  ) {
+    const cookie = sessionStorage.getItem(COOKIE_LANGUAGE)
+    if (!cookie) {
+      userLang = navigator.language
+      sessionStorage.setItem(COOKIE_LANGUAGE, userLang)
+    } else if (cookie) {
+      userLang = cookie
+    }
+  }
   const [language, setLanguage] = useState(userLang)
+
+  const changeLanguage = (lang: string) => {
+    sessionStorage.setItem(COOKIE_LANGUAGE, lang)
+    setLanguage(lang)
+  }
 
   return (
     <html
@@ -71,7 +90,7 @@ export default function App() {
           locale="en"
           timeZone={timeZone}
         >
-          <LanguageProvider context={{ language, setLanguage }}>
+          <LanguageProvider context={{ language, setLanguage: changeLanguage }}>
             <Outlet />
           </LanguageProvider>
         </IntlProvider>
