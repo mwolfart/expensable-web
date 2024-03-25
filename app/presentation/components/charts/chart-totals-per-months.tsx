@@ -14,7 +14,6 @@ type Props = {
 }
 
 export function TotalPerMonthsChart({ data }: Props) {
-  console.log(data)
   return (
     <ResponsiveContainer width="90%" height="90%">
       <LineChart
