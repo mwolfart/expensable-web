@@ -46,14 +46,14 @@ export function FixedExpenseItem({ expense }: Props) {
     navigate(`/fixed/${expense.id}`)
   }
 
-  const remainingItems = upcomingExpenses.length
+  const totalItems = expense.amountOfMonths
 
   return (
     <div className="flex items-center gap-4 bg-foreground py-4">
       <div className="flex flex-col gap-1">
         <p className="text-md font-semibold">{expense.title}</p>
         <small className="pb-2">
-          {t('expenses.remaining-items', { value: remainingItems })}
+          {t('expenses.total-items', { value: totalItems })}
         </small>
         {expense.category && (
           <span className="inline rounded bg-light-grey p-1 text-xs font-semibold uppercase w-fit">

@@ -112,7 +112,7 @@
         "created": "Expense created successfully!",
         "deleted": "Expense deleted successfully!",
         "saved": "Expense saved successfully!",
-        "remaining-items": "{value} remaining entries",
+        "total-items": "{value} total entries",
         "varying-amounts": "This expense has varying amounts per month",
         "add-months": "Add month values",
         "errors": {

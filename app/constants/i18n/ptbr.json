@@ -112,7 +112,7 @@
         "created": "Despesa criada com sucesso!",
         "deleted": "Despesa excluída com sucesso!",
         "saved": "Despesa salva com sucesso!",
-        "remaining-items": "{value} meses remanescentes",
+        "total-items": "{value} meses totais",
         "varying-amounts": "Esta despesa possui valores variáveis durante os meses",
         "add-months": "Adicionar meses e valores",
         "errors": {
