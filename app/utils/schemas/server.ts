@@ -72,7 +72,7 @@ export const fixedExpenseSchema = yup.object().shape({
   }),
   amountOfMonths: yup
     .string()
-    .matches(/^\d$/, ErrorCodes.AMOUNT_OF_MONTHS_INVALID)
+    .matches(/^\d+$/, ErrorCodes.AMOUNT_OF_MONTHS_INVALID)
     .required(ErrorCodes.AMOUNT_OF_MONTHS_REQUIRED),
   categoryId: yup.string(),
 })
