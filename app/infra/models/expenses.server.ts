@@ -168,6 +168,7 @@ export const getUserExpenseTotalByMonthYear = async (
   userId: string,
   month: number,
   year: number,
+  withFixed?: boolean,
 ) => {
   if (month > 11) {
     throw new Error('Month must be less than 11')
@@ -175,12 +176,31 @@ export const getUserExpenseTotalByMonthYear = async (
   const startDate = new Date(Date.UTC(year, month))
   const endDate = new Date(Date.UTC(year, month + 1, 0))
   const where = getWhereClauseFromFilter(userId, { startDate, endDate })
-  return prisma.expense.aggregate({
+
+  const total = await prisma.expense.aggregate({
     where,
     _sum: {
       amountEffective: true,
     },
   })
+
+  if (withFixed) {
+    const fixedExpTotal = await prisma.fixedExpense.aggregate({
+      where: {
+        date: {
+          gte: startDate,
+          lte: endDate,
+        },
+      },
+      _sum: {
+        amount: true,
+      },
+    })
+
+    return (total._sum.amountEffective ?? 0) + (fixedExpTotal._sum.amount ?? 0)
+  }
+
+  return total._sum.amountEffective ?? 0
 }
 
 const buildMonthYearExpenseCorrelation = (
@@ -200,17 +220,20 @@ export const getUserExpensesInNumOfMonths = async (
   userId: string,
   startDate: Date,
   amountOfMonths?: number,
+  withFixed?: boolean,
 ) => {
   const upcomingMonthYears = getUpcomingMonthYears(startDate, amountOfMonths)
   const totalsPerMonthYearPromises = upcomingMonthYears.map((monthYear) =>
-    getUserExpenseTotalByMonthYear(userId, monthYear.month, monthYear.year),
+    getUserExpenseTotalByMonthYear(
+      userId,
+      monthYear.month,
+      monthYear.year,
+      withFixed,
+    ),
   )
   const totalsPerMonthRaw = await Promise.all(totalsPerMonthYearPromises)
-  const totalsPerMonth = totalsPerMonthRaw.map(({ _sum }, i) => {
-    return buildMonthYearExpenseCorrelation(
-      _sum.amountEffective || 0,
-      upcomingMonthYears[i],
-    )
+  const totalsPerMonth = totalsPerMonthRaw.map((total, i) => {
+    return buildMonthYearExpenseCorrelation(total, upcomingMonthYears[i])
   })
 
   return totalsPerMonth

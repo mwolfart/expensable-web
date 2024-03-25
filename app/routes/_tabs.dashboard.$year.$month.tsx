@@ -57,12 +57,19 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
       userId,
       -1,
     )
+    const totalsPerMonthWithFixedIntervalPromise = getUserExpensesInNumOfMonths(
+      userId,
+      startDate,
+      12,
+      true,
+    )
 
     return defer({
       totalsPerMonthInterval: totalsPerMonthIntervalPromise,
       totalsPerCategory: totalsPerCategoryPromise,
       installmentsPerCategory: installmentsPerCategoryPromise,
       totalsPerAllCategories: totalsPerAllCategoriesPromise,
+      totalsPerMonthWithFixedInterval: totalsPerMonthWithFixedIntervalPromise,
     })
   }
   return json({
@@ -70,6 +77,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     totalsPerCategory: null,
     installmentsPerCategory: null,
     totalsPerAllCategories: null,
+    totalsPerMonthWithFixedInterval: null,
   })
 }
 
@@ -82,6 +90,7 @@ export default function Dashboard() {
     totalsPerCategory,
     installmentsPerCategory,
     totalsPerAllCategories,
+    totalsPerMonthWithFixedInterval,
   } = useLoaderData<typeof loader>()
   const params = useParams()
   const year = params.year ? parseInt(params.year) : new Date().getFullYear()
@@ -210,6 +219,19 @@ export default function Dashboard() {
               </Await>
             </Suspense>
           </div>
+        </div>
+      )}
+      {totalsPerMonthWithFixedInterval && (
+        <div className="flex flex-col gap-4 w-full h-96 px-8 pb-8">
+          <h4>{t('dashboard.expenses-during-months-including-fixed')}</h4>
+          <Suspense fallback={loaderElement}>
+            <Await
+              resolve={totalsPerMonthWithFixedInterval}
+              errorElement={errorElement}
+            >
+              {(data) => <TotalPerMonthsChart data={data ?? []} />}
+            </Await>
+          </Suspense>
         </div>
       )}
     </div>

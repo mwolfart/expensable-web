@@ -142,6 +142,7 @@
     "dashboard": {
         "viewing-data-for": "Visualizando dados para:",
         "expenses-during-months": "Despesas por mês",
+        "expenses-during-months-including-fixed": "Despesas por mês (incluindo fixas)",
         "categories-this-month": "Categorias com mais despesas neste mês",
         "categories-installments-this-month": "Categories com mais parcelas este mês",
         "total-amount-per-categories": "Total gasto em cada categoria",
