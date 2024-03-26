@@ -187,6 +187,7 @@ export const getUserExpenseTotalByMonthYear = async (
   if (withFixed) {
     const fixedExpTotal = await prisma.fixedExpense.aggregate({
       where: {
+        userId,
         date: {
           gte: startDate,
           lte: endDate,

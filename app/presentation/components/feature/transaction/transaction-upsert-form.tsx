@@ -79,7 +79,7 @@ export function UpsertTransactionForm({
             amount,
             unit,
             installments,
-            categoryId: categories[0].categoryId,
+            categoryId: categories.length > 0 ? categories[0].categoryId : '',
           }),
         ),
       )
