@@ -15,7 +15,6 @@ import { useLoaderData, useNavigate } from '@remix-run/react'
 import { usePagination } from '~/presentation/hooks/use-pagination'
 import { PaginationButtons } from '~/presentation/components/ui/pagination-buttons'
 import { PaginationLimitSelect } from '~/presentation/components/ui/pagination-limit-select'
-import type { ValidationError } from 'yup'
 import {
   countUserFixedExpenses,
   createFixedExpense,
