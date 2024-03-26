@@ -87,7 +87,7 @@
     "home": {
         "logged-in-as": "Logado como {user}",
         "expenses": "Despesas Variáveis",
-        "expense-short": "Variáveis",
+        "expenses-short": "Variáveis",
         "fixed": "Despesas Fixas",
         "fixed-short": "Fixas",
         "categories": "Categorias",

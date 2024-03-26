@@ -89,8 +89,8 @@ export const createFixedExpense = async (
 
   if (typeof isParent === 'undefined' || isParent) {
     for (let i = 0; i < amountOfMonths - 1; i++) {
-      dateObject.setMonth(dateObject.getMonth() + 1, 1)
-      dateObject.setHours(0, 0, 0)
+      dateObject.setUTCMonth(dateObject.getUTCMonth() + 1, 1)
+      dateObject.setUTCHours(0, 0, 0)
       await createFixedExpense(
         {
           ...expense,
@@ -137,8 +137,8 @@ export const updateFixedExpense = async (expense: FixedExpenseUpdate) => {
   })
 
   for (let i = 0; i < amountOfMonths - 1; i++) {
-    dateObject.setMonth(dateObject.getMonth() + 1, 1)
-    dateObject.setHours(0, 0, 0)
+    dateObject.setUTCMonth(dateObject.getUTCMonth() + 1, 1)
+    dateObject.setUTCHours(0, 0, 0)
     await createFixedExpense(
       {
         ...rest,

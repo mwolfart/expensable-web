@@ -77,7 +77,7 @@ export const transactionSchema = yup.object().shape({
 export const fixedExpenseSchema = yup.object().shape({
   title: yup.string().required(),
   date: yup.string().required(),
-  categoryId: yup.string(),
+  categoryId: yup.string().nullable().optional(),
   varyingCosts: yup.boolean(),
   amount: yup.number().when('varyingCosts', {
     is: false,
