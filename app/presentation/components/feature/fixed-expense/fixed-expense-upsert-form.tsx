@@ -17,13 +17,6 @@ type Props = {
   monthExpenses?: SerializeFrom<FixedExpense[]> | null
 }
 
-const getDateLabel = (idx: number, dateStr?: string) => {
-  const today = dateStr ? new Date(dateStr) : new Date()
-  const month = getMonthName((today.getMonth() + idx + 1) % 12)
-  const year = today.getFullYear() + Math.floor((today.getMonth() + idx) / 12)
-  return `${month} ${year}`
-}
-
 export function UpsertFixedExpenseForm({
   onGoBack,
   initialData,
@@ -33,6 +26,14 @@ export function UpsertFixedExpenseForm({
   const { showToast } = useContext(ToastContext)
   const fetcher = useFetcher<FetcherResponse>()
   const { list: categories } = useContext(CategoryContext)
+
+  const getDateLabel = (idx: number, dateStr?: string) => {
+    const today = dateStr ? new Date(dateStr) : new Date()
+    const monthKey = getMonthName((today.getMonth() + idx + 1) % 12)
+    const monthLabel = t(`common.month.${monthKey}`)
+    const year = today.getFullYear() + Math.floor((today.getMonth() + idx) / 12)
+    return `${monthLabel} ${year}`
+  }
 
   const { values, errors, handleSubmit, setFieldValue, setFieldError } =
     useFormik({

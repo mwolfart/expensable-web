@@ -8,29 +8,29 @@ export const isDateValid = (value?: string) => {
 export const getMonthName = (month: number) => {
   switch (month) {
     case 0:
-      return 'January'
+      return 'january'
     case 1:
-      return 'February'
+      return 'february'
     case 2:
-      return 'March'
+      return 'march'
     case 3:
-      return 'April'
+      return 'april'
     case 4:
-      return 'May'
+      return 'may'
     case 5:
-      return 'June'
+      return 'june'
     case 6:
-      return 'July'
+      return 'july'
     case 7:
-      return 'August'
+      return 'august'
     case 8:
-      return 'September'
+      return 'september'
     case 9:
-      return 'October'
+      return 'october'
     case 10:
-      return 'November'
+      return 'november'
     case 11:
-      return 'December'
+      return 'december'
   }
 }
 

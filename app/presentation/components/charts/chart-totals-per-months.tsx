@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import {
   LineChart,
   Line,
@@ -14,12 +15,20 @@ type Props = {
 }
 
 export function TotalPerMonthsChart({ data }: Props) {
+  const { t } = useTranslation()
+  const dataWithTranslatedMonths = data.map(({ period, total }) => {
+    const monthYear = period.split(' ')
+    return {
+      period: [t(`common.month.${monthYear[0]}`), monthYear[1]].join(' '),
+      total,
+    }
+  })
   return (
     <ResponsiveContainer width="90%" height="90%">
       <LineChart
         width={500}
         height={300}
-        data={data}
+        data={dataWithTranslatedMonths}
         margin={{
           top: 5,
           right: 30,
@@ -41,7 +50,7 @@ export function TotalPerMonthsChart({ data }: Props) {
         <Line
           type="monotone"
           dataKey="total"
-          name="Amount of expenses"
+          name={t('dashboard.amount-of-expenses')}
           stroke="#8884d8"
           activeDot={{ r: 8 }}
         />

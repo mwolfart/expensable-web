@@ -1,4 +1,5 @@
 import type { ChangeEventHandler } from 'react'
+import { useTranslation } from 'react-i18next'
 import { getMonthName } from '~/utils/helpers'
 
 type Props = {
@@ -17,6 +18,7 @@ export function DashboardIntervalSelect({
 }: Props) {
   const currentDate = new Date()
   const hasDate = year && typeof month === 'number'
+  const { t } = useTranslation()
   if (hasDate) {
     currentDate.setFullYear(year, month)
   }
@@ -28,6 +30,9 @@ export function DashboardIntervalSelect({
     onChangeInterval(newDate.getMonth(), newDate.getFullYear())
   }
 
+  const getMonthLabel = (month: number) =>
+    t(`common.month.${getMonthName(month)}`)
+
   return (
     <select className="input" onChange={onChange} value={0}>
       {[...Array(7).keys()].map((i) => {
@@ -37,7 +42,7 @@ export function DashboardIntervalSelect({
         if (date.getFullYear() >= MIN_YEAR && date.getFullYear() <= MAX_YEAR) {
           return (
             <option key={id} value={id}>
-              {`${getMonthName(date.getMonth())} ${date.getFullYear()}`}
+              {`${getMonthLabel(date.getMonth())} ${date.getFullYear()}`}
             </option>
           )
         }

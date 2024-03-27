@@ -49,6 +49,20 @@
         "this-is-fixed": "Esta despesa é fixa",
         "confirm-deletion": "Confirmar exclusão",
         "confirm-deletion-text": "Você tem certeza de que quer excluir este item? Esta ação é irreversível.",
+        "month": {
+            "january": "Janeiro",
+            "february": "Fevereiro",
+            "march": "Março",
+            "april": "Abril",
+            "may": "Maio",
+            "june": "Junho",
+            "july": "Julho",
+            "august": "Agosto",
+            "september": "Setembro",
+            "october": "Outubro",
+            "november": "Novembro",
+            "december": "Dezembro"
+        },
         "errors": {
             "invalid-field": "{{field}} está inválido.",
             "required-field": "{{field}} é obrigatório",
@@ -146,6 +160,7 @@
         "categories-this-month": "Categorias com mais despesas neste mês",
         "categories-installments-this-month": "Categories com mais parcelas este mês",
         "total-amount-per-categories": "Total gasto em cada categoria",
-        "no-data": "Não há dados para o mês selecionado"
+        "no-data": "Não há dados para o mês selecionado",
+        "amount-of-expenses": "Gasto total"
     }
 }
