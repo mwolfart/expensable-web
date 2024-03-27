@@ -8,6 +8,8 @@ import Backend from 'i18next-http-backend'
 import { getInitialNamespaces } from 'remix-i18next/client'
 import i18n from './constants/i18n'
 
+const LANG_COOKIE = 'expensable_i18nextLng'
+
 async function hydrate() {
   await i18next
     .use(initReactI18next)
@@ -19,9 +21,9 @@ async function hydrate() {
       ns: getInitialNamespaces(),
       backend: { loadPath: '/locales/{{lng}}/{{ns}}.json' },
       detection: {
-        order: ['htmlTag'],
-
-        caches: [],
+        order: ['sessionStorage', 'htmlTag'],
+        lookupSessionStorage: LANG_COOKIE,
+        caches: ['sessionStorage'],
       },
     })
 

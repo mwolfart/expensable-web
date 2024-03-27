@@ -10,8 +10,8 @@ import { AiOutlineShoppingCart } from 'react-icons/ai'
 import { FaMoneyBillTransfer } from 'react-icons/fa6'
 import { CategoryProvider } from '~/presentation/providers/category'
 import { ToastProvider } from '~/presentation/providers/toast'
-import { useContext } from 'react'
-import { LanguageContext } from '~/presentation/providers/language'
+
+const enableLangSwitcher = false
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const user = await getLoggedUserProfile(request)
@@ -22,12 +22,16 @@ export async function loader({ request }: LoaderFunctionArgs) {
 }
 
 export default function Index() {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const user = useLoaderData<typeof loader>()
   const submit = useSubmit()
   const { pathname } = useLocation()
 
-  const { setLanguage } = useContext(LanguageContext)
+  const setLanguage = (lang: string) => {
+    if (enableLangSwitcher) {
+      i18n.changeLanguage(lang)
+    }
+  }
 
   const getTabClass = (path: string) =>
     `btn normal-case px-2 xs:px-3 sm:px-4 ${
@@ -99,25 +103,27 @@ export default function Index() {
               </div>
               <Outlet />
             </div>
-            <div className="py-4 flex flex-row gap-2">
-              {t('common.viewing-website-in')}
-              <div className="flex flex-row">
-                <button
-                  className="btn-link btn"
-                  type="button"
-                  onClick={() => setLanguage('en')}
-                >
-                  {t('common.english')}
-                </button>
-                <button
-                  className="btn-link btn"
-                  type="button"
-                  onClick={() => setLanguage('ptbr')}
-                >
-                  {t('common.portuguese')}
-                </button>
+            {enableLangSwitcher && (
+              <div className="py-4 flex flex-row gap-2">
+                {t('common.viewing-website-in')}
+                <div className="flex flex-row">
+                  <button
+                    className="btn-link btn"
+                    type="button"
+                    onClick={() => setLanguage('en')}
+                  >
+                    {t('common.english')}
+                  </button>
+                  <button
+                    className="btn-link btn"
+                    type="button"
+                    onClick={() => setLanguage('ptbr')}
+                  >
+                    {t('common.portuguese')}
+                  </button>
+                </div>
               </div>
-            </div>
+            )}
           </main>
         </DialogProvider>
       </ToastProvider>
