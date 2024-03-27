@@ -1,4 +1,3 @@
-import { createCookieSessionStorage } from '@remix-run/node'
 import Backend from 'i18next-fs-backend'
 import { resolve } from 'node:path'
 import { RemixI18Next } from 'remix-i18next/server'
@@ -8,8 +7,8 @@ const i18next = new RemixI18Next({
   detection: {
     supportedLanguages: i18n.supportedLngs,
     fallbackLanguage: i18n.fallbackLng,
-    sessionKey: 'expensable_i18nextLng',
-    sessionStorage: createCookieSessionStorage({}),
+    // sessionKey: 'expensable_i18nextLng',
+    // sessionStorage: createCookieSessionStorage({}),
   },
   i18next: {
     ...i18n,

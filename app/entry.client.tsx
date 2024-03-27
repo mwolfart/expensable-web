@@ -20,6 +20,7 @@ async function hydrate() {
 
       ns: getInitialNamespaces(),
       backend: { loadPath: '/locales/{{lng}}/{{ns}}.json' },
+      debug: false,
       detection: {
         order: ['sessionStorage', 'htmlTag'],
         lookupSessionStorage: LANG_COOKIE,
