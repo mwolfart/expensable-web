@@ -63,3 +63,16 @@ export const getIntervalForMonthYear = (month: number, year: number) => {
     endDate,
   }
 }
+
+export const buildMonthYearExpenseCorrelation = (
+  totalAmount: number,
+  { month, year }: { month: number; year: number },
+) => {
+  const period = new Date()
+  period.setMonth(month)
+  period.setFullYear(year)
+  return {
+    period: `${getMonthName(period.getMonth())} ${period.getFullYear()}`,
+    total: totalAmount ? parseFloat(totalAmount.toFixed(2)) : 0,
+  }
+}

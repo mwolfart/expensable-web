@@ -20,6 +20,7 @@ import { IoArrowBack, IoArrowForward } from 'react-icons/io5'
 import { Suspense, useContext } from 'react'
 import { BeatLoader } from 'react-spinners'
 import { CategoryContext } from '~/presentation/providers/category'
+import { getUserFixedExpensesInNumOfMonths } from '~/infra/models/fixed-expense.server'
 
 const MIN_YEAR = 2003
 const MAX_YEAR = 2053
@@ -42,7 +43,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     const totalsPerMonthIntervalPromise = getUserExpensesInNumOfMonths(
       userId,
       startDate,
-      6,
+      12,
     )
     const totalsPerCategoryPromise = getUserTotalsPerCategoryInMonthYear(
       month,
@@ -57,19 +58,29 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
       userId,
       -1,
     )
-    const totalsPerMonthWithFixedIntervalPromise = getUserExpensesInNumOfMonths(
+
+    const totalsPerMonthFromFixedPromise = getUserFixedExpensesInNumOfMonths(
       userId,
       startDate,
       12,
-      true,
     )
+
+    const sumFixedWithVarying = async () => {
+      const varying = await totalsPerMonthIntervalPromise
+      const fixed = await totalsPerMonthFromFixedPromise
+      const totals = varying.map(({ period, total }, i) => ({
+        period,
+        total: total + fixed[i].total,
+      }))
+      return totals
+    }
 
     return defer({
       totalsPerMonthInterval: totalsPerMonthIntervalPromise,
       totalsPerCategory: totalsPerCategoryPromise,
       installmentsPerCategory: installmentsPerCategoryPromise,
       totalsPerAllCategories: totalsPerAllCategoriesPromise,
-      totalsPerMonthWithFixedInterval: totalsPerMonthWithFixedIntervalPromise,
+      totalsPerMonthWithFixed: sumFixedWithVarying(),
     })
   }
   return json({
@@ -77,7 +88,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     totalsPerCategory: null,
     installmentsPerCategory: null,
     totalsPerAllCategories: null,
-    totalsPerMonthWithFixedInterval: null,
+    totalsPerMonthWithFixed: null,
   })
 }
 
@@ -90,7 +101,7 @@ export default function Dashboard() {
     totalsPerCategory,
     installmentsPerCategory,
     totalsPerAllCategories,
-    totalsPerMonthWithFixedInterval,
+    totalsPerMonthWithFixed,
   } = useLoaderData<typeof loader>()
   const params = useParams()
   const year = params.year ? parseInt(params.year) : new Date().getFullYear()
@@ -159,7 +170,9 @@ export default function Dashboard() {
           </h6>
           <Suspense fallback={loaderElement}>
             <Await resolve={totalsPerMonthInterval} errorElement={errorElement}>
-              {(data) => <TotalPerMonthsChart data={data ?? []} />}
+              {(data) => (
+                <TotalPerMonthsChart data={data ? data.slice(0, 6) : []} />
+              )}
             </Await>
           </Suspense>
         </div>
@@ -221,12 +234,12 @@ export default function Dashboard() {
           </div>
         </div>
       )}
-      {totalsPerMonthWithFixedInterval && (
+      {totalsPerMonthWithFixed && (
         <div className="flex flex-col gap-4 w-full h-96 px-8 pb-8">
           <h4>{t('dashboard.expenses-during-months-including-fixed')}</h4>
           <Suspense fallback={loaderElement}>
             <Await
-              resolve={totalsPerMonthWithFixedInterval}
+              resolve={totalsPerMonthWithFixed}
               errorElement={errorElement}
             >
               {(data) => <TotalPerMonthsChart data={data ?? []} />}

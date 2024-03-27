@@ -1,6 +1,10 @@
 import type { FixedExpenseCreate, FixedExpenseUpdate } from '~/utils/types'
 import { prisma } from '~/infra/db.server'
 import { DEFAULT_DATA_LIMIT } from '~/constants'
+import {
+  buildMonthYearExpenseCorrelation,
+  getUpcomingMonthYears,
+} from '~/utils/helpers'
 
 export const getUserFixedExpenses = (
   id: string,
@@ -169,4 +173,52 @@ export const deleteFixedExpense = async (id: string) => {
   })
 
   return expenseRes
+}
+
+const getUserFixedExpenseTotalByMonthYear = async (
+  userId: string,
+  month: number,
+  year: number,
+) => {
+  if (month > 11) {
+    throw new Error('Month must be less than 11')
+  }
+  const startDate = new Date(Date.UTC(year, month))
+  const endDate = new Date(Date.UTC(year, month + 1, 0))
+
+  const total = await prisma.fixedExpense.aggregate({
+    where: {
+      userId,
+      date: {
+        gte: startDate,
+        lte: endDate,
+      },
+    },
+    _sum: {
+      amount: true,
+    },
+  })
+
+  return total._sum.amount ?? 0
+}
+
+export const getUserFixedExpensesInNumOfMonths = async (
+  userId: string,
+  startDate: Date,
+  amountOfMonths?: number,
+) => {
+  const upcomingMonthYears = getUpcomingMonthYears(startDate, amountOfMonths)
+  const totalsPerMonthYearPromises = upcomingMonthYears.map((monthYear) =>
+    getUserFixedExpenseTotalByMonthYear(
+      userId,
+      monthYear.month,
+      monthYear.year,
+    ),
+  )
+  const totalsPerMonthRaw = await Promise.all(totalsPerMonthYearPromises)
+  const totalsPerMonth = totalsPerMonthRaw.map((total, i) => {
+    return buildMonthYearExpenseCorrelation(total, upcomingMonthYears[i])
+  })
+
+  return totalsPerMonth
 }
