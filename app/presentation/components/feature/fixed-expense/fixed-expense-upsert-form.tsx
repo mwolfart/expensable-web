@@ -2,7 +2,7 @@ import type { FetcherResponse } from '~/utils/types'
 import type { SerializeFrom } from '@remix-run/server-runtime'
 import type { FixedExpense } from '@prisma/client'
 import { useContext, useEffect } from 'react'
-import { useTranslations } from 'use-intl'
+import { useTranslation } from 'react-i18next'
 import { ToastContext, ToastType } from '../../../providers/toast'
 import { Form, useFetcher } from '@remix-run/react'
 import { useFormik } from 'formik'
@@ -29,7 +29,7 @@ export function UpsertFixedExpenseForm({
   initialData,
   monthExpenses,
 }: Props) {
-  const t = useTranslations()
+  const { t } = useTranslation()
   const { showToast } = useContext(ToastContext)
   const fetcher = useFetcher<FetcherResponse>()
   const { list: categories } = useContext(CategoryContext)

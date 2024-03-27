@@ -1,8 +1,8 @@
-import { useTranslations } from 'use-intl'
+import { useTranslation } from 'react-i18next'
 import { ErrorCodes } from '~/utils/enum'
 
 export const useErrorMessages = () => {
-  const t = useTranslations()
+  const { t } = useTranslation()
 
   const errorToString = (code?: string) => {
     switch (code) {

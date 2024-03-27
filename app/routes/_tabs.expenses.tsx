@@ -5,7 +5,7 @@ import type {
 } from '@remix-run/server-runtime'
 import type { AddExpenseFormErrors } from '~/utils/types'
 import { json } from '@remix-run/server-runtime'
-import { useTranslations } from 'use-intl'
+import { useTranslation } from 'react-i18next'
 import { AiOutlinePlus } from 'react-icons/ai'
 import {
   countUserExpenses,
@@ -194,7 +194,7 @@ export async function action({ request }: ActionFunctionArgs): Promise<
 
 export default function Expenses() {
   const { expenses, total } = useLoaderData<typeof loader>()
-  const t = useTranslations()
+  const { t } = useTranslation()
   const revalidator = useRevalidator()
 
   const [params] = useSearchParams()

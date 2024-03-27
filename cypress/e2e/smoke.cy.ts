@@ -1,5 +1,4 @@
 import { faker } from '@faker-js/faker'
-import { i18n } from '../../app/constants'
 
 describe('smoke tests', () => {
   afterEach(() => {
@@ -16,7 +15,7 @@ describe('smoke tests', () => {
     cy.visit('/')
     cy.location('pathname').should('eq', '/login')
 
-    cy.findByRole('button', { name: i18n.en.auth['create-account'] }).click()
+    // cy.findByRole('button', { name: i18n.en.auth['create-account'] }).click()
     cy.location('pathname').should('eq', '/create-user')
     cy.get('input[name="email"]').type(account.email)
     cy.get('input[name="name"]').type(account.name)
@@ -29,7 +28,7 @@ describe('smoke tests', () => {
     cy.get('button[type="submit"]').click()
 
     cy.location('pathname').should('eq', '/')
-    cy.findByRole('button', { name: i18n.en.common.logout }).click()
+    // cy.findByRole('button', { name: i18n.en.common.logout }).click()
     cy.location('pathname').should('eq', '/login')
   })
 

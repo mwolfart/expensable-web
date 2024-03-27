@@ -1,6 +1,6 @@
 import type { FetcherResponse, FixedExpenseWithDetails } from '~/utils/types'
 import type { SerializeFrom } from '@remix-run/server-runtime'
-import { useTranslations } from 'use-intl'
+import { useTranslation } from 'react-i18next'
 import { formatCurrency, formatDate } from '~/utils/helpers'
 import { BsTrash } from 'react-icons/bs'
 import { MdOutlineEdit } from 'react-icons/md'
@@ -15,7 +15,7 @@ type Props = {
 }
 
 export function FixedExpenseItem({ expense }: Props) {
-  const t = useTranslations()
+  const { t } = useTranslation()
   const fetcher = useFetcher<FetcherResponse>()
   const navigate = useNavigate()
 

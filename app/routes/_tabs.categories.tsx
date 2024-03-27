@@ -5,7 +5,7 @@ import type {
   TypedResponse,
 } from '@remix-run/server-runtime'
 import { json } from '@remix-run/server-runtime'
-import { useTranslations } from 'use-intl'
+import { useTranslation } from 'react-i18next'
 import { getLoggedUserId } from '~/infra/session.server'
 import {
   createCategory,
@@ -121,7 +121,7 @@ export async function action({
 
 export default function Categories() {
   const { categories } = useLoaderData<typeof loader>()
-  const t = useTranslations()
+  const { t } = useTranslation()
   const [query, setQuery] = useState('')
   const [showAddCategory, setAddCategory] = useState(false)
 

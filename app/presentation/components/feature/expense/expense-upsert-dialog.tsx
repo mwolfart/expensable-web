@@ -2,7 +2,7 @@ import type { SerializeFrom } from '@remix-run/server-runtime'
 import type { ExpenseWithCategory, FetcherResponse } from '~/utils/types'
 import type { Tag } from '../../ui/tag-input'
 import { useContext, useEffect, useId, useState } from 'react'
-import { useTranslations } from 'use-intl'
+import { useTranslation } from 'react-i18next'
 import { CurrencyInput } from '../../ui/currency-input'
 import { Form, useFetcher } from '@remix-run/react'
 import { DialogContext } from '~/presentation/providers/dialog'
@@ -21,7 +21,7 @@ type Props = {
 }
 
 export function UpsertExpenseDialog({ onUpserted, initialData }: Props) {
-  const t = useTranslations()
+  const { t } = useTranslation()
   const fetcher = useFetcher<FetcherResponse>()
   const { list: categories, map: categoryMap } = useContext(CategoryContext)
   const tagInputId = useId()

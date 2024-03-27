@@ -5,7 +5,7 @@ import type {
 } from '@remix-run/server-runtime'
 import { json } from '@remix-run/server-runtime'
 import type { AddExpenseFormErrors } from '~/utils/types'
-import { useTranslations } from 'use-intl'
+import { useTranslation } from 'react-i18next'
 import { AiOutlinePlus } from 'react-icons/ai'
 import { getLoggedUserId } from '~/infra/session.server'
 import { NoData } from '~/presentation/components/layout/no-data'
@@ -128,7 +128,7 @@ export async function action({ request }: ActionFunctionArgs): Promise<
 
 export default function FixedExpenses() {
   const { expenses, total } = useLoaderData<typeof loader>()
-  const t = useTranslations()
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const pagination = usePagination({ url: '/fixed-expenses', total })
 

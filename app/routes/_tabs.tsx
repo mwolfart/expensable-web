@@ -1,7 +1,7 @@
 import type { LoaderFunctionArgs } from '@remix-run/node'
 import { json, redirect } from '@remix-run/node'
 import { Outlet, useLoaderData, useLocation, useSubmit } from '@remix-run/react'
-import { useTranslations } from 'use-intl'
+import { useTranslation } from 'react-i18next'
 import { DialogProvider } from '~/presentation/providers/dialog'
 import { getLoggedUserProfile } from '~/infra/session.server'
 import { MdOutlineCategory } from 'react-icons/md'
@@ -22,7 +22,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 }
 
 export default function Index() {
-  const t = useTranslations()
+  const { t } = useTranslation()
   const user = useLoaderData<typeof loader>()
   const submit = useSubmit()
   const { pathname } = useLocation()
@@ -112,7 +112,7 @@ export default function Index() {
                 <button
                   className="btn-link btn"
                   type="button"
-                  onClick={() => setLanguage('pt-BR')}
+                  onClick={() => setLanguage('ptbr')}
                 >
                   {t('common.portuguese')}
                 </button>

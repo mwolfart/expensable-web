@@ -1,6 +1,6 @@
 import { useState, type FormEventHandler } from 'react'
 import type { TransactionFilters } from '~/utils/types'
-import { useTranslations } from 'use-intl'
+import { useTranslation } from 'react-i18next'
 
 type Props = {
   onApplyFilters: (formData: FormData) => void
@@ -13,7 +13,7 @@ export function TransactionFilterComponent({
   onClearFilters,
   initialFilters,
 }: Props) {
-  const t = useTranslations()
+  const { t } = useTranslation()
   const initialStartDate = initialFilters?.startDate?.toISOString().slice(0, 10)
   const initialEndDate = initialFilters?.endDate?.toISOString().slice(0, 10)
   const [startDate, setStartDate] = useState(initialStartDate)

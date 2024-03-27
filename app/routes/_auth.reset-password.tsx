@@ -1,4 +1,4 @@
-import { useTranslations } from 'use-intl'
+import { useTranslation } from 'react-i18next'
 import {
   Form,
   useNavigate,
@@ -15,7 +15,7 @@ import { confirmPasswordReset } from 'firebase/auth'
 import { clientAuth } from '~/infra/firebase.client'
 
 export default function ResetPassword() {
-  const t = useTranslations()
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const [transition] = useOutletContext<AuthContext>()

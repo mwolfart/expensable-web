@@ -8,7 +8,7 @@ import {
   useNavigate,
   useOutletContext,
 } from '@remix-run/react'
-import { useTranslations } from 'use-intl'
+import { useTranslation } from 'react-i18next'
 import { cxFormInput, cxWithFade, timeout } from '~/utils/helpers'
 import { useErrorMessages } from '~/presentation/hooks'
 import { loginSchema } from '~/utils/schemas/form'
@@ -39,7 +39,7 @@ export async function action({ request }: ActionFunctionArgs) {
 }
 
 export default function Login() {
-  const t = useTranslations()
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const actionData = useActionData<typeof action>()
   const fetcher = useFetcher()

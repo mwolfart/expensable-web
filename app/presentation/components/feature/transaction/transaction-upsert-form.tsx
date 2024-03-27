@@ -7,7 +7,7 @@ import type {
 } from '~/utils/types'
 import { useState, useEffect, useContext } from 'react'
 import { Form, useFetcher } from '@remix-run/react'
-import { useTranslations } from 'use-intl'
+import { useTranslation } from 'react-i18next'
 import { TransactionExpenseRow } from './transaction-expense-row'
 import { cxFormInput, cxWithFade } from '~/utils/helpers'
 import { AiOutlinePlus } from 'react-icons/ai'
@@ -32,7 +32,7 @@ export function UpsertTransactionForm({
   initialExpenses,
   isLoadingExpenses,
 }: Props) {
-  const t = useTranslations()
+  const { t } = useTranslation()
   const fetcher = useFetcher<FetcherResponse>()
   const { showToast } = useContext(ToastContext)
 

@@ -1,13 +1,13 @@
 import type { ChangeEvent } from 'react'
 import { useSearchParams } from '@remix-run/react'
-import { useTranslations } from 'use-intl'
+import { useTranslation } from 'react-i18next'
 
 type Props = {
   onChangeLimit: (evt: ChangeEvent<HTMLSelectElement>) => unknown
 }
 
 export function PaginationLimitSelect({ onChangeLimit }: Props) {
-  const t = useTranslations()
+  const { t } = useTranslation()
   const [params] = useSearchParams()
   return (
     <label>

@@ -1,7 +1,7 @@
 import type { ChangeEvent } from 'react'
 import type { TransactionExpenseInput } from '~/utils/types'
 import { useContext, useState } from 'react'
-import { useTranslations } from 'use-intl'
+import { useTranslation } from 'react-i18next'
 import { CurrencyInput } from '../../ui/currency-input'
 import { CategoryContext } from '~/presentation/providers/category'
 import { FaCheck, FaTimes } from 'react-icons/fa'
@@ -12,7 +12,7 @@ type Props = {
 }
 
 export function TransactionNewExpenseRow({ onCancel, onAdd }: Props) {
-  const t = useTranslations()
+  const { t } = useTranslation()
   const [data, setData] = useState<Partial<TransactionExpenseInput>>({
     installments: 1,
   })

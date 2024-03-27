@@ -2,12 +2,10 @@ import type { ReactNode } from 'react'
 import { createContext } from 'react'
 
 type LanguageContextProps = {
-  language: string
   setLanguage: (lang: string) => void
 }
 
 const defaultContext: LanguageContextProps = {
-  language: 'en',
   setLanguage: () => {},
 }
 

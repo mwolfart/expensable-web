@@ -1,7 +1,7 @@
 import type { ActionFunctionArgs } from '@remix-run/node'
 import { json } from '@remix-run/node'
 import { createUser } from '~/infra/models/user.server'
-import { useTranslations } from 'use-intl'
+import { useTranslation } from 'react-i18next'
 import {
   Form,
   useFetcher,
@@ -42,7 +42,7 @@ export async function action({ request }: ActionFunctionArgs) {
 }
 
 export default function CreateUser() {
-  const t = useTranslations()
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const fetcher = useFetcher()
   const [transition] = useOutletContext<AuthContext>()

@@ -1,7 +1,7 @@
 import type { FormEventHandler } from 'react'
 import type { ExpenseFilters } from '~/utils/types'
 import { useContext, useEffect, useState } from 'react'
-import { useTranslations } from 'use-intl'
+import { useTranslation } from 'react-i18next'
 import Select, { components } from 'react-select'
 import { CategoryContext } from '~/presentation/providers/category'
 
@@ -18,7 +18,7 @@ export function ExpenseFilterComponent({
   onClearFilters,
   initialFilters,
 }: Props) {
-  const t = useTranslations()
+  const { t } = useTranslation()
 
   const initialStartDate = initialFilters?.startDate?.toISOString().slice(0, 10)
   const initialEndDate = initialFilters?.endDate?.toISOString().slice(0, 10)

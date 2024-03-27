@@ -5,7 +5,7 @@ import { useFetcher } from '@remix-run/react'
 import { useContext, useEffect, useState } from 'react'
 import { BsTrash } from 'react-icons/bs'
 import { MdOutlineEdit, MdOutlineCheck, MdOutlineClear } from 'react-icons/md'
-import { useTranslations } from 'use-intl'
+import { useTranslation } from 'react-i18next'
 import { cxFormInput } from '~/utils/helpers'
 import { ToastContext, ToastType } from '../../../providers/toast'
 import { DialogContext } from '~/presentation/providers/dialog'
@@ -16,7 +16,7 @@ type Props = {
 }
 
 export function CategoryItem({ category }: Props) {
-  const t = useTranslations()
+  const { t } = useTranslation()
   const fetcher = useFetcher<FetcherResponse>()
 
   const { showToast } = useContext(ToastContext)

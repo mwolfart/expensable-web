@@ -1,5 +1,5 @@
 import type { Pagination } from '~/presentation/hooks/use-pagination'
-import { useTranslations } from 'use-intl'
+import { useTranslation } from 'react-i18next'
 import { useSearchParams } from '@remix-run/react'
 import { GrLinkPrevious, GrLinkNext } from 'react-icons/gr'
 import { DEFAULT_DATA_LIMIT } from '~/constants'
@@ -9,7 +9,7 @@ type Props = {
 } & Pagination
 
 export function PaginationButtons({ total, ...pagination }: Props) {
-  const t = useTranslations()
+  const { t } = useTranslation()
   const [params] = useSearchParams()
   const limit = parseInt(params.get('limit') as string) || DEFAULT_DATA_LIMIT
   const totalPages = Math.ceil(total / limit)

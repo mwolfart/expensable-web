@@ -4,7 +4,7 @@ import type {
   FetcherResponse,
   TransactionWithExpenses,
 } from '~/utils/types'
-import { useTranslations } from 'use-intl'
+import { useTranslation } from 'react-i18next'
 import { formatCurrency, formatDate } from '~/utils/helpers'
 import { BsTrash } from 'react-icons/bs'
 import { MdOutlineEdit } from 'react-icons/md'
@@ -26,7 +26,7 @@ type ExpensesFetcher = FetcherResponse & {
 }
 
 export function TransactionItem({ transaction }: Props) {
-  const t = useTranslations()
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const { showToast } = useContext(ToastContext)
   const { openDialog, closeDialog } = useContext(DialogContext)

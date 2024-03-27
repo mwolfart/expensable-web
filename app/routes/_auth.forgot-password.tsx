@@ -1,4 +1,4 @@
-import { useTranslations } from 'use-intl'
+import { useTranslation } from 'react-i18next'
 import { useNavigate, useOutletContext } from '@remix-run/react'
 import { useState } from 'react'
 import { cxFormInput, cxWithFade, timeout } from '~/utils/helpers'
@@ -12,7 +12,7 @@ import { clientAuth } from '~/infra/firebase.client'
 const CONFIRMATION_TIMEOUT = 5000
 
 export default function ForgotPassword() {
-  const t = useTranslations()
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const [transition] = useOutletContext<AuthContext>()
   const { errorToString } = useErrorMessages()

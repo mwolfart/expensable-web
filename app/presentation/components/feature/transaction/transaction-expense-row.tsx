@@ -3,7 +3,7 @@ import { useContext } from 'react'
 import { BsTrash } from 'react-icons/bs'
 import { formatCurrency } from '~/utils/helpers'
 import { CategoryContext } from '~/presentation/providers/category'
-import { useTranslations } from 'use-intl'
+import { useTranslation } from 'react-i18next'
 
 type Props = {
   index: number
@@ -19,7 +19,7 @@ export function TransactionExpenseRow({
   expense,
 }: Props) {
   const { map: categoryMap } = useContext(CategoryContext)
-  const t = useTranslations()
+  const { t } = useTranslation()
 
   return (
     <>

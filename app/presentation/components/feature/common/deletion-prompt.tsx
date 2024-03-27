@@ -1,4 +1,4 @@
-import { useTranslations } from 'use-intl'
+import { useTranslation } from 'react-i18next'
 
 type Props = {
   onConfirm: () => void
@@ -6,7 +6,7 @@ type Props = {
 }
 
 export function DeletionPrompt({ onConfirm, onCancel }: Props) {
-  const t = useTranslations()
+  const { t } = useTranslation()
   return (
     <div className="flex flex-col items-center gap-8">
       <h3>{t('common.confirm-deletion')}</h3>

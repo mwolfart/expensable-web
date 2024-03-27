@@ -10,7 +10,7 @@ import {
   Cell,
   Text,
 } from 'recharts'
-import { useTranslations } from 'use-intl'
+import { useTranslation } from 'react-i18next'
 
 type Props = {
   data: { categoryName: string; total: number }[]
@@ -68,7 +68,7 @@ const CustomYAxisTick = ({ x, y, payload }: TickProps) => {
 }
 
 export function TotalPerCategoriesChart({ data, currency, vertical }: Props) {
-  const t = useTranslations()
+  const { t } = useTranslation()
   return (
     <ResponsiveContainer width="90%" height="90%">
       {data?.length > 0 ? (

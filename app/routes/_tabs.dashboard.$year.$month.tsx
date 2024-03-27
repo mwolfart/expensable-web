@@ -6,7 +6,7 @@ import {
   useParams,
   useRevalidator,
 } from '@remix-run/react'
-import { useTranslations } from 'use-intl'
+import { useTranslation } from 'react-i18next'
 import { TotalPerCategoriesChart } from '~/presentation/components/charts/chart-totals-per-categories'
 import { TotalPerMonthsChart } from '~/presentation/components/charts/chart-totals-per-months'
 import { DashboardIntervalSelect } from '~/presentation/components/feature/dashboard/dashboard-interval-select'
@@ -82,7 +82,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 }
 
 export default function Dashboard() {
-  const t = useTranslations()
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const revalidator = useRevalidator()
   const {

@@ -2,7 +2,7 @@ import type { ChangeEvent } from 'react'
 import type { FetcherResponse } from '~/utils/types'
 import { useFetcher } from '@remix-run/react'
 import { useContext, useEffect, useState } from 'react'
-import { useTranslations } from 'use-intl'
+import { useTranslation } from 'react-i18next'
 import { useErrorMessages } from '~/presentation/hooks'
 import {
   cxFormInput,
@@ -18,7 +18,7 @@ type Props = {
 }
 
 export function AddCategoryPopup({ isOpen, setOpen }: Props) {
-  const t = useTranslations()
+  const { t } = useTranslation()
   const fetcher = useFetcher<FetcherResponse>()
   const { errorToString } = useErrorMessages()
 

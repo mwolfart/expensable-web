@@ -10,7 +10,7 @@ import type {
 import { json } from '@remix-run/server-runtime'
 import { useLoaderData, useNavigate, useSearchParams } from '@remix-run/react'
 import { useState } from 'react'
-import { useTranslations } from 'use-intl'
+import { useTranslation } from 'react-i18next'
 import { NoData } from '~/presentation/components/layout/no-data'
 import { PaginationButtons } from '~/presentation/components/ui/pagination-buttons'
 import { TransactionList } from '~/presentation/components/feature/transaction/transaction-list'
@@ -149,7 +149,7 @@ export async function action({ request }: ActionFunctionArgs): Promise<
 
 export default function Transactions() {
   const { transactions, total } = useLoaderData<typeof loader>()
-  const t = useTranslations()
+  const { t } = useTranslation()
   const navigate = useNavigate()
 
   const [params] = useSearchParams()
