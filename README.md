@@ -22,9 +22,9 @@ R: Refactor
 
 - [ ] T 5 P1 Integration + E2E testing w/ Cypress
 - [ ] T 2 P1 Further tests on transactions: items with installments, items without categories, delete individual expense after transaction create
-- [ ] E 3 P1 Include fixed expenses on categories fetch for dashboard
 - [ ] E 4 P2 Add loaders
 - [ ] E 2 P2 Include current expense on upcoming expenses in fixed expenses tab
+- [ ] E 3 P3 Include fixed expenses on categories fetch for dashboard
 - [ ] B 4 P5 Fix hydration bugs with i18next
 
 # Credits

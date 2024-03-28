@@ -206,7 +206,7 @@ export function UpsertTransactionForm({
               <div className="flex flex-col gap-4 md:flex-row">
                 <div className="flex gap-[2px]">
                   <select
-                    className="input bg-primary rounded-tr-none rounded-br-none text-white focus:outline focus:outline-primary"
+                    className="input appearance-auto bg-primary rounded-tr-none rounded-br-none text-white focus:outline focus:outline-primary"
                     value={expensesToAdd}
                     onChange={(evt) =>
                       setExpensesToAdd(parseInt(evt.target.value))
