@@ -200,12 +200,12 @@ export default function Transactions() {
       <div className={cxWithGrowFadeLg('hidden md:block', showFilters)}>
         {FiltersBlock}
       </div>
-      {!transactions.length && (
+      {!transactions?.length && (
         <NoData>
           <p>{t('transactions.try-adding')}</p>
         </NoData>
       )}
-      {!!transactions.length && (
+      {!!transactions?.length && (
         <>
           <TransactionList transactions={transactions} />
           <PaginationButtons total={total} {...pagination} />

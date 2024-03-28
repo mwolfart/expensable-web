@@ -6,7 +6,7 @@ import type {
 import type { Transaction } from '@prisma/client'
 import { prisma } from '~/infra/db.server'
 import { DEFAULT_DATA_LIMIT } from '~/constants'
-import { createExpense } from './expenses.server'
+import { createExpense, deleteExpenseStrict } from './expenses.server'
 
 export const getUserTransactions = (
   id: string,
@@ -27,13 +27,14 @@ export const getUserTransactions = (
     },
   })
 
-export const getUserTransactionById = (transactionId: string) =>
+export const getUserTransactionById = (userId: string, transactionId: string) =>
   prisma.transaction.findUnique({
     include: {
       expenses: true,
     },
     where: {
       id: transactionId,
+      userId,
     },
   })
 
@@ -140,7 +141,7 @@ const removeExpensesFromTransaction = async (transactionId: string) => {
     },
   })
   const promises = expenses.map(({ expenseId }) =>
-    prisma.expense.delete({ where: { id: expenseId } }),
+    deleteExpenseStrict(expenseId),
   )
   await Promise.all(promises)
 }
@@ -148,22 +149,23 @@ const removeExpensesFromTransaction = async (transactionId: string) => {
 const createTransactionExpense = async (
   transactionId: string,
   expense: ExpenseCreate,
-  categoryId: string,
+  categoryId?: string,
 ) => {
   const { id } = await createExpense(expense)
-  const categoryPromise = prisma.categoriesOnExpense.create({
-    data: {
-      expenseId: id,
-      categoryId,
-    },
-  })
+  if (categoryId) {
+    await prisma.categoriesOnExpense.create({
+      data: {
+        expenseId: id,
+        categoryId,
+      },
+    })
+  }
   const transactionPromise = prisma.expensesInTransaction.create({
     data: {
       expenseId: id,
       transactionId,
     },
   })
-  await categoryPromise
   await transactionPromise
 }
 

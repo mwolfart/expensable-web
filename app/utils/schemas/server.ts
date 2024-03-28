@@ -11,7 +11,10 @@ export const expenseSchema = yup.object().shape({
     .string()
     .matches(/^\d+(\.\d+)?$/, ErrorCodes.AMOUNT_INVALID)
     .required(ErrorCodes.AMOUNT_REQUIRED),
-  unit: yup.string().matches(/^(\d+(\.\d+)?)?$/),
+  unit: yup
+    .string()
+    .matches(/^(\d+(\.\d+)?)?$/)
+    .nullable(),
   date: yup
     .string()
     .test('is-date-valid', ErrorCodes.BAD_DATE_FORMAT, isDateValid)

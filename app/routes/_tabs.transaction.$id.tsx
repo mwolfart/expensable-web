@@ -20,7 +20,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   const userId = await getLoggedUserId(request)
   const transactionId = params.id
   if (userId && transactionId) {
-    const transaction = await getUserTransactionById(transactionId)
+    const transaction = await getUserTransactionById(userId, transactionId)
     if (transaction) {
       return json({ transaction })
     }
@@ -48,7 +48,9 @@ export default function TransactionId() {
       const expensesToFetch = transaction.expenses
         .map(({ expenseId }) => expenseId)
         .join(',')
-      expensesFetcher.load(`/expenses?ids=${expensesToFetch}&limit=30`)
+      if (expensesToFetch.length > 0) {
+        expensesFetcher.load(`/expenses?ids=${expensesToFetch}&limit=30`)
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [transaction])

@@ -55,7 +55,9 @@ export function TransactionItem({ transaction }: Props) {
     const expensesToFetch = transaction.expenses
       .map(({ expenseId }) => expenseId)
       .join(',')
-    expensesFetcher.load(`/expenses?ids=${expensesToFetch}&limit=5`)
+    if (expensesToFetch.length > 0) {
+      expensesFetcher.load(`/expenses?ids=${expensesToFetch}&limit=5`)
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [transaction.expenses])
 

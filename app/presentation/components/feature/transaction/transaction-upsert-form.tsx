@@ -90,7 +90,8 @@ export function UpsertTransactionForm({
     if (fetcher.data?.errors?.expenses) {
       setExpenseError(fetcher.data?.errors?.expenses)
     } else if (fetcher.data?.errors) {
-      showToast(ToastType.ERROR, fetcher.data?.errors)
+      const serverErrors = Object.values(fetcher.data.errors)
+      showToast(ToastType.ERROR, serverErrors.join(','))
     } else if (fetcher.data?.success) {
       showToast(
         ToastType.SUCCESS,
@@ -242,6 +243,7 @@ export function UpsertTransactionForm({
         </div>
         <div className="flex w-full flex-col gap-4 lg:col-span-2">
           <button
+            type="submit"
             className="btn-primary btn w-full"
             disabled={
               isLoadingExpenses || dirtyExpenses.length > 0 || !expenses.length

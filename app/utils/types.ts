@@ -31,7 +31,7 @@ export type TransactionExpenseInput = Pick<
   Expense,
   'title' | 'unit' | 'amount' | 'installments'
 > & {
-  categoryId: string
+  categoryId?: string
 }
 
 export type AddExpenseFormErrors = {

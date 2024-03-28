@@ -3,7 +3,6 @@ import { prisma } from '~/infra/db.server'
 import {
   buildMonthYearExpenseCorrelation,
   getIntervalForMonthYear,
-  getMonthName,
   getUpcomingMonthYears,
 } from '~/utils/helpers'
 import type {
@@ -646,6 +645,26 @@ export const deleteExpense = async (id: string) => {
       expenseInTransaction,
       expense.amount,
     )
+  }
+  return prisma.expense.delete({ where: { id } })
+}
+
+export const deleteExpenseStrict = async (id: string) => {
+  const expense = await prisma.expense.findUnique({
+    where: {
+      id,
+    },
+  })
+  if (!expense) {
+    return
+  }
+  // Remove installments if present
+  if (expense.installments > 0) {
+    await prisma.expense.deleteMany({
+      where: {
+        parentExpenseId: id,
+      },
+    })
   }
   return prisma.expense.delete({ where: { id } })
 }

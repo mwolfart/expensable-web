@@ -34,6 +34,7 @@ export function TransactionExpenseRow({
       <div className="max-lg:col-start-2 max-lg:row-start-3">{`${expense.installments}x`}</div>
       <div className="max-lg:row-start-4 lg:flex lg:justify-end">
         <button
+          type="button"
           className="hidden lg:block btn-outline btn-primary btn"
           onClick={() => onRemove(index)}
           disabled={canRemove}
@@ -42,6 +43,7 @@ export function TransactionExpenseRow({
           <BsTrash size={20} />
         </button>
         <button
+          type="button"
           className="block lg:hidden btn-outline btn-primary btn p-2 min-h-0 h-auto"
           onClick={() => onRemove(index)}
           disabled={canRemove}
