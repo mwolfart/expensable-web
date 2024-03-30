@@ -56,7 +56,7 @@ export function ExpenseItem({ expense }: Props) {
 
   return (
     <div className="grid items-center gap-2 bg-foreground py-4 sm:grid-cols-2">
-      <p className="text-md font-semibold">{expense.title}</p>
+      <p className="text-md font-semibold">{expense.title?.toString()}</p>
       <p className="sm:text-right">{date}</p>
       <div className="flex flex-col">
         <p>{formatCurrency(expense.amount)}</p>
