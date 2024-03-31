@@ -50,7 +50,7 @@ export function FixedExpenseItem({ expense }: Props) {
 
   return (
     <div className="flex items-center gap-4 bg-foreground py-4">
-      <div className="flex flex-col gap-1">
+      <div className="flex flex-col gap-1 flex-grow">
         <p className="text-md font-semibold">{expense.title}</p>
         <small className="pb-2">
           {t('expenses.total-items', { value: totalItems })}
@@ -61,11 +61,11 @@ export function FixedExpenseItem({ expense }: Props) {
           </span>
         )}
       </div>
-      <div className="flex flex-row flex-grow gap-2 sm:justify-end">
+      <div className="flex-row flex-grow gap-2 sm:justify-end hidden lg:flex">
         {upcomingExpenses.map(({ id, amount, date }) => (
           <div
             key={id}
-            className="inline rounded border-black border p-1 text-xs text-grey font-semibold uppercase flex flex-col gap-1"
+            className="hidden xl:flex [&:nth-child(-n+3)]:lg:flex inline rounded border-black border p-1 text-xs text-grey font-semibold uppercase flex-col gap-1"
           >
             <span>{formatCurrency(amount)}</span>
             <span>{formatDate(new Date(date)).substring(3)}</span>
