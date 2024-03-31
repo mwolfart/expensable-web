@@ -1,7 +1,7 @@
 import type { FetcherResponse, FixedExpenseWithDetails } from '~/utils/types'
 import type { SerializeFrom } from '@remix-run/server-runtime'
 import { useTranslation } from 'react-i18next'
-import { formatCurrency, formatDate } from '~/utils/helpers'
+import { formatCurrency, formatDate, truncStr } from '~/utils/helpers'
 import { BsTrash } from 'react-icons/bs'
 import { MdOutlineEdit } from 'react-icons/md'
 import { useFetcher, useNavigate } from '@remix-run/react'
@@ -51,7 +51,12 @@ export function FixedExpenseItem({ expense }: Props) {
   return (
     <div className="flex items-center gap-4 bg-foreground py-4">
       <div className="flex flex-col gap-1 flex-grow">
-        <p className="text-md font-semibold">{expense.title}</p>
+        <p className="text-md font-semibold hidden md:block">
+          {expense.title?.toString()}
+        </p>
+        <p className="text-md font-semibold block md:hidden">
+          {truncStr(expense.title, 10)}
+        </p>
         <small className="pb-2">
           {t('expenses.total-items', { value: totalItems })}
         </small>

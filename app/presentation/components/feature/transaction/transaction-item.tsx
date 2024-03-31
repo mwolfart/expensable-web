@@ -5,7 +5,7 @@ import type {
   TransactionWithExpenses,
 } from '~/utils/types'
 import { useTranslation } from 'react-i18next'
-import { formatCurrency, formatDate } from '~/utils/helpers'
+import { formatCurrency, formatDate, truncStr } from '~/utils/helpers'
 import { BsTrash } from 'react-icons/bs'
 import { MdOutlineEdit } from 'react-icons/md'
 import { useFetcher, useNavigate } from '@remix-run/react'
@@ -81,7 +81,12 @@ export function TransactionItem({ transaction }: Props) {
 
   return (
     <div className="grid items-center gap-2 bg-foreground py-4 sm:grid-cols-2">
-      <p className="text-md font-semibold">{transaction.location}</p>
+      <p className="text-md font-semibold hidden md:block">
+        {transaction.location?.toString()}
+      </p>
+      <p className="text-md font-semibold block md:hidden">
+        {truncStr(transaction.location, 10)}
+      </p>
       <p className="sm:text-right">{date}</p>
       <div>
         <p>{formatCurrency(transaction.total)}</p>

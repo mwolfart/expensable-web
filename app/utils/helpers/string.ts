@@ -3,7 +3,7 @@ export const formatCurrency = (amount: number) => {
   return `${currency} ${amount.toFixed(2)}`
 }
 
-export const trimStr = (longStr: string, size?: number) => {
+export const truncStr = (longStr: string, size?: number) => {
   const chosenSize = size || 10
   return longStr.length > chosenSize
     ? `${longStr.substring(0, chosenSize - 2)}...`
