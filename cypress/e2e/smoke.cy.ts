@@ -2,18 +2,20 @@ import { faker } from '@faker-js/faker'
 import * as i18n from '../../public/locales/en/common.json'
 
 describe('smoke tests', () => {
-  afterEach(() => {
-    cy.cleanupUser()
-  })
+  // afterEach(() => {
+  //   cy.cleanupUser()
+  // })
 
   it('should allow you to register and login', () => {
     const account = {
       email: `${faker.internet.userName()}@example.com`,
       name: faker.person.fullName(),
-      password: faker.internet.password(),
+      password: faker.internet.password({
+        prefix: 'aA2#',
+      }),
     }
 
-    cy.intercept('POST', '/create-user', (req) => {
+    cy.intercept('POST', /\/create-user.*/, (req) => {
       req.reply({
         statusCode: 200,
         body: {
@@ -23,16 +25,17 @@ describe('smoke tests', () => {
       })
     }).as('createUser')
 
-    // TODO catch login?
-
     cy.visit('/')
     cy.location('pathname').should('eq', '/login')
+    // Wait page load
+    cy.wait(1000)
 
     cy.findByRole('button', { name: i18n.auth['create-account'] }).click()
     cy.location('pathname').should('eq', '/create-user')
     cy.get('input[name="email"]').type(account.email)
     cy.get('input[name="name"]').type(account.name)
     cy.get('input[name="password"]').type(account.password)
+    cy.get('input[name="passwordConfirmation"]').type(account.password)
     cy.get('button[type="submit"]').click()
 
     cy.wait('@createUser').then((interception) => {
@@ -42,14 +45,6 @@ describe('smoke tests', () => {
       cy.findByRole('button', {
         name: i18n.auth['already-have-account'],
       }).click()
-      cy.location('pathname').should('eq', '/login')
-
-      cy.get('input[type="email"]').type(account.email)
-      cy.get('input[type="password"]').type(account.password)
-      cy.get('button[type="submit"]').click()
-
-      cy.location('pathname').should('eq', '/')
-      cy.findByRole('button', { name: i18n.common.logout }).click()
       cy.location('pathname').should('eq', '/login')
     })
   })

@@ -6,7 +6,7 @@ export const emailSchema = yup
   .string()
   .required(ErrorCodes.EMAIL_REQUIRED)
   .matches(
-    /^[a-zA-Z0-9.]+@[a-zA-Z0-9]+(\.[a-zA-Z]+)+$/,
+    /^[a-zA-Z0-9._-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z]+)+$/,
     ErrorCodes.EMAIL_INVALID,
   )
 
