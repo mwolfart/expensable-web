@@ -1,6 +1,6 @@
 import type { FormEventHandler } from 'react'
 import type { ExpenseFilters } from '~/utils/types'
-import { useContext, useEffect, useState } from 'react'
+import { Suspense, useContext, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import Select, { components } from 'react-select'
 import { CategoryContext } from '~/presentation/providers/category'
@@ -96,18 +96,20 @@ export function ExpenseFilterComponent({
       </label>
       <label className="md:max-3xl:row-start-2 md:max-lg:col-span-2 lg:max-3xl:col-span-3">
         {t('common.categories')}
-        <Select
-          isMulti
-          value={selectedOptions}
-          onChange={(o) => setSelectedOptions(Array.from(o))}
-          options={catOptions}
-          isOptionDisabled={() => selectedOptions.length >= 3}
-          components={{
-            Control: (props) => (
-              <components.Control {...props} className="input" />
-            ),
-          }}
-        />
+        <Suspense fallback={null}>
+          <Select
+            isMulti
+            value={selectedOptions}
+            onChange={(o) => setSelectedOptions(Array.from(o))}
+            options={catOptions}
+            isOptionDisabled={() => selectedOptions.length >= 3}
+            components={{
+              Control: (props) => (
+                <components.Control {...props} className="input" />
+              ),
+            }}
+          />
+        </Suspense>
       </label>
       <div className="flex w-full flex-row items-end gap-4 md:max-lg:col-span-2">
         <button className="btn-primary btn flex-grow">
