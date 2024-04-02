@@ -13,6 +13,7 @@ import {
   ScrollRestoration,
   useLoaderData,
 } from '@remix-run/react'
+import Select from 'react-select'
 
 import tailwindStylesheetUrl from './styles/tailwind.css'
 import { getLoggedUserProfile } from './infra/session.server'
@@ -68,6 +69,14 @@ export default function App() {
         <ScrollRestoration />
         <Scripts />
         <LiveReload />
+        <div style={{ display: 'none' }}>
+          <Select
+            instanceId={'rendered-select'}
+            value={{ label: 'none', value: 'none' }}
+            options={[{ label: 'none', value: 'none' }]}
+            onChange={() => null}
+          />
+        </div>
       </body>
     </html>
   )
