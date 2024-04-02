@@ -12,7 +12,9 @@ export function PaginationButtons({ total, ...pagination }: Props) {
   const { t } = useTranslation()
   const [params] = useSearchParams()
   const limit = parseInt(params.get('limit') as string) || DEFAULT_DATA_LIMIT
+  const offset = parseInt(params.get('offset') as string) || 0
   const totalPages = Math.ceil(total / limit)
+  const currentPage = Math.floor(offset / limit)
   return (
     <div className="flex justify-center gap-4">
       <button
@@ -29,9 +31,10 @@ export function PaginationButtons({ total, ...pagination }: Props) {
       <select
         className="input"
         onChange={(evt) => pagination.goToPage(evt.target.value)}
+        value={currentPage}
       >
         {Array.from({ length: totalPages }).map((_, id) => (
-          <option key={id} id={id.toString()}>
+          <option key={id} value={id}>
             {t('common.page-n', { number: id + 1 })}
           </option>
         ))}

@@ -36,7 +36,7 @@
         "page-n": "Página {{number}}",
         "expenses": "Despesas",
         "category": "Categoria",
-        "n-more": "Mais {value}",
+        "n-more": "Mais {{value}}",
         "n-items": "{{value}} itens",
         "number-of-months": "Número de meses",
         "optional-field": "{{field}} (opcional)",

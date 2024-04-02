@@ -69,10 +69,10 @@ export const buildMonthYearExpenseCorrelation = (
   { month, year }: { month: number; year: number },
 ) => {
   const period = new Date()
-  period.setMonth(month)
-  period.setFullYear(year)
+  period.setUTCMonth(month, 1)
+  period.setUTCFullYear(year)
   return {
-    period: `${getMonthName(period.getMonth())} ${period.getFullYear()}`,
+    period: `${getMonthName(period.getUTCMonth())} ${period.getUTCFullYear()}`,
     total: totalAmount ? parseFloat(totalAmount.toFixed(2)) : 0,
   }
 }
