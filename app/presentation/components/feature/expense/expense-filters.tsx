@@ -2,7 +2,7 @@ import type { FormEventHandler } from 'react'
 import type { ExpenseFilters } from '~/utils/types'
 import { useContext, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-// import Select, { components } from 'react-select'
+import Select, { components } from 'react-select'
 import { CategoryContext } from '~/presentation/providers/category'
 
 type Props = {
@@ -27,8 +27,8 @@ export function ExpenseFilterComponent({
   const [title, setTitle] = useState(initialFilters?.title ?? '')
 
   const [selectedOptions, setSelectedOptions] = useState<SelectOption[]>([])
-  // const { list: categories, map: categoryMap } = useContext(CategoryContext)
-  const { map: categoryMap } = useContext(CategoryContext)
+  const { list: categories, map: categoryMap } = useContext(CategoryContext)
+  // const { map: categoryMap } = useContext(CategoryContext)
 
   useEffect(() => {
     if (initialFilters?.categoriesIds) {
@@ -40,7 +40,7 @@ export function ExpenseFilterComponent({
     }
   }, [categoryMap, initialFilters])
 
-  // const catOptions = categories.map((c) => ({ value: c.id, label: c.title }))
+  const catOptions = categories.map((c) => ({ value: c.id, label: c.title }))
 
   const submit: FormEventHandler<HTMLFormElement> = (evt) => {
     evt.preventDefault()
@@ -95,10 +95,7 @@ export function ExpenseFilterComponent({
           onChange={(evt) => setEndDate(evt.target.value)}
         />
       </label>
-      {/**
-        * Commented until the issue with react-select is resolved
-        * 
-        <label className="md:max-3xl:row-start-2 md:max-lg:col-span-2 lg:max-3xl:col-span-3">
+      <label className="md:max-3xl:row-start-2 md:max-lg:col-span-2 lg:max-3xl:col-span-3">
         {t('common.categories')}
         <Select
           isMulti
@@ -112,7 +109,7 @@ export function ExpenseFilterComponent({
             ),
           }}
         />
-      </label> */}
+      </label>
       <div className="flex w-full flex-row items-end gap-4 md:max-lg:col-span-2">
         <button className="btn-primary btn flex-grow">
           {t('common.apply')}
