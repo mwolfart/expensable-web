@@ -25,7 +25,6 @@ export const links: LinksFunction = () => {
 
 export const meta: MetaFunction = () => [
   {
-    charset: 'utf-8',
     title: 'Expensable',
   },
   {
@@ -60,6 +59,7 @@ export default function App() {
       data-theme="expensable"
     >
       <head>
+        <meta charSet="utf-8" />
         <Meta />
         <Links />
       </head>
